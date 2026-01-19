@@ -1,0 +1,211 @@
+/* Category Common Styles */
+.category-container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: #ffffff;
+}
+
+.category-content {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  width: 100%;
+  max-width: 375px;
+  margin: 0 auto;
+  padding: 60px 20px 20px;
+}
+
+.category-header {
+  margin-bottom: 30px;
+}
+
+.category-title {
+  font-size: 24px;
+  font-weight: 700;
+  color: #1a1a1a;
+  line-height: 1.4;
+  margin: 0 0 12px 0;
+}
+
+.category-subtitle {
+  font-size: 14px;
+  color: #888;
+  margin: 0;
+}
+
+/* Purpose Grid (첫 번째 화면) */
+.purpose-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  margin-bottom: 30px;
+}
+
+.purpose-card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 20px 16px;
+  border: 2px solid #f0f0f0;
+  border-radius: 16px;
+  background-color: #fff;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: left;
+}
+
+.purpose-card:hover {
+  border-color: #ddd;
+}
+
+.purpose-card.selected {
+  border-color: #1a1a1a;
+  background-color: #fafafa;
+}
+
+.purpose-card:last-child {
+  grid-column: 1 / 2;
+}
+
+.purpose-icon {
+  font-size: 32px;
+  margin-bottom: 12px;
+}
+
+.purpose-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #1a1a1a;
+  margin-bottom: 2px;
+}
+
+.purpose-subtitle {
+  font-size: 14px;
+  font-weight: 600;
+  color: #1a1a1a;
+}
+
+/* Topic Grid (두 번째 화면) */
+.topic-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  margin-bottom: 30px;
+}
+
+.topic-card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 20px 16px;
+  border: 2px solid #f0f0f0;
+  border-radius: 16px;
+  background-color: #fff;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: left;
+}
+
+.topic-card:hover {
+  border-color: #ddd;
+}
+
+.topic-card.selected {
+  border-color: #1a1a1a;
+  background-color: #fafafa;
+}
+
+.topic-icon {
+  font-size: 32px;
+  margin-bottom: 12px;
+}
+
+.topic-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: #1a1a1a;
+  margin-bottom: 6px;
+}
+
+.topic-description {
+  font-size: 12px;
+  color: #888;
+  line-height: 1.4;
+}
+
+/* Platform List (세 번째 화면) */
+.platform-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 30px;
+}
+
+.platform-item {
+  display: flex;
+  align-items: center;
+  padding: 16px 20px;
+  border: 2px solid #f0f0f0;
+  border-radius: 12px;
+  background-color: #fff;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.platform-item:hover {
+  border-color: #ddd;
+}
+
+.platform-item.selected {
+  border-color: #1a1a1a;
+  background-color: #1a1a1a;
+}
+
+.platform-item.selected .platform-name {
+  color: #fff;
+}
+
+.platform-icon {
+  font-size: 24px;
+  margin-right: 12px;
+}
+
+.platform-name {
+  font-size: 15px;
+  font-weight: 500;
+  color: #1a1a1a;
+  flex: 1;
+  text-align: left;
+}
+
+.platform-check {
+  font-size: 18px;
+  color: #fff;
+  font-weight: 600;
+}
+
+/* Next Button */
+.next-button {
+  width: 100%;
+  padding: 16px;
+  border: none;
+  border-radius: 12px;
+  background-color: #e0e0e0;
+  color: #999;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: not-allowed;
+  transition: all 0.2s ease;
+  margin-top: auto;
+}
+
+.next-button.active {
+  background-color: #1a1a1a;
+  color: #fff;
+  cursor: pointer;
+}
+
+.next-button.active:hover {
+  background-color: #333;
+}
