@@ -1,12 +1,15 @@
 import { useState } from 'react';
+import './App.css';
 import LoginScreen from './components/LoginScreen';
 import CategoryPurpose from './components/CategoryPurpose';
 import CategoryTopic from './components/CategoryTopic';
 import CategoryPlatform from './components/CategoryPlatform';
 import Home from './components/Home';
+import Editor from './components/Editor';
 
 function App() {
   const [currentScreen, setCurrentScreen] = useState('login');
+  const [activeTab, setActiveTab] = useState('template');
   const [user, setUser] = useState(null);
   const [selections, setSelections] = useState({
     purpose: null,
@@ -42,6 +45,14 @@ function App() {
     setCurrentScreen('home');
   };
 
+  const handleTabChange = (tab) => {
+    setActiveTab(tab);
+  };
+
+  const handleEditorBack = () => {
+    setActiveTab('template');
+  };
+
   const renderScreen = () => {
     switch (currentScreen) {
       case 'login':
@@ -53,11 +64,16 @@ function App() {
       case 'platform':
         return <CategoryPlatform onNext={handlePlatformNext} />;
       case 'home':
+        if (activeTab === 'editor') {
+          return <Editor onBack={handleEditorBack} />;
+        }
         return (
           <Home
             user={user}
             selections={selections}
             onLogout={handleLogout}
+            onTabChange={handleTabChange}
+            activeTab={activeTab}
           />
         );
       default:
@@ -65,7 +81,13 @@ function App() {
     }
   };
 
-  return renderScreen();
+  return (
+    <div className="mobile-app-container">
+      <div className="mobile-app-frame">
+        {renderScreen()}
+      </div>
+    </div>
+  );
 }
 
 export default App;

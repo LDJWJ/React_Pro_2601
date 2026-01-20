@@ -17,9 +17,15 @@ const weekendTemplates = [
   { id: 8, title: '맛집 리뷰', users: 300, thumbnail: '' },
 ];
 
-function Home({ user, selections, onLogout }) {
+function Home({ user, selections, onLogout, onTabChange, activeTab = 'template' }) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isAnimating, setIsAnimating] = useState(false);
+
+  const handleTabClick = (tab) => {
+    if (onTabChange) {
+      onTabChange(tab);
+    }
+  };
 
   useEffect(() => {
     logScreenView('home');
@@ -233,6 +239,46 @@ function Home({ user, selections, onLogout }) {
           ))}
         </div>
       </div>
+
+      {/* 하단 고정 네비게이션 */}
+      <nav className="bottom-nav">
+        <button
+          className={`bottom-nav-item ${activeTab === 'template' ? 'active' : ''}`}
+          onClick={() => handleTabClick('template')}
+        >
+          <svg className="bottom-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <rect x="3" y="3" width="7" height="7" rx="1" />
+            <rect x="14" y="3" width="7" height="7" rx="1" />
+            <rect x="3" y="14" width="7" height="7" rx="1" />
+            <rect x="14" y="14" width="7" height="7" rx="1" />
+          </svg>
+          <span className="bottom-nav-label">템플릿</span>
+        </button>
+        <button
+          className={`bottom-nav-item ${activeTab === 'editor' ? 'active' : ''}`}
+          onClick={() => handleTabClick('editor')}
+        >
+          <svg className="bottom-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <rect x="3" y="3" width="7" height="7" rx="1" />
+            <rect x="14" y="3" width="7" height="7" rx="1" />
+            <rect x="3" y="14" width="7" height="7" rx="1" />
+            <rect x="14" y="14" width="7" height="7" rx="1" />
+            <line x1="12" y1="1" x2="12" y2="23" />
+            <line x1="1" y1="12" x2="23" y2="12" />
+          </svg>
+          <span className="bottom-nav-label">편집기</span>
+        </button>
+        <button
+          className={`bottom-nav-item ${activeTab === 'mypage' ? 'active' : ''}`}
+          onClick={() => handleTabClick('mypage')}
+        >
+          <svg className="bottom-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <circle cx="12" cy="8" r="4" />
+            <path d="M4 20c0-4 4-6 8-6s8 2 8 6" />
+          </svg>
+          <span className="bottom-nav-label">마이페이지</span>
+        </button>
+      </nav>
     </div>
   );
 }

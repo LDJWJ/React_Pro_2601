@@ -2,7 +2,7 @@
 .home-container {
   min-height: 100vh;
   background-color: #ffffff;
-  padding-bottom: 20px;
+  padding-bottom: 80px; /* 하단 네비게이션 높이 + 여유 공간 */
 }
 
 /* Search Section */
@@ -348,4 +348,62 @@
     width: 40px;
     height: 60px;
   }
+}
+
+/* Bottom Navigation */
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: 430px;
+  height: 70px;
+  background-color: #ffffff;
+  border-top: 1px solid #e5e5e5;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  z-index: 100;
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+/* 데스크톱에서 모바일 프레임 내 하단 네비 */
+@media (min-width: 431px) {
+  .bottom-nav {
+    bottom: 20px;
+    border-radius: 0 0 24px 24px;
+  }
+}
+
+.bottom-nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 8px 20px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #999;
+  transition: color 0.2s ease;
+}
+
+.bottom-nav-item:hover {
+  color: #666;
+}
+
+.bottom-nav-item.active {
+  color: #1a1a1a;
+}
+
+.bottom-nav-icon {
+  width: 24px;
+  height: 24px;
+}
+
+.bottom-nav-label {
+  font-size: 11px;
+  font-weight: 500;
 }
