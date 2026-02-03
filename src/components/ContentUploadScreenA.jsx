@@ -228,10 +228,7 @@ function ContentUploadScreenA({ onComplete, onBack }) {
                 ) : (
                   <div className="cua-thumb-empty" />
                 )}
-                <div className="cua-timeline-duration">
-                  <span className="cua-duration-number">{cut.duration.replace('초', '')}</span>
-                  <span className="cua-duration-unit">초</span>
-                </div>
+                <span className="cua-timeline-duration">{cut.duration}</span>
               </div>
             </div>
           ))}
