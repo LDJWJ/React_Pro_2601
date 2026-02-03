@@ -131,25 +131,34 @@
   background: #2a2a2a;
 }
 
-/* duration: 썸네일 중앙에 오버레이 */
+/* duration: 썸네일 중앙에 오버레이, 배경 투명 */
 .cua-timeline-duration {
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  font-size: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
   color: #fff;
-  padding: 4px 10px;
-  background: rgba(0, 0, 0, 0.6);
-  border-radius: 4px;
-  font-weight: 500;
   z-index: 1;
 }
 
-.cua-timeline-item.active .cua-timeline-duration {
-  background: #ffe033;
-  color: #000;
+.cua-duration-number {
+  font-size: 18px;
   font-weight: 600;
+  line-height: 1.2;
+}
+
+.cua-duration-unit {
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.2;
+}
+
+.cua-timeline-item.active .cua-timeline-duration {
+  color: #fff;
 }
 
 /* 컷 정보 카드 */
