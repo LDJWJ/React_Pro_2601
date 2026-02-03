@@ -5,9 +5,9 @@ import { logScreenView, logButtonClick } from '../utils/logger';
 const VIDEO_URL = '/videos/sample-2.mp4';
 
 const defaultCuts = [
-  { id: 1, label: "1", title: "인트로 (첫 장면)", description: "패키지 전체가 보이도록 제품을 한 컷으로 보여주세요.", time: "", startTime: 0 },
-  { id: 2, label: "2-4", title: "제품 보여주기", description: "제품이 손이나 얼굴에 닿는 순간만 보여줘도 좋아요.", time: "3초", startTime: 3 },
-  { id: 3, label: "5", title: "사용 장면", description: "이 제품의 특징이 잘 보이는 부분을 담아요.\n가까이에서 촬영하면 포인트에요.", time: "3초", startTime: 6 },
+  { id: 1, label: "1", title: "인트로(첫 장면)", description: "시선을 사로잡을 수 있는 포인트를 담아주세요. 디저트나 커피 클로즈업도 좋아요.", time: "1초~3초", startTime: 0 },
+  { id: 2, label: "2 - 5", title: "카페 보여주기", description: "이 장면에서는 '작업하기 좋다'는 이유가 보이는 장면을 담아주세요.", time: "3초", startTime: 3 },
+  { id: 3, label: "6", title: "마무리 장면", description: "여운을 남길 수 있는 장면이에요. 분위기를 한 번 더 강조하면 좋아요.", time: "3초", startTime: 6 },
 ];
 
 function StoryPlanningScreenB({ onComplete, onBack }) {
@@ -78,6 +78,11 @@ function StoryPlanningScreenB({ onComplete, onBack }) {
 
   const handleSave = () => {
     logButtonClick('story_planning_b', 'save');
+    alert('아이디어가 저장되었습니다.');
+  };
+
+  const handleStartEdit = () => {
+    logButtonClick('story_planning_b', 'start_edit');
     setCompleted(true);
   };
 
@@ -114,19 +119,26 @@ function StoryPlanningScreenB({ onComplete, onBack }) {
         <button className="story-back-button" onClick={handleBack}>
           ‹
         </button>
-        <span className="story-header-title">체험단용 뷰티 브이로그</span>
+        <span className="story-header-title">작업하기 좋은 카페 추천</span>
       </div>
 
       <div className="story-scroll-content" ref={scrollRef}>
         <div className="story-content-section">
-          <div className="story-guide-header">
-            <h2 className="story-guide-title">영상 가이드</h2>
+          {/* 진행 상태 바 */}
+          <div className="story-progress-bar">
+            {progressWidths.map((width, index) => (
+              <div
+                key={index}
+                className={`sp-progress-segment ${index < activeCount ? 'active' : ''}`}
+                style={{ flex: width }}
+              />
+            ))}
           </div>
 
           {/* Step 1 - 타임라인 밖에 위치 */}
           <div className="story-step-box-left story-step-box-with-line-bottom">
             <span className="story-step-label">step 1</span>
-            <span className="story-step-text">메모해보세요</span>
+            <span className="story-step-text">각 컷을 간단하게 메모해보세요.</span>
           </div>
 
           <div className="sp-cut-list-container">
@@ -171,9 +183,14 @@ function StoryPlanningScreenB({ onComplete, onBack }) {
                       </div>
                       <div className="sp-cut-content">
                         <div className="sp-cut-header">
-                          <img src="/icons/media.png" alt="" className="sp-cut-icon" />
-                          <span className="sp-cut-label">{cut.label}</span>
-                          <span className="sp-cut-title">{cut.title}</span>
+                          <div className="sp-cut-header-left">
+                            <img src="/icons/media.png" alt="" className={`sp-cut-icon ${isActive ? 'active' : ''}`} />
+                            <span className={`sp-cut-label ${isActive ? 'active' : ''}`}>{cut.label}</span>
+                            <span className={`sp-cut-title ${isActive ? 'active' : ''}`}>{cut.title}</span>
+                          </div>
+                          {cut.time && (
+                            <span className={`sp-cut-time-tag ${isActive ? 'active' : ''}`}>{cut.time}</span>
+                          )}
                         </div>
                         {cut.description && (
                           <p className="sp-cut-description">{cut.description}</p>
@@ -201,15 +218,12 @@ function StoryPlanningScreenB({ onComplete, onBack }) {
           {/* Step 2 - 타임라인 밖에 위치 */}
           <div className="story-step-box-left story-step-box-with-line-top">
             <span className="story-step-label">step 2</span>
-            <span className="story-step-text">메모를 바탕으로 바로 편집을 시작해보세요.</span>
+            <span className="story-step-text">작성한 메모는 영상 설명으로 사용돼요.</span>
           </div>
 
-          <div className="story-bottom-buttons-dual">
-            <button className="story-secondary-btn" onClick={handleSave}>
-              아이디어 저장
-            </button>
-            <button className="story-primary-btn" onClick={onComplete}>
-              이대로 편집 시작하기
+          <div className="story-bottom-buttons">
+            <button className="story-save-btn" onClick={handleStartEdit}>
+              저장하기
             </button>
           </div>
         </div>

@@ -22,6 +22,7 @@ function ContentUploadScreenB({ onComplete, onBack }) {
   const [aiSuggestions, setAiSuggestions] = useState([]);
   const [isLoadingAI, setIsLoadingAI] = useState(false);
   const [selectedAiIndex, setSelectedAiIndex] = useState(null);
+  const [completed, setCompleted] = useState(false);
 
 
   const fileInputRef = useRef(null);
@@ -252,7 +253,7 @@ function ContentUploadScreenB({ onComplete, onBack }) {
   // 완료
   const handleComplete = () => {
     logButtonClick('content_upload_b', 'complete');
-    onComplete();
+    setCompleted(true);
   };
 
   if (!currentCut) {
@@ -260,6 +261,25 @@ function ContentUploadScreenB({ onComplete, onBack }) {
       <div className="content-upload-b">
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', color: '#888' }}>
           로딩 중...
+        </div>
+      </div>
+    );
+  }
+
+  // 완료 화면
+  if (completed) {
+    return (
+      <div className="content-upload-b">
+        <div className="cub-complete-overlay">
+          <div className="cub-complete-message">
+            <div className="cub-complete-check">✓</div>
+            <p>미션을 완료했습니다.</p>
+          </div>
+          <div className="cub-complete-footer">
+            <button className="cub-complete-btn" onClick={onComplete}>
+              완료
+            </button>
+          </div>
         </div>
       </div>
     );

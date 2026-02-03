@@ -1,10 +1,13 @@
 .story-planning-container {
-  width: 100%;
-  height: 100%;
+  width: 393px;
+  height: 852px;
+  max-width: 393px;
+  max-height: 852px;
   background-color: #1a1a1a;
   overflow: hidden;
   display: flex;
   flex-direction: column;
+  margin: 0 auto;
 }
 
 /* 상단 헤더 바 - 고정 */
@@ -260,7 +263,7 @@
 }
 
 .sp-cut-item-filled {
-  border-color: #F8FF33;
+  border-color: #333;
 }
 
 /* 썸네일 */
@@ -337,26 +340,73 @@
 .sp-cut-header {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   gap: 6px;
   margin-bottom: 4px;
+}
+
+.sp-cut-header-left {
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 
 .sp-cut-icon {
   width: 16px;
   height: 16px;
   object-fit: contain;
+  filter: brightness(0) invert(0.5);
+  transition: filter 0.2s;
+}
+
+.sp-cut-icon.active {
   filter: brightness(0) saturate(100%) invert(95%) sepia(95%) saturate(1000%) hue-rotate(10deg) brightness(105%);
+}
+
+.sp-cut-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #888;
+  transition: color 0.2s;
+}
+
+.sp-cut-label.active {
+  color: #F8FF33;
 }
 
 .sp-cut-number-inline {
   font-size: 13px;
   font-weight: 600;
-  color: #999;
+  color: #888;
 }
 
 .sp-cut-title {
   font-size: 14px;
   font-weight: 600;
+  color: #888;
+  transition: color 0.2s;
+}
+
+.sp-cut-title.active {
+  color: #F8FF33;
+}
+
+/* 시간 태그 */
+.sp-cut-time-tag {
+  padding: 4px 10px;
+  background-color: transparent;
+  border: 1px solid #555;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #888;
+  white-space: nowrap;
+  transition: all 0.2s;
+}
+
+.sp-cut-time-tag.active {
+  background-color: rgba(248, 255, 51, 0.15);
+  border-color: #F8FF33;
   color: #F8FF33;
 }
 
@@ -389,12 +439,12 @@
   display: block;
 }
 
-/* 메모 완료 시 노란 텍스트 표시 */
+/* 메모 완료 시 텍스트 표시 */
 .sp-cut-memo-display {
   margin: 6px 0 0;
   font-size: 13px;
   font-weight: 600;
-  color: #F8FF33;
+  color: #999;
   line-height: 1.4;
 }
 

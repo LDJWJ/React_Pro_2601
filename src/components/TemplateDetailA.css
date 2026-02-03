@@ -1,12 +1,15 @@
 /* TemplateDetailA - based on TemplateDetail.css */
 
 .td-a-container {
-  width: 100%;
-  height: 100%;
+  width: 393px;
+  height: 852px;
+  max-width: 393px;
+  max-height: 852px;
   background-color: var(--bg-surface);
   color: var(--text-primary);
   overflow: hidden;
   position: relative;
+  margin: 0 auto;
 }
 
 /* Complete screen */

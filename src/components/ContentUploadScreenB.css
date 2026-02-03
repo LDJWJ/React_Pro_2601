@@ -593,3 +593,67 @@
 .cub-subtitle-input::placeholder {
   color: var(--text-subtle);
 }
+
+/* ===== 완료 화면 ===== */
+.cub-complete-overlay {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.cub-complete-message {
+  text-align: center;
+  color: var(--text-primary);
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.cub-complete-check {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background-color: var(--fill-primary);
+  color: #000;
+  font-size: 40px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 24px;
+}
+
+.cub-complete-message p {
+  font-size: 24px;
+  font-weight: 700;
+  margin: 0;
+}
+
+.cub-complete-footer {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  padding-bottom: 32px;
+}
+
+.cub-complete-btn {
+  width: 90%;
+  padding: 16px 0;
+  border: none;
+  border-radius: 24px;
+  background-color: var(--fill-primary);
+  color: #000;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+}
+
+.cub-complete-btn:active {
+  opacity: 0.8;
+}
