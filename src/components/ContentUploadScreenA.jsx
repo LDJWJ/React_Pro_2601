@@ -111,7 +111,7 @@ function ContentUploadScreenA({ onComplete, onBack }) {
     ));
   };
 
-  // 영상에서 현재 프레임 캡처 (Base64) - Promise 기반
+  // 영상에서 첫 프레임(0초) 캡처 (Base64) - Promise 기반
   const captureVideoFrame = () => {
     return new Promise((resolve) => {
       if (!videoRef.current) {
@@ -122,15 +122,32 @@ function ContentUploadScreenA({ onComplete, onBack }) {
 
       const video = videoRef.current;
 
+      // 첫 프레임 캡처를 위한 함수
+      const seekAndCapture = () => {
+        // 이미 0초면 바로 캡처
+        if (video.currentTime === 0) {
+          captureFrame(video, resolve);
+          return;
+        }
+
+        // 0초로 이동 후 캡처
+        const handleSeeked = () => {
+          video.removeEventListener('seeked', handleSeeked);
+          captureFrame(video, resolve);
+        };
+        video.addEventListener('seeked', handleSeeked);
+        video.currentTime = 0;
+      };
+
       // 비디오가 로드되지 않았으면 로드 대기
       if (video.readyState < 2) {
         console.log('비디오 로드 대기 중...');
         video.addEventListener('loadeddata', () => {
-          captureFrame(video, resolve);
+          seekAndCapture();
         }, { once: true });
         video.load();
       } else {
-        captureFrame(video, resolve);
+        seekAndCapture();
       }
     });
   };
@@ -174,6 +191,7 @@ function ContentUploadScreenA({ onComplete, onBack }) {
           cutTitle: currentCut?.title || '',
           cutDescription: currentCut?.description || '',
           memo: currentCut?.memo || '',
+          userKeyword: currentCut?.subtitle || '', // 사용자 입력 키워드
           imageBase64, // 이미지 데이터 추가
         }),
       });
