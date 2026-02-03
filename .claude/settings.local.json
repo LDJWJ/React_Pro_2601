@@ -15,7 +15,8 @@
       "Bash(sudo npm install:*)",
       "Bash(npm cache clean:*)",
       "Bash(netstat:*)",
-      "Bash(git rm:*)"
+      "Bash(git rm:*)",
+      "WebFetch(domain:hookhook2.netlify.app)"
     ]
   }
 }
