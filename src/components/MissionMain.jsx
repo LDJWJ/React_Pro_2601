@@ -4,7 +4,7 @@ import { logScreenView, logButtonClick } from '../utils/logger';
 
 const missions = [
   { id: 1, title: '미션 1', subtitle: '영상 기획하기', enabled: true },
-  { id: 2, title: '미션 2', subtitle: '준비 중', enabled: false },
+  { id: 2, title: '미션 2', subtitle: '영상 기획하기', enabled: true },
   { id: 3, title: '미션 3', subtitle: '준비 중', enabled: false },
   { id: 4, title: '미션 4', subtitle: '준비 중', enabled: false },
 ];

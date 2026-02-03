@@ -38,17 +38,6 @@ function LoginScreen({ onLogin }) {
     googleLogin();
   };
 
-  const handleNaverLogin = () => {
-    logButtonClick('login', 'naver_login_button');
-    console.log('Naver login clicked');
-    alert('네이버 로그인은 아직 구현되지 않았습니다.');
-  };
-
-  const handleAppleLogin = () => {
-    logButtonClick('login', 'apple_login_button');
-    console.log('Apple login clicked');
-    alert('Apple 로그인은 아직 구현되지 않았습니다.');
-  };
 
   return (
     <div className="login-container">
@@ -64,15 +53,6 @@ function LoginScreen({ onLogin }) {
             <span className="button-text">구글 계정으로 시작하기</span>
           </button>
 
-          <button className="login-button" onClick={handleNaverLogin}>
-            <span className="button-icon">N</span>
-            <span className="button-text">네이버 계정으로 시작하기</span>
-          </button>
-
-          <button className="login-button" onClick={handleAppleLogin}>
-            <span className="button-icon">A</span>
-            <span className="button-text">Apple 계정으로 시작하기</span>
-          </button>
         </div>
       </div>
     </div>

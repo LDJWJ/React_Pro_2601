@@ -1,14 +1,27 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import './App.css';
 import LoginScreen from './components/LoginScreen';
 import MissionMain from './components/MissionMain';
 import MissionStep from './components/MissionStep';
 import TemplateDetailA from './components/TemplateDetailA';
 import TemplateDetailB from './components/TemplateDetailB';
+import StoryPlanningScreenA from './components/StoryPlanningScreenA';
+import StoryPlanningScreenB from './components/StoryPlanningScreenB';
+import { startInteractionLogging, setInteractionScreen } from './utils/interactionLogger';
 
 function App() {
   const [currentScreen, setCurrentScreen] = useState('login');
   const [user, setUser] = useState(null);
+
+  // 인터랙션 로깅 시작
+  useEffect(() => {
+    startInteractionLogging();
+  }, []);
+
+  // 화면 전환 시 인터랙션 로그에 화면 이름 설정
+  useEffect(() => {
+    setInteractionScreen(currentScreen);
+  }, [currentScreen]);
 
   const handleLogin = (userInfo) => {
     setUser(userInfo);
@@ -23,6 +36,8 @@ function App() {
   const handleMissionSelect = (missionId) => {
     if (missionId === 1) {
       setCurrentScreen('mission1_1');
+    } else if (missionId === 2) {
+      setCurrentScreen('mission2_1');
     }
   };
 
@@ -75,6 +90,44 @@ function App() {
           <TemplateDetailB
             onComplete={() => setCurrentScreen('missionMain')}
             onBack={() => setCurrentScreen('mission1_2')}
+          />
+        );
+
+      case 'mission2_1':
+        return (
+          <MissionStep
+            stepTitle="영상 기획하기 A안"
+            description="화면을 보고 영상 기획 메모를 작성하고 저장하기를 눌러주세요."
+            buttonText="다음"
+            screenName="mission2_1"
+            onNext={() => setCurrentScreen('storyPlanningA')}
+          />
+        );
+
+      case 'storyPlanningA':
+        return (
+          <StoryPlanningScreenA
+            onComplete={() => setCurrentScreen('mission2_2')}
+            onBack={() => setCurrentScreen('mission2_1')}
+          />
+        );
+
+      case 'mission2_2':
+        return (
+          <MissionStep
+            stepTitle="영상 기획하기 B안"
+            description="화면을 보고 영상 기획 메모를 작성하고 저장하기를 눌러주세요."
+            buttonText="다음"
+            screenName="mission2_2"
+            onNext={() => setCurrentScreen('storyPlanningB')}
+          />
+        );
+
+      case 'storyPlanningB':
+        return (
+          <StoryPlanningScreenB
+            onComplete={() => setCurrentScreen('missionMain')}
+            onBack={() => setCurrentScreen('mission2_2')}
           />
         );
 

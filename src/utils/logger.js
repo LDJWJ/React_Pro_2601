@@ -1,5 +1,68 @@
-// Google Apps Script 웹 앱 URL을 여기에 입력하세요
-const SCRIPT_URL = import.meta.env.VITE_GOOGLE_SCRIPT_URL || '';
+// Google Apps Script 웹 앱 URL (Tracking_Sheet 용)
+// 개발 환경에서는 Vite 프록시를 사용하여 COEP 문제 회피
+const SCRIPT_URL = import.meta.env.DEV
+  ? '/api/tracking'
+  : (import.meta.env.VITE_TRACKING_SCRIPT_URL || '');
+
+// 화면 이름 한글 매핑
+const SCREEN_LABELS = {
+  login: '로그인',
+  mission_main: '메인 미션 화면',
+  mission1_1: '미션1',
+  mission1_2: '미션1',
+  template_detail_a: '미션1',
+  template_detail_b: '미션1',
+  mission2_1: '미션2',
+  mission2_2: '미션2',
+  story_planning_a: '미션2',
+  story_planning_b: '미션2',
+};
+
+// 이벤트 타입 한글 매핑
+const EVENT_LABELS = {
+  screen_view: '화면 진입',
+  button_click: '버튼 클릭',
+  select: '선택',
+  login: '로그인',
+  mission_complete: '미션 완료',
+};
+
+// 대상(target) 한글 매핑
+const TARGET_LABELS = {
+  // 로그인
+  google_login_button: '구글 로그인',
+  google: '구글',
+  // 미션 메인
+  mission_1: '미션 1',
+  mission_2: '미션 2',
+  mission_3: '미션 3',
+  mission_4: '미션 4',
+  logout_button: '로그아웃',
+  // 미션 스텝
+  next_button: '다음',
+  // 템플릿 상세A
+  hook_note_button: '훅 노트',
+  // 템플릿 상세B
+  story_planning_button: '영상기획하기',
+  // 공통
+  save_toggle: '저장 토글',
+  back: '뒤로가기',
+};
+
+// 행동 라벨 자동 생성
+function generateAction(screen, event, target) {
+  const screenKr = SCREEN_LABELS[screen] || screen;
+  const eventKr = EVENT_LABELS[event] || event;
+  const targetKr = TARGET_LABELS[target] || target;
+
+  if (event === 'screen_view') {
+    return `${screenKr} ${eventKr}`;
+  }
+  if (!target) {
+    return `${screenKr} ${eventKr}`;
+  }
+  return `${targetKr} ${eventKr}`;
+}
 
 // 세션 ID 생성 (브라우저 세션 동안 유지)
 const getSessionId = () => {
@@ -12,29 +75,45 @@ const getSessionId = () => {
 };
 
 // 로그 전송 함수
+// 시트 컬럼: 타임스탬프 | 사용자ID | 화면 | 이벤트 | 대상 | 값 | 행동 | 브라우저
 export const sendLog = async (logData) => {
   if (!SCRIPT_URL) {
-    console.log('[Logger] URL not configured:', logData);
+    console.log('[Tracking] URL not configured:', logData);
     return;
   }
 
   try {
+    const screenKr = SCREEN_LABELS[logData.screen] || logData.screen;
+    const eventKr = EVENT_LABELS[logData.event] || logData.event;
+    const targetKr = TARGET_LABELS[logData.target] || logData.target || '';
+    const action = generateAction(logData.screen, logData.event, logData.target);
+
     const payload = {
       userId: getSessionId(),
-      userAgent: navigator.userAgent,
-      ...logData,
+      screen: screenKr,
+      event: eventKr,
+      target: targetKr,
+      value: logData.value || '',
+      action: action,
+      browser: navigator.userAgent,
     };
 
-    await fetch(SCRIPT_URL, {
+    const fetchOptions = {
       method: 'POST',
-      mode: 'no-cors',
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(payload),
-    });
+    };
+
+    // 프로덕션에서는 no-cors 모드 사용 (Google Apps Script 직접 호출)
+    if (!import.meta.env.DEV) {
+      fetchOptions.mode = 'no-cors';
+    }
+
+    await fetch(SCRIPT_URL, fetchOptions);
   } catch (error) {
-    console.error('[Logger] Failed to send log:', error);
+    console.error('[Tracking] Failed to send log:', error);
   }
 };
 
