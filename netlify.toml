@@ -1,0 +1,27 @@
+[build]
+  command = "npm run build"
+  publish = "dist"
+  functions = "netlify/functions"
+
+[functions]
+  node_bundler = "esbuild"
+
+# 개발 서버 설정
+[dev]
+  command = "npm run dev"
+  targetPort = 5173
+  port = 8888
+  publish = "dist"
+  autoLaunch = false
+
+# SPA 라우팅을 위한 리다이렉트
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+# API 함수 리다이렉트
+[[redirects]]
+  from = "/api/*"
+  to = "/.netlify/functions/:splat"
+  status = 200
