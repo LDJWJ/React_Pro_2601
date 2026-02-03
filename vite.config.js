@@ -28,11 +28,6 @@ export default defineConfig(({ mode }) => {
             return url ? new URL(url).pathname : '/macros';
           },
         },
-        // 로컬 개발용: Netlify Functions를 로컬 서버로 프록시
-        '/.netlify/functions': {
-          target: 'http://localhost:3001',
-          changeOrigin: true,
-        },
       },
     },
   }

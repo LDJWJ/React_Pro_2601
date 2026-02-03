@@ -8,18 +8,18 @@ const SCRIPT_URL = import.meta.env.DEV
 const SCREEN_LABELS = {
   login: '로그인',
   mission_main: '메인 미션 화면',
-  mission1_1: '미션1',
-  mission1_2: '미션1',
-  template_detail_a: '미션1',
-  template_detail_b: '미션1',
-  mission2_1: '미션2',
-  mission2_2: '미션2',
-  story_planning_a: '미션2',
-  story_planning_b: '미션2',
-  mission3_1: '미션3',
-  mission3_2: '미션3',
-  content_upload_a: '미션3',
-  content_upload_b: '미션3',
+  mission1_1: '미션9',
+  mission1_2: '미션9',
+  template_detail_a: '미션9',
+  template_detail_b: '미션9',
+  mission2_1: '미션1',
+  mission2_2: '미션1',
+  story_planning_a: '미션1',
+  story_planning_b: '미션1',
+  mission3_1: '미션2',
+  mission3_2: '미션2',
+  content_upload_a: '미션2',
+  content_upload_b: '미션2',
 };
 
 // 이벤트 타입 한글 매핑
@@ -37,9 +37,9 @@ const TARGET_LABELS = {
   google_login_button: '구글 로그인',
   google: '구글',
   // 미션 메인
-  mission_1: '미션 1',
-  mission_2: '미션 2',
-  mission_3: '미션 3',
+  mission_1: '미션 9',
+  mission_2: '미션 1',
+  mission_3: '미션 2',
   mission_4: '미션 4',
   logout_button: '로그아웃',
   // 미션 스텝
