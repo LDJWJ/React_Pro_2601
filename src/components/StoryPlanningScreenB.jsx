@@ -150,63 +150,84 @@ function StoryPlanningScreenB({ onComplete, onBack }) {
                 const isLast = index === cuts.length - 1;
 
                 return (
-                  <div key={cut.id} className="sp-timeline-row">
+                  <div key={cut.id} className="sp-timeline-row" onClick={() => handleCutSelect(cut)}>
                     {/* 왼쪽 타임라인 */}
                     <div className="sp-timeline-indicator">
                       <div className={`sp-timeline-dot ${isActive ? 'active' : ''}`} />
                       <div className={`sp-timeline-line ${isActive ? 'active' : ''}`} />
                     </div>
 
-                    {/* 컷 카드 */}
-                    <div
-                      className={`sp-cut-item ${isActive ? 'sp-cut-item-active' : hasMemo ? 'sp-cut-item-filled' : ''}`}
-                      onClick={() => handleCutSelect(cut)}
-                    >
-                      <div className="sp-cut-thumbnail">
-                        {cutThumbnails[cut.id] ? (
-                          <img src={cutThumbnails[cut.id]} alt={`컷 ${index + 1}`} />
-                        ) : (
-                          <div className="sp-cut-thumbnail-empty" />
-                        )}
-                        {!isActive && cut.time && (
-                          <div className="sp-cut-thumbnail-dim">
-                            <span className="sp-cut-thumbnail-time">{cut.time}</span>
-                          </div>
-                        )}
-                        {hasMemo && (
-                          <div className="sp-cut-thumbnail-check">
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                              <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z" fill="#F8FF33"/>
-                            </svg>
-                          </div>
+                    <div className="sp-cut-wrapper">
+                      {/* 타이틀 행 (카드 바깥) */}
+                      <div className="sp-cut-header-outside">
+                        <div className="sp-cut-header-left">
+                          {cut.label.includes(' - ') ? (
+                            // 범위 라벨 (예: "2 - 5")
+                            <>
+                              <img src="/icons/media.png" alt="" className={`sp-cut-icon ${isActive ? 'active' : ''}`} />
+                              <span className={`sp-cut-label ${isActive ? 'active' : ''}`}>{cut.label.split(' - ')[0]}</span>
+                              <span className={`sp-cut-label-separator ${isActive ? 'active' : ''}`}>-</span>
+                              <img src="/icons/media.png" alt="" className={`sp-cut-icon ${isActive ? 'active' : ''}`} />
+                              <span className={`sp-cut-label ${isActive ? 'active' : ''}`}>{cut.label.split(' - ')[1]}</span>
+                            </>
+                          ) : (
+                            // 단일 라벨 (예: "1", "6")
+                            <>
+                              <img src="/icons/media.png" alt="" className={`sp-cut-icon ${isActive ? 'active' : ''}`} />
+                              <span className={`sp-cut-label ${isActive ? 'active' : ''}`}>{cut.label}</span>
+                            </>
+                          )}
+                          <span className={`sp-cut-title ${isActive ? 'active' : ''}`}>{cut.title}</span>
+                        </div>
+                        {isActive && cut.time && (
+                          <span className="sp-cut-time-tag active">{cut.time}</span>
                         )}
                       </div>
-                      <div className="sp-cut-content">
-                        <div className="sp-cut-header">
-                          <div className="sp-cut-header-left">
-                            <img src="/icons/media.png" alt="" className={`sp-cut-icon ${isActive ? 'active' : ''}`} />
-                            <span className={`sp-cut-label ${isActive ? 'active' : ''}`}>{cut.label}</span>
-                            <span className={`sp-cut-title ${isActive ? 'active' : ''}`}>{cut.title}</span>
-                          </div>
-                          {cut.time && (
-                            <span className={`sp-cut-time-tag ${isActive ? 'active' : ''}`}>{cut.time}</span>
+
+                      {/* 컷 카드 (썸네일 + 설명) */}
+                      <div className={`sp-cut-card ${isActive ? 'active' : ''}`}>
+                        <div className={`sp-cut-thumbnail ${isActive ? 'active' : ''}`}>
+                          {cutThumbnails[cut.id] ? (
+                            <img src={cutThumbnails[cut.id]} alt={`컷 ${index + 1}`} />
+                          ) : (
+                            <div className="sp-cut-thumbnail-empty" />
+                          )}
+                          {!isActive && cut.time && (
+                            <div className="sp-cut-thumbnail-dim">
+                              <span className="sp-cut-thumbnail-time">{cut.time.replace('초', 's')}</span>
+                            </div>
+                          )}
+                          {hasMemo && !isActive && (
+                            <div className="sp-cut-thumbnail-check">
+                              <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z" fill="#F8FF33"/>
+                              </svg>
+                            </div>
                           )}
                         </div>
-                        {cut.description && (
-                          <p className="sp-cut-description">{cut.description}</p>
-                        )}
-                        {!isActive && hasMemo && (
-                          <p className="sp-cut-memo-display">{memos[cut.id]}</p>
-                        )}
+                        <div className="sp-cut-description-area">
+                          {cut.description && (
+                            <p className="sp-cut-description">{cut.description}</p>
+                          )}
+                          {!isActive && hasMemo && (
+                            <p className="sp-cut-memo-display">{memos[cut.id]}</p>
+                          )}
+                        </div>
                       </div>
-                      <input
-                        type="text"
-                        className="sp-cut-memo-input"
-                        placeholder="어떤 장면을 보여주고 싶으신가요?"
-                        value={memos[cut.id] || ''}
-                        onChange={(e) => handleMemoChange(cut.id, e.target.value)}
-                        onFocus={() => handleCutSelect(cut)}
-                      />
+
+                      {/* 메모 섹션 (선택 시에만 표시) */}
+                      {isActive && (
+                        <div className="sp-memo-section">
+                          <label className="sp-memo-label">메모</label>
+                          <input
+                            type="text"
+                            className="sp-memo-input"
+                            placeholder=""
+                            value={memos[cut.id] || ''}
+                            onChange={(e) => handleMemoChange(cut.id, e.target.value)}
+                          />
+                        </div>
+                      )}
                     </div>
                   </div>
                 );
@@ -220,13 +241,14 @@ function StoryPlanningScreenB({ onComplete, onBack }) {
             <span className="story-step-label">step 2</span>
             <span className="story-step-text">작성한 메모는 영상 설명으로 사용돼요.</span>
           </div>
-
-          <div className="story-bottom-buttons">
-            <button className="story-save-btn" onClick={handleStartEdit}>
-              저장하기
-            </button>
-          </div>
         </div>
+      </div>
+
+      {/* 하단 버튼 - 고정 */}
+      <div className="story-bottom-buttons-fixed">
+        <button className="story-save-btn" onClick={handleStartEdit}>
+          저장하기
+        </button>
       </div>
     </div>
   );
