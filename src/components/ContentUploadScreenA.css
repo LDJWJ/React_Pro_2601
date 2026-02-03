@@ -1,0 +1,350 @@
+/* ContentUploadScreenA - 새 디자인 */
+
+.cua-container {
+  min-height: 100vh;
+  background: #0a0a0a;
+  display: flex;
+  flex-direction: column;
+  color: #fff;
+}
+
+/* 메인 프리뷰 영역 */
+.cua-main-preview {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 40px 16px 20px;
+  min-height: 380px;
+}
+
+/* 왼쪽 하단 정보 오버레이 */
+.cua-info-overlay {
+  position: absolute;
+  left: 16px;
+  bottom: 30px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.cua-info-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.cua-info-icon {
+  font-size: 14px;
+  opacity: 0.7;
+}
+
+.cua-info-text {
+  font-size: 13px;
+  color: #ccc;
+}
+
+/* 영상 추가 영역 - 9:16 세로 비율, 테두리 없음 */
+.cua-video-area {
+  width: 180px;
+  height: 320px;
+  border-radius: 8px;
+  overflow: hidden;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #1a1a1a;
+}
+
+.cua-video-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+}
+
+.cua-plus-icon {
+  font-size: 48px;
+  color: #fff;
+  font-weight: 300;
+}
+
+.cua-video-player {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* 하단 타임라인 */
+.cua-timeline {
+  padding: 16px;
+  background: #1a1a1a;
+}
+
+.cua-timeline-scroll {
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+
+.cua-timeline-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+.cua-timeline-item {
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+/* 썸네일: 가로가 더 넓음, duration 오버레이를 위해 relative */
+.cua-timeline-thumb {
+  position: relative;
+  width: 72px;
+  height: 48px;
+  border-radius: 6px;
+  overflow: hidden;
+  border: 2px solid transparent;
+  transition: border-color 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cua-timeline-item.active .cua-timeline-thumb {
+  border-color: #ffe033;
+}
+
+.cua-timeline-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.cua-thumb-empty {
+  width: 100%;
+  height: 100%;
+  background: #2a2a2a;
+}
+
+/* duration: 썸네일 중앙에 오버레이 */
+.cua-timeline-duration {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 12px;
+  color: #fff;
+  padding: 4px 10px;
+  background: rgba(0, 0, 0, 0.6);
+  border-radius: 4px;
+  font-weight: 500;
+  z-index: 1;
+}
+
+.cua-timeline-item.active .cua-timeline-duration {
+  background: #ffe033;
+  color: #000;
+  font-weight: 600;
+}
+
+/* 컷 정보 카드 */
+.cua-cut-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 16px;
+  margin: 12px 16px;
+  background: #1a1a1a;
+  border-radius: 12px;
+  border: 1px solid #333;
+}
+
+.cua-cut-icon {
+  font-size: 16px;
+}
+
+.cua-cut-number {
+  font-size: 14px;
+  font-weight: 600;
+  color: #ffe033;
+}
+
+.cua-cut-title {
+  font-size: 14px;
+  color: #fff;
+}
+
+/* 자막 섹션 */
+.cua-subtitle-section {
+  padding: 16px;
+}
+
+.cua-subtitle-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.cua-subtitle-label {
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.cua-ai-button {
+  background: #ffe033;
+  color: #000;
+  border: none;
+  padding: 10px 18px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.cua-ai-button:hover {
+  background: #ffd000;
+}
+
+.cua-ai-button.loading {
+  background: #666;
+  color: #999;
+  cursor: not-allowed;
+}
+
+.cua-subtitle-input {
+  width: 100%;
+  padding: 14px 16px;
+  background: #1a1a1a;
+  border: 1px solid #333;
+  border-radius: 12px;
+  color: #fff;
+  font-size: 14px;
+  outline: none;
+  box-sizing: border-box;
+}
+
+.cua-subtitle-input::placeholder {
+  color: #666;
+}
+
+.cua-subtitle-input:focus {
+  border-color: #ffe033;
+}
+
+/* AI 추천 자막 */
+.cua-ai-suggestions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.cua-suggestion-chip {
+  background: #222;
+  border: 1px solid #444;
+  color: #fff;
+  padding: 10px 16px;
+  border-radius: 20px;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.cua-suggestion-chip:hover {
+  background: #333;
+  border-color: #666;
+}
+
+.cua-suggestion-chip.selected {
+  background: #ffe033;
+  color: #000;
+  border-color: #ffe033;
+}
+
+/* 하단 버튼 */
+.cua-footer {
+  padding: 16px;
+  margin-top: auto;
+}
+
+.cua-complete-button {
+  width: 100%;
+  padding: 16px;
+  background: #ffe033;
+  color: #000;
+  border: none;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.cua-complete-button:hover {
+  background: #ffd000;
+}
+
+/* 완료 화면 */
+.cua-complete-overlay {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 20px;
+}
+
+.cua-complete-message {
+  text-align: center;
+}
+
+.cua-complete-check {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: #ffe033;
+  color: #000;
+  font-size: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 20px;
+}
+
+.cua-complete-message p {
+  font-size: 18px;
+  margin: 0;
+}
+
+.cua-complete-footer {
+  margin-top: 40px;
+  width: 100%;
+  max-width: 300px;
+}
+
+.cua-complete-btn {
+  width: 100%;
+  padding: 16px;
+  background: #ffe033;
+  color: #000;
+  border: none;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.cua-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  color: #666;
+}
