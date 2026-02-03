@@ -159,23 +159,25 @@
 
 /* 왼쪽 타임라인 인디케이터 영역 */
 .sp-timeline-indicator {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+  position: relative;
   width: 24px;
   margin-right: 12px;
   flex-shrink: 0;
+  align-self: stretch;
 }
 
 /* 타임라인 점 */
 .sp-timeline-dot {
+  position: absolute;
+  left: 50%;
+  top: 22px;
+  transform: translateX(-50%);
   width: 10px;
   height: 10px;
   border-radius: 50%;
   background-color: #444;
-  flex-shrink: 0;
-  margin-top: 22px;
   transition: background-color 0.2s ease;
+  z-index: 1;
 }
 
 .sp-timeline-dot.active {
@@ -184,11 +186,13 @@
 
 /* 타임라인 선 */
 .sp-timeline-line {
+  position: absolute;
+  left: 50%;
+  top: 36px;
+  bottom: -14px;
+  transform: translateX(-50%);
   width: 2px;
-  flex: 1;
   background-color: #444;
-  margin-top: 4px;
-  margin-bottom: -10px;
   transition: background-color 0.2s ease;
 }
 
@@ -196,22 +200,34 @@
   background-color: #F8FF33;
 }
 
-/* Step 행 스타일 */
-.sp-timeline-step-row {
-  align-items: flex-start;
+/* Step 박스에서 아래로 연결선 (step 1용) */
+.story-step-box-with-line-bottom {
+  position: relative;
 }
 
-.sp-timeline-step-row .sp-timeline-indicator {
-  margin-top: 0;
+.story-step-box-with-line-bottom::after {
+  content: '';
+  position: absolute;
+  left: 31px;
+  top: 100%;
+  width: 2px;
+  height: 24px;
+  background-color: #444;
 }
 
-.sp-timeline-step-row .sp-timeline-dot {
-  margin-top: 8px;
+/* Step 박스에서 위로 연결선 (step 2용) */
+.story-step-box-with-line-top {
+  position: relative;
 }
 
-.sp-timeline-step-row .sp-timeline-line {
-  margin-top: 4px;
-  margin-bottom: 0;
+.story-step-box-with-line-top::before {
+  content: '';
+  position: absolute;
+  left: 31px;
+  bottom: 100%;
+  width: 2px;
+  height: 24px;
+  background-color: #444;
 }
 
 /* 타임라인 내 Step 박스 */

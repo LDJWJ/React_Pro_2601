@@ -16,6 +16,10 @@ const SCREEN_LABELS = {
   mission2_2: '미션2',
   story_planning_a: '미션2',
   story_planning_b: '미션2',
+  mission3_1: '미션3',
+  mission3_2: '미션3',
+  content_upload_a: '미션3',
+  content_upload_b: '미션3',
 };
 
 // 이벤트 타입 한글 매핑
@@ -44,6 +48,15 @@ const TARGET_LABELS = {
   hook_note_button: '훅 노트',
   // 템플릿 상세B
   story_planning_button: '영상기획하기',
+  // 콘텐츠 업로드
+  timeline_cut_select: '타임라인 컷 선택',
+  duration_chip_select: '시간 칩 선택',
+  video_upload: '영상 업로드',
+  add_video_button: '영상 추가 버튼',
+  ai_subtitle: 'AI 자막 추천',
+  ai_suggestion_select: 'AI 추천 선택',
+  complete: '완성하기',
+  save_progress: '저장하기',
   // 공통
   save_toggle: '저장 토글',
   back: '뒤로가기',

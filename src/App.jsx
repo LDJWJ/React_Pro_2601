@@ -7,6 +7,8 @@ import TemplateDetailA from './components/TemplateDetailA';
 import TemplateDetailB from './components/TemplateDetailB';
 import StoryPlanningScreenA from './components/StoryPlanningScreenA';
 import StoryPlanningScreenB from './components/StoryPlanningScreenB';
+import ContentUploadScreenA from './components/ContentUploadScreenA';
+import ContentUploadScreenB from './components/ContentUploadScreenB';
 import { startInteractionLogging, setInteractionScreen } from './utils/interactionLogger';
 
 function App() {
@@ -38,6 +40,8 @@ function App() {
       setCurrentScreen('mission1_1');
     } else if (missionId === 2) {
       setCurrentScreen('mission2_1');
+    } else if (missionId === 3) {
+      setCurrentScreen('mission3_1');
     }
   };
 
@@ -128,6 +132,44 @@ function App() {
           <StoryPlanningScreenB
             onComplete={() => setCurrentScreen('missionMain')}
             onBack={() => setCurrentScreen('mission2_2')}
+          />
+        );
+
+      case 'mission3_1':
+        return (
+          <MissionStep
+            stepTitle="콘텐츠 업로드 A안"
+            description="화면을 보고 영상을 업로드하고 AI 자막 추천을 사용해보세요."
+            buttonText="다음"
+            screenName="mission3_1"
+            onNext={() => setCurrentScreen('contentUploadA')}
+          />
+        );
+
+      case 'contentUploadA':
+        return (
+          <ContentUploadScreenA
+            onComplete={() => setCurrentScreen('mission3_2')}
+            onBack={() => setCurrentScreen('mission3_1')}
+          />
+        );
+
+      case 'mission3_2':
+        return (
+          <MissionStep
+            stepTitle="콘텐츠 업로드 B안"
+            description="화면을 보고 영상을 업로드하고 AI 자막 추천을 사용해보세요."
+            buttonText="다음"
+            screenName="mission3_2"
+            onNext={() => setCurrentScreen('contentUploadB')}
+          />
+        );
+
+      case 'contentUploadB':
+        return (
+          <ContentUploadScreenB
+            onComplete={() => setCurrentScreen('missionMain')}
+            onBack={() => setCurrentScreen('mission3_2')}
           />
         );
 

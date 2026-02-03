@@ -124,13 +124,14 @@ function StoryPlanningScreenB({ onComplete, onBack }) {
           </div>
 
           {/* Step 1 - 타임라인 밖에 위치 */}
-          <div className="story-step-box-left">
+          <div className="story-step-box-left story-step-box-with-line-bottom">
             <span className="story-step-label">step 1</span>
             <span className="story-step-text">메모해보세요</span>
           </div>
 
           <div className="sp-cut-list-container">
             <div className="sp-timeline-wrapper">
+
               {cuts.map((cut, index) => {
                 const isActive = activeCutId === cut.id;
                 const hasMemo = memos[cut.id]?.trim();
@@ -141,9 +142,7 @@ function StoryPlanningScreenB({ onComplete, onBack }) {
                     {/* 왼쪽 타임라인 */}
                     <div className="sp-timeline-indicator">
                       <div className={`sp-timeline-dot ${isActive ? 'active' : ''}`} />
-                      {!isLast && (
-                        <div className={`sp-timeline-line ${isActive ? 'active' : ''}`} />
-                      )}
+                      <div className={`sp-timeline-line ${isActive ? 'active' : ''}`} />
                     </div>
 
                     {/* 컷 카드 */}
@@ -200,7 +199,7 @@ function StoryPlanningScreenB({ onComplete, onBack }) {
           </div>
 
           {/* Step 2 - 타임라인 밖에 위치 */}
-          <div className="story-step-box-left">
+          <div className="story-step-box-left story-step-box-with-line-top">
             <span className="story-step-label">step 2</span>
             <span className="story-step-text">메모를 바탕으로 바로 편집을 시작해보세요.</span>
           </div>
