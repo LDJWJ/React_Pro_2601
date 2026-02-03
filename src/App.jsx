@@ -1,81 +1,83 @@
 import { useState } from 'react';
 import './App.css';
 import LoginScreen from './components/LoginScreen';
-import CategoryPurpose from './components/CategoryPurpose';
-import CategoryTopic from './components/CategoryTopic';
-import CategoryPlatform from './components/CategoryPlatform';
-import Home from './components/Home';
-import Editor from './components/Editor';
+import MissionMain from './components/MissionMain';
+import MissionStep from './components/MissionStep';
+import TemplateDetailA from './components/TemplateDetailA';
+import TemplateDetailB from './components/TemplateDetailB';
 
 function App() {
   const [currentScreen, setCurrentScreen] = useState('login');
-  const [activeTab, setActiveTab] = useState('template');
   const [user, setUser] = useState(null);
-  const [selections, setSelections] = useState({
-    purpose: null,
-    topics: [],
-    platforms: [],
-  });
 
   const handleLogin = (userInfo) => {
     setUser(userInfo);
-    setCurrentScreen('purpose');
+    setCurrentScreen('missionMain');
   };
 
   const handleLogout = () => {
     setUser(null);
     setCurrentScreen('login');
-    setSelections({ purpose: null, topics: [], platforms: [] });
   };
 
-  const handlePurposeNext = (purpose) => {
-    setSelections((prev) => ({ ...prev, purpose }));
-    setCurrentScreen('topic');
-  };
-
-  const handleTopicNext = (topics) => {
-    setSelections((prev) => ({ ...prev, topics }));
-    setCurrentScreen('platform');
-  };
-
-  const handlePlatformNext = (platforms) => {
-    const finalSelections = { ...selections, platforms };
-    setSelections(finalSelections);
-    console.log('온보딩 완료:', finalSelections);
-    setCurrentScreen('home');
-  };
-
-  const handleTabChange = (tab) => {
-    setActiveTab(tab);
-  };
-
-  const handleEditorBack = () => {
-    setActiveTab('template');
+  const handleMissionSelect = (missionId) => {
+    if (missionId === 1) {
+      setCurrentScreen('mission1_1');
+    }
   };
 
   const renderScreen = () => {
     switch (currentScreen) {
       case 'login':
         return <LoginScreen onLogin={handleLogin} />;
-      case 'purpose':
-        return <CategoryPurpose onNext={handlePurposeNext} />;
-      case 'topic':
-        return <CategoryTopic onNext={handleTopicNext} />;
-      case 'platform':
-        return <CategoryPlatform onNext={handlePlatformNext} />;
-      case 'home':
-        if (activeTab === 'editor') {
-          return <Editor onBack={handleEditorBack} />;
-        }
+
+      case 'missionMain':
         return (
-          <Home
+          <MissionMain
             user={user}
-            selections={selections}
+            onMissionSelect={handleMissionSelect}
             onLogout={handleLogout}
-            onTabChange={handleTabChange}
-            activeTab={activeTab}
           />
         );
+
+      case 'mission1_1':
+        return (
+          <MissionStep
+            stepTitle="영상 기획하기"
+            description="화면에서 영상 기획하기 버튼을 눌러주세요"
+            buttonText="다음"
+            screenName="mission1_1"
+            onNext={() => setCurrentScreen('templateDetailA')}
+          />
+        );
+
+      case 'templateDetailA':
+        return (
+          <TemplateDetailA
+            onComplete={() => setCurrentScreen('mission1_2')}
+            onBack={() => setCurrentScreen('mission1_1')}
+          />
+        );
+
+      case 'mission1_2':
+        return (
+          <MissionStep
+            stepTitle="영상 기획하기"
+            description="화면에서 '영상 기획하기' 버튼을 눌러주세요"
+            buttonText="다음"
+            screenName="mission1_2"
+            onNext={() => setCurrentScreen('templateDetailB')}
+          />
+        );
+
+      case 'templateDetailB':
+        return (
+          <TemplateDetailB
+            onComplete={() => setCurrentScreen('missionMain')}
+            onBack={() => setCurrentScreen('mission1_2')}
+          />
+        );
+
       default:
         return <LoginScreen onLogin={handleLogin} />;
     }

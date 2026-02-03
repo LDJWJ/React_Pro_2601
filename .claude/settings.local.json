@@ -4,7 +4,10 @@
       "Bash(npm create:*)",
       "Bash(npm run build:*)",
       "Bash(npm run dev:*)",
-      "Bash(npm install:*)"
+      "Bash(npm install:*)",
+      "Bash(find:*)",
+      "Bash(tree:*)",
+      "Bash(npx vite:*)"
     ]
   }
 }
