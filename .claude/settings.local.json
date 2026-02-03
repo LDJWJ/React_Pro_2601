@@ -12,7 +12,8 @@
       "Bash(kill:*)",
       "Bash(lsof:*)",
       "Bash(xargs:*)",
-      "Bash(sudo npm install:*)"
+      "Bash(sudo npm install:*)",
+      "Bash(npm cache clean:*)"
     ]
   }
 }
