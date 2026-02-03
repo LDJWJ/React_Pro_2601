@@ -101,7 +101,7 @@ function App() {
         return (
           <MissionStep
             stepTitle="영상 기획하기 A안"
-            description="화면을 보고 영상 기획 메모를 작성하고 저장하기를 눌러주세요."
+            description="영상 아이디어 노트를 작성하고 저장하기를 눌러주세요."
             buttonText="다음"
             screenName="mission2_1"
             onNext={() => setCurrentScreen('storyPlanningA')}
