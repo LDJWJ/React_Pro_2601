@@ -17,8 +17,10 @@ function ContentUploadScreenA({ onComplete, onBack }) {
   const [isLoadingAI, setIsLoadingAI] = useState(false);
   const [selectedSuggestionIndex, setSelectedSuggestionIndex] = useState(null);
   const [thumbnails, setThumbnails] = useState({});
+  const [completed, setCompleted] = useState(false);
   const fileInputRef = useRef(null);
   const mainScrollRef = useRef(null);
+  const videoRef = useRef(null);
 
   useEffect(() => {
     logScreenView('content_upload_a');
@@ -109,6 +111,47 @@ function ContentUploadScreenA({ onComplete, onBack }) {
     ));
   };
 
+  // 영상에서 현재 프레임 캡처 (Base64) - Promise 기반
+  const captureVideoFrame = () => {
+    return new Promise((resolve) => {
+      if (!videoRef.current) {
+        console.log('videoRef가 없습니다');
+        resolve(null);
+        return;
+      }
+
+      const video = videoRef.current;
+
+      // 비디오가 로드되지 않았으면 로드 대기
+      if (video.readyState < 2) {
+        console.log('비디오 로드 대기 중...');
+        video.addEventListener('loadeddata', () => {
+          captureFrame(video, resolve);
+        }, { once: true });
+        video.load();
+      } else {
+        captureFrame(video, resolve);
+      }
+    });
+  };
+
+  // 실제 프레임 캡처 함수
+  const captureFrame = (video, resolve) => {
+    try {
+      const canvas = document.createElement('canvas');
+      canvas.width = 512;
+      canvas.height = 288;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+      const dataUrl = canvas.toDataURL('image/jpeg', 0.7);
+      console.log('프레임 캡처 성공, 크기:', dataUrl.length);
+      resolve(dataUrl);
+    } catch (error) {
+      console.error('프레임 캡처 오류:', error);
+      resolve(null);
+    }
+  };
+
   const handleAISubtitle = async () => {
     logButtonClick('content_upload_a', 'ai_subtitle');
     setIsLoadingAI(true);
@@ -116,6 +159,13 @@ function ContentUploadScreenA({ onComplete, onBack }) {
     setSelectedSuggestionIndex(null);
 
     try {
+      // 영상이 있으면 현재 프레임 캡처
+      let imageBase64 = null;
+      if (currentCut?.videoPreview) {
+        imageBase64 = await captureVideoFrame();
+        console.log('이미지 캡처 결과:', imageBase64 ? '성공' : '실패');
+      }
+
       // AI 자막 생성 API 호출 (Netlify Function)
       const response = await fetch('/.netlify/functions/generate-subtitle', {
         method: 'POST',
@@ -124,6 +174,7 @@ function ContentUploadScreenA({ onComplete, onBack }) {
           cutTitle: currentCut?.title || '',
           cutDescription: currentCut?.description || '',
           memo: currentCut?.memo || '',
+          imageBase64, // 이미지 데이터 추가
         }),
       });
 
@@ -133,6 +184,11 @@ function ContentUploadScreenA({ onComplete, onBack }) {
 
       const data = await response.json();
       setAiSuggestions(data.subtitles || []);
+
+      // Vision API 사용 여부 로그
+      if (data.usedVision) {
+        console.log('AI 자막 추천: 이미지 분석 사용');
+      }
     } catch (error) {
       console.error('AI 자막 생성 오류:', error);
       // 폴백: 더미 자막 표시
@@ -165,7 +221,7 @@ function ContentUploadScreenA({ onComplete, onBack }) {
   // "완성하기"
   const handleComplete = () => {
     logButtonClick('content_upload_a', 'complete');
-    onComplete();
+    setCompleted(true);
   };
 
   // "저장하기"
@@ -195,6 +251,25 @@ function ContentUploadScreenA({ onComplete, onBack }) {
     );
   }
 
+  // 완료 화면
+  if (completed) {
+    return (
+      <div className="content-upload-container">
+        <div className="content-complete-overlay">
+          <div className="content-complete-message">
+            <div className="content-complete-check">✓</div>
+            <p>미션을 완료했습니다.</p>
+          </div>
+          <div className="content-complete-footer">
+            <button className="content-complete-btn" onClick={onComplete}>
+              완료
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="content-upload-container">
       {/* 상단 헤더 */}
@@ -208,7 +283,7 @@ function ContentUploadScreenA({ onComplete, onBack }) {
       <div className="preview-section">
         <div className="preview-thumbnail">
           {currentCut.videoPreview ? (
-            <video src={currentCut.videoPreview} className="preview-video" />
+            <video ref={videoRef} src={currentCut.videoPreview} className="preview-video" preload="auto" playsInline />
           ) : (
             <div className="preview-placeholder">영상을 추가해주세요</div>
           )}

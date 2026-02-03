@@ -1,10 +1,15 @@
 .mission-main-container {
-  width: 100%;
-  min-height: 100vh;
+  width: 393px;
+  height: 852px;
+  max-width: 393px;
+  max-height: 852px;
   background-color: #ffffff;
   padding: 24px 20px;
   display: flex;
   flex-direction: column;
+  margin: 0 auto;
+  box-sizing: border-box;
+  overflow-y: auto;
 }
 
 .mission-main-header {

@@ -1,24 +1,31 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
-import './ContentUploadScreen.css';
+import { useState, useEffect, useRef } from 'react';
+import './ContentUploadScreenB.css';
 import { logScreenView, logButtonClick } from '../utils/logger';
 
 const defaultCuts = [
-  { id: 1, title: '인트로 (첫 장면)', duration: '2초', description: '시선을 끌고 분위기를 시작하는 장면이에요.', memo: '' },
-  { id: 2, title: '제품 보여주기', duration: '3초', description: '제품이 손이나 얼굴에 닿는 순간만 보여줘도 좋아요.', memo: '' },
-  { id: 3, title: '사용 장면', duration: '3초', description: '이 제품의 특징이 잘 보이는 부분을 담아요.', memo: '' },
-  { id: 4, title: '리액션 컷', duration: '2초', description: '사용 후 만족스러운 표정이나 반응을 보여주세요.', memo: '' },
-  { id: 5, title: '마무리 컷', duration: '2초', description: '제품과 함께 자연스러운 엔딩 장면을 담아요.', memo: '' },
+  { id: 1, title: '인트로 (첫 장면)', duration: 2, description: '성수동 자주 가는 카페에서 분위기 있게 셀카 찍기' },
+  { id: 2, title: '제품 보여주기', duration: 3, description: '제품이 손이나 얼굴에 닿는 순간만 보여줘도 좋아요.' },
+  { id: 3, title: '사용 장면', duration: 3, description: '이 제품의 특징이 잘 보이는 부분을 담아요.' },
+  { id: 4, title: '리액션 컷', duration: 2, description: '사용 후 만족스러운 표정이나 반응을 보여주세요.' },
+  { id: 5, title: '마무리 컷', duration: 2, description: '제품과 함께 자연스러운 엔딩 장면을 담아요.' },
 ];
+
+// 시간 형식 변환 (초 → "Xs")
+const formatTime = (seconds) => `${seconds}s`;
+
 
 function ContentUploadScreenB({ onComplete, onBack }) {
   const [currentCutIndex, setCurrentCutIndex] = useState(0);
   const [cutData, setCutData] = useState([]);
+  const [thumbnails, setThumbnails] = useState({});
+  const [isPlaying, setIsPlaying] = useState(false);
   const [aiSuggestions, setAiSuggestions] = useState([]);
   const [isLoadingAI, setIsLoadingAI] = useState(false);
-  const [selectedSuggestionIndex, setSelectedSuggestionIndex] = useState(null);
-  const [thumbnails, setThumbnails] = useState({});
+  const [selectedAiIndex, setSelectedAiIndex] = useState(null);
+
+
   const fileInputRef = useRef(null);
-  const mainScrollRef = useRef(null);
+  const videoRef = useRef(null);
 
   useEffect(() => {
     logScreenView('content_upload_b');
@@ -32,8 +39,11 @@ function ContentUploadScreenB({ onComplete, onBack }) {
 
   const currentCut = cutData[currentCutIndex];
   const totalCuts = cutData.length;
+  // 총 재생시간 계산
+  const totalSeconds = cutData.reduce((sum, cut) => sum + (cut.duration || 0), 0);
+  const totalDuration = `00:${String(totalSeconds).padStart(2, '0')}`;
 
-  // 영상에서 썸네일 프레임 추출
+  // 썸네일 생성
   const generateThumbnail = (videoUrl, cutIndex) => {
     const video = document.createElement('video');
     video.src = videoUrl;
@@ -55,27 +65,12 @@ function ContentUploadScreenB({ onComplete, onBack }) {
     });
   };
 
-  // "2초" → "2s" 변환
-  const parseDuration = (durationStr) => {
-    if (!durationStr) return '';
-    const match = durationStr.match(/(\d+)/);
-    return match ? `${match[1]}s` : durationStr;
-  };
-
-  // 타임라인 클릭 시 컷 전환
-  const handleTimelineCutSelect = (index) => {
-    logButtonClick('content_upload_b', 'timeline_cut_select', String(index + 1));
-    setAiSuggestions([]);
-    setSelectedSuggestionIndex(null);
+  // 컷 선택
+  const handleCutSelect = (index) => {
+    logButtonClick('content_upload_b', 'cut_select', String(index + 1));
     setCurrentCutIndex(index);
-  };
-
-  // duration 칩 클릭 시 컷 전환
-  const handleDurationChipSelect = (index) => {
-    logButtonClick('content_upload_b', 'duration_chip_select', String(index + 1));
     setAiSuggestions([]);
-    setSelectedSuggestionIndex(null);
-    setCurrentCutIndex(index);
+    setSelectedAiIndex(null);
   };
 
   // 뒤로가기
@@ -85,227 +80,290 @@ function ContentUploadScreenB({ onComplete, onBack }) {
   };
 
   // 영상 업로드
-  const handleVideoUpload = (e, targetIndex) => {
+  const handleVideoUpload = (e) => {
     const file = e.target.files[0];
     if (file) {
       logButtonClick('content_upload_b', 'video_upload');
       const videoUrl = URL.createObjectURL(file);
-      const idx = targetIndex !== undefined ? targetIndex : currentCutIndex;
       setCutData(prev => prev.map((cut, index) =>
-        index === idx
+        index === currentCutIndex
           ? { ...cut, videoFile: file, videoPreview: videoUrl }
           : cut
       ));
-      generateThumbnail(videoUrl, idx);
+      generateThumbnail(videoUrl, currentCutIndex);
     }
   };
 
-  const handleSubtitleChange = (e) => {
-    const value = e.target.value;
-    setCutData(prev => prev.map((cut, index) =>
-      index === currentCutIndex
-        ? { ...cut, subtitle: value }
-        : cut
-    ));
+  // 재생/정지
+  const handlePlayToggle = () => {
+    logButtonClick('content_upload_b', 'play_toggle');
+    if (videoRef.current) {
+      if (isPlaying) {
+        videoRef.current.pause();
+      } else {
+        videoRef.current.play();
+      }
+      setIsPlaying(!isPlaying);
+    }
   };
 
+  // 영상에서 현재 프레임 캡처 (Base64) - Promise 기반
+  const captureVideoFrame = () => {
+    return new Promise((resolve) => {
+      if (!videoRef.current) {
+        console.log('videoRef가 없습니다');
+        resolve(null);
+        return;
+      }
+
+      const video = videoRef.current;
+
+      // 비디오가 로드되지 않았으면 로드 대기
+      if (video.readyState < 2) {
+        console.log('비디오 로드 대기 중...');
+        video.addEventListener('loadeddata', () => {
+          captureFrame(video, resolve);
+        }, { once: true });
+        video.load();
+      } else {
+        captureFrame(video, resolve);
+      }
+    });
+  };
+
+  // 실제 프레임 캡처 함수
+  const captureFrame = (video, resolve) => {
+    try {
+      const canvas = document.createElement('canvas');
+      canvas.width = 512;
+      canvas.height = 288;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+      const dataUrl = canvas.toDataURL('image/jpeg', 0.7);
+      console.log('프레임 캡처 성공, 크기:', dataUrl.length);
+      resolve(dataUrl);
+    } catch (error) {
+      console.error('프레임 캡처 오류:', error);
+      resolve(null);
+    }
+  };
+
+  // AI 자막 추천
   const handleAISubtitle = async () => {
     logButtonClick('content_upload_b', 'ai_subtitle');
     setIsLoadingAI(true);
     setAiSuggestions([]);
-    setSelectedSuggestionIndex(null);
+    setSelectedAiIndex(null);
 
     try {
-      // AI 자막 생성 API 호출 (Netlify Function)
+      // 영상이 있으면 현재 프레임 캡처
+      let imageBase64 = null;
+      if (currentCut?.videoPreview) {
+        imageBase64 = await captureVideoFrame();
+        console.log('이미지 캡처 결과:', imageBase64 ? '성공' : '실패');
+      }
+
       const response = await fetch('/.netlify/functions/generate-subtitle', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           cutTitle: currentCut?.title || '',
           cutDescription: currentCut?.description || '',
-          memo: currentCut?.memo || '',
+          memo: currentCut?.subtitle || '',
+          imageBase64, // 이미지 데이터 추가
         }),
       });
 
-      if (!response.ok) {
-        throw new Error('Failed to generate subtitles');
-      }
+      if (!response.ok) throw new Error('Failed');
 
       const data = await response.json();
-      setAiSuggestions(data.subtitles || []);
+      const subtitles = data.subtitles || [];
+      setAiSuggestions(subtitles);
+
+      // 자막이 비어있으면 가장 좋은 안(첫번째)을 자동으로 입력
+      if (!currentCut?.subtitle && subtitles.length > 0) {
+        setSelectedAiIndex(0);
+        setCutData(prev => prev.map((cut, i) =>
+          i === currentCutIndex ? { ...cut, subtitle: subtitles[0] } : cut
+        ));
+      }
+
+      // Vision API 사용 여부 로그
+      if (data.usedVision) {
+        console.log('AI 자막 추천: 이미지 분석 사용');
+      }
     } catch (error) {
       console.error('AI 자막 생성 오류:', error);
-      // 폴백: 더미 자막 표시
-      setAiSuggestions([
+      const fallbackSubtitles = [
         '지금 바로 확인해보세요!',
         '이 순간을 놓치지 마세요!',
         '함께 즐겨보세요!',
-      ]);
+      ];
+      setAiSuggestions(fallbackSubtitles);
+
+      // 자막이 비어있으면 가장 좋은 안(첫번째)을 자동으로 입력
+      if (!currentCut?.subtitle) {
+        setSelectedAiIndex(0);
+        setCutData(prev => prev.map((cut, i) =>
+          i === currentCutIndex ? { ...cut, subtitle: fallbackSubtitles[0] } : cut
+        ));
+      }
     } finally {
       setIsLoadingAI(false);
     }
   };
 
-  const handleSelectSuggestion = (suggestion, index) => {
+  // AI 추천 선택
+  const handleSelectAiSuggestion = (suggestion, index) => {
     logButtonClick('content_upload_b', 'ai_suggestion_select', suggestion);
-    setSelectedSuggestionIndex(index);
+    setSelectedAiIndex(index);
     setCutData(prev => prev.map((cut, i) =>
-      i === currentCutIndex
-        ? { ...cut, subtitle: suggestion }
-        : cut
+      i === currentCutIndex ? { ...cut, subtitle: suggestion } : cut
     ));
   };
 
-  // + 버튼 (영상 추가 파일 선택 트리거)
-  const handleAddVideoButton = () => {
-    logButtonClick('content_upload_b', 'add_video_button', String(currentCutIndex + 1));
-    fileInputRef.current?.click();
+  // 자막 직접 입력 (직접 입력 시 AI 추천 숨김)
+  const handleSubtitleChange = (e) => {
+    const value = e.target.value;
+    setCutData(prev => prev.map((cut, index) =>
+      index === currentCutIndex ? { ...cut, subtitle: value } : cut
+    ));
+    // 직접 입력하면 AI 추천 숨김
+    setAiSuggestions([]);
+    setSelectedAiIndex(null);
   };
 
-  // "완성하기"
-  const handleComplete = () => {
-    logButtonClick('content_upload_b', 'complete');
-    onComplete();
-  };
-
-  // "저장하기"
-  const handleSaveProgress = () => {
+  // 저장하기
+  const handleSave = () => {
     logButtonClick('content_upload_b', 'save_progress');
     const saveData = {
       cutData: cutData.map(cut => ({
         id: cut.id,
         title: cut.title,
-        description: cut.description,
-        duration: cut.duration,
-        memo: cut.memo,
         subtitle: cut.subtitle,
       })),
       currentCutIndex,
       savedAt: new Date().toISOString(),
     };
     localStorage.setItem('content_upload_progress_b', JSON.stringify(saveData));
-    alert('진행 상황이 저장되었습니다.');
+    alert('저장되었습니다.');
+  };
+
+  // 완료
+  const handleComplete = () => {
+    logButtonClick('content_upload_b', 'complete');
+    onComplete();
   };
 
   if (!currentCut) {
     return (
-      <div className="content-upload-container">
-        <div className="loading">로딩 중...</div>
+      <div className="content-upload-b">
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', color: '#888' }}>
+          로딩 중...
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="content-upload-container">
-      {/* 상단 헤더 */}
-      <div className="content-upload-header">
-        <button className="back-button" onClick={handleBack}>
-          ←
+    <div className="content-upload-b">
+      {/* 헤더 */}
+      <div className="cub-header">
+        <button className="cub-back-btn" onClick={handleBack}>
+          ‹
         </button>
+        <span className="cub-title">새 프로젝트</span>
       </div>
 
-      {/* 비디오 미리보기 영역 */}
-      <div className="preview-section">
-        <div className="preview-thumbnail">
-          {currentCut.videoPreview ? (
-            <video src={currentCut.videoPreview} className="preview-video" />
-          ) : (
-            <div className="preview-placeholder">영상을 추가해주세요</div>
-          )}
-        </div>
-        <div className="preview-info">
-          <span className="preview-duration">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z" />
-            </svg>
-            00:12
-          </span>
-          <span className="preview-cuts">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14z" />
-            </svg>
-            {totalCuts}컷
-          </span>
-        </div>
-      </div>
-
-      {/* 썸네일 타임라인 */}
-      <div className="thumbnail-timeline-container">
-        <div className="thumbnail-timeline-scroll">
+      {/* 컷 타임라인 */}
+      <div className="cub-timeline">
+        <div className="cub-timeline-scroll">
           {cutData.map((cut, index) => (
             <button
               key={cut.id}
-              className={`timeline-thumbnail ${index === currentCutIndex ? 'active' : ''}`}
-              onClick={() => handleTimelineCutSelect(index)}
+              className={`cub-cut-card ${index === currentCutIndex ? 'active' : ''}`}
+              onClick={() => handleCutSelect(index)}
             >
-              {thumbnails[index] ? (
-                <img src={thumbnails[index]} alt={`컷 ${index + 1}`} />
-              ) : (
-                <span className="timeline-thumbnail-number">{index + 1}</span>
+              {/* 썸네일 이미지 (있으면 표시) */}
+              {thumbnails[index] && (
+                <img src={thumbnails[index]} alt={`컷 ${index + 1}`} className="cub-cut-thumb-img" />
               )}
+              {/* 숫자 오버레이 (항상 표시) */}
+              <span className="cub-cut-number-overlay">{index + 1}</span>
+              {/* 시간 오버레이 (항상 표시) */}
+              <span className="cub-cut-time-overlay">{formatTime(cut.duration)}</span>
             </button>
           ))}
 
-          {/* + 버튼 */}
-          <button
-            className="timeline-add-button"
-            onClick={handleAddVideoButton}
-          >
-            +
-          </button>
           <input
             ref={fileInputRef}
             type="file"
             accept="video/*"
-            onChange={(e) => handleVideoUpload(e, currentCutIndex)}
+            onChange={handleVideoUpload}
             style={{ display: 'none' }}
           />
-
-          {/* 구분선 */}
-          <div className="timeline-divider" />
-
-          {/* duration 칩들 */}
-          {cutData.map((cut, index) => (
-            <button
-              key={`dur-${cut.id}`}
-              className={`timeline-duration-chip ${index === currentCutIndex ? 'active' : ''}`}
-              onClick={() => handleDurationChipSelect(index)}
-            >
-              {parseDuration(cut.duration)}
-            </button>
-          ))}
         </div>
-        <div className="timeline-accent-line" />
       </div>
 
-      {/* 메인 콘텐츠 영역 */}
-      <div className="content-upload-main" ref={mainScrollRef}>
-        {/* 콘텐츠 기획 섹션 */}
-        <div className="content-planning-section">
-          <div className="content-planning-header">
-            <span className="content-planning-label">콘텐츠 기획 {currentCutIndex + 1}</span>
-          </div>
-          <div className={`content-planning-card ${currentCut.memo ? 'content-planning-card-filled' : ''}`}>
-            <div className="planning-card-badge">{currentCutIndex + 1}</div>
-            <div className="planning-card-body">
-              <div className="planning-card-header-row">
-                <span className="planning-card-title">{currentCut.title || `${currentCutIndex + 1}번째 영상 포인트`}</span>
-                <span className="planning-card-time-chip">{currentCut.duration}</span>
-              </div>
-              <p className="planning-card-description">{currentCut.description}</p>
-              {currentCut.memo && (
-                <div className="planning-card-memo">{currentCut.memo}</div>
-              )}
+      {/* 메인 프리뷰 영역 */}
+      <div className="cub-preview">
+        {currentCut.videoPreview ? (
+          <video
+            ref={videoRef}
+            src={currentCut.videoPreview}
+            className="cub-preview-video"
+            preload="auto"
+            playsInline
+            onEnded={() => setIsPlaying(false)}
+          />
+        ) : (
+          <div className="cub-preview-placeholder" onClick={() => fileInputRef.current?.click()}>
+            <div className="cub-mobile-frame">
+              <span className="cub-plus-icon">+</span>
             </div>
+          </div>
+        )}
+
+        {/* 왼쪽 상단 정보 */}
+        <div className="cub-preview-info">
+          <div className="cub-info-badge">
+            <img src="/icons/vedio-time.svg" alt="" />
+            {totalDuration}
+          </div>
+          <div className="cub-info-badge">
+            <img src="/icons/media.png" alt="" />
+            {totalCuts}
           </div>
         </div>
 
-        {/* 자막 섹션 */}
-        <div className="subtitle-section-redesign">
-          <div className="subtitle-header-row">
-            <span className="subtitle-label">자막</span>
+        {/* 재생 버튼 */}
+        <button className="cub-play-btn" onClick={handlePlayToggle}>
+          <img src={isPlaying ? '/icons/video-stop.png' : '/icons/PLAY.png'} alt="" />
+        </button>
+
+        {/* 편집 버튼 */}
+        <button className="cub-edit-btn" onClick={() => fileInputRef.current?.click()}>
+          <img src="/icons/edit.png" alt="" />
+        </button>
+      </div>
+
+      {/* 메인 스크롤 영역 */}
+      <div className="cub-main">
+        {/* 컷 정보 카드 */}
+        <div className="cub-cut-info">
+          <div className="cub-cut-info-header">
+            <span className="cub-cut-number">{currentCutIndex + 1}</span>
+            <span className="cub-cut-title">{currentCut.title}</span>
+          </div>
+          <p className="cub-cut-desc">{currentCut.description}</p>
+        </div>
+
+        {/* 자막 작성 섹션 */}
+        <div className="cub-subtitle-section">
+          <div className="cub-subtitle-header">
+            <span className="cub-subtitle-label">자막 작성</span>
             <button
-              className={`ai-subtitle-chip ${isLoadingAI ? 'loading' : ''}`}
+              className="cub-ai-btn"
               onClick={handleAISubtitle}
               disabled={isLoadingAI}
             >
@@ -315,26 +373,28 @@ function ContentUploadScreenB({ onComplete, onBack }) {
                   생성 중...
                 </>
               ) : (
-                'AI 자막 추천'
+                '✨ AI 자막 추천'
               )}
             </button>
           </div>
+
+          {/* 자막 입력 */}
           <input
             type="text"
-            className="subtitle-input-redesign"
+            className="cub-subtitle-input"
             placeholder="자막을 입력하세요"
             value={currentCut.subtitle || ''}
             onChange={handleSubtitleChange}
           />
 
-          {/* AI 추천 자막 Chips */}
+          {/* AI 추천 자막 (A안처럼 버튼 형태) */}
           {aiSuggestions.length > 0 && (
-            <div className="ai-suggestions">
+            <div className="cub-ai-suggestions">
               {aiSuggestions.map((suggestion, index) => (
                 <button
                   key={index}
-                  className={`suggestion-chip ${selectedSuggestionIndex === index ? 'selected' : ''}`}
-                  onClick={() => handleSelectSuggestion(suggestion, index)}
+                  className={`cub-ai-suggestion ${selectedAiIndex === index ? 'selected' : ''}`}
+                  onClick={() => handleSelectAiSuggestion(suggestion, index)}
                 >
                   {suggestion}
                 </button>
@@ -342,16 +402,16 @@ function ContentUploadScreenB({ onComplete, onBack }) {
             </div>
           )}
         </div>
+      </div>
 
-        {/* 하단 버튼 */}
-        <div className="content-upload-footer-redesign">
-          <button className="content-upload-btn-secondary" onClick={handleSaveProgress}>
-            저장하기
-          </button>
-          <button className="content-upload-btn-primary" onClick={handleComplete}>
-            완성하기
-          </button>
-        </div>
+      {/* 하단 액션 버튼 */}
+      <div className="cub-footer">
+        <button className="cub-btn-secondary" onClick={handleSave}>
+          저장하기
+        </button>
+        <button className="cub-btn-primary" onClick={handleComplete}>
+          바로 편집 시작하기
+        </button>
       </div>
     </div>
   );

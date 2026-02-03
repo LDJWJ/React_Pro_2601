@@ -11,7 +11,8 @@
       "Bash(curl:*)",
       "Bash(kill:*)",
       "Bash(lsof:*)",
-      "Bash(xargs:*)"
+      "Bash(xargs:*)",
+      "Bash(sudo npm install:*)"
     ]
   }
 }
