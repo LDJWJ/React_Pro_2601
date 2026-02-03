@@ -176,14 +176,7 @@ function ContentUploadScreenA({ onComplete, onBack }) {
     setSelectedSuggestionIndex(null);
 
     try {
-      // 영상이 있으면 현재 프레임 캡처
-      let imageBase64 = null;
-      if (currentCut?.videoPreview) {
-        imageBase64 = await captureVideoFrame();
-        console.log('이미지 캡처 결과:', imageBase64 ? '성공' : '실패');
-      }
-
-      // AI 자막 생성 API 호출 (Netlify Function)
+      // AI 자막 생성 API 호출 (Netlify Function) - 텍스트 기반
       const response = await fetch('/.netlify/functions/generate-subtitle', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -192,7 +185,6 @@ function ContentUploadScreenA({ onComplete, onBack }) {
           cutDescription: currentCut?.description || '',
           memo: currentCut?.memo || '',
           userKeyword: currentCut?.subtitle || '', // 사용자 입력 키워드
-          imageBase64, // 이미지 데이터 추가
         }),
       });
 

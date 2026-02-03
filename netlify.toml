@@ -11,8 +11,8 @@
   command = "npm run dev"
   targetPort = 5173
   port = 8888
-  publish = "dist"
   autoLaunch = false
+  framework = "#custom"
 
 # SPA 라우팅을 위한 리다이렉트
 [[redirects]]
