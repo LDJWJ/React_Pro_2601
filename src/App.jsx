@@ -9,6 +9,9 @@ import StoryPlanningScreenA from './components/StoryPlanningScreenA';
 import StoryPlanningScreenB from './components/StoryPlanningScreenB';
 import ContentUploadScreenA from './components/ContentUploadScreenA';
 import ContentUploadScreenB from './components/ContentUploadScreenB';
+import SampleTemplateA from './components/SampleTemplateA';
+import SampleTemplateB from './components/SampleTemplateB';
+import DataAnalysis from './components/DataAnalysis';
 import { startInteractionLogging, setInteractionScreen } from './utils/interactionLogger';
 
 function App() {
@@ -42,6 +45,10 @@ function App() {
       setCurrentScreen('mission2_1');
     } else if (missionId === 3) {
       setCurrentScreen('mission3_1');
+    } else if (missionId === 5) {
+      setCurrentScreen('mission99_1');
+    } else if (missionId === 6) {
+      setCurrentScreen('dataAnalysis');
     }
   };
 
@@ -170,6 +177,51 @@ function App() {
           <ContentUploadScreenB
             onComplete={() => setCurrentScreen('missionMain')}
             onBack={() => setCurrentScreen('mission3_2')}
+          />
+        );
+
+      case 'mission99_1':
+        return (
+          <MissionStep
+            stepTitle="영상 기획하기 A안"
+            description="영상 아이디어 노트를 작성하고 저장하기를 눌러주세요."
+            buttonText="다음"
+            screenName="mission99_1"
+            onNext={() => setCurrentScreen('sampleTemplateA')}
+          />
+        );
+
+      case 'sampleTemplateA':
+        return (
+          <SampleTemplateA
+            onComplete={() => setCurrentScreen('mission99_2')}
+            onBack={() => setCurrentScreen('mission99_1')}
+          />
+        );
+
+      case 'mission99_2':
+        return (
+          <MissionStep
+            stepTitle="영상 기획하기 B안"
+            description="화면을 보고 영상 기획 메모를 작성하고 저장하기를 눌러주세요."
+            buttonText="다음"
+            screenName="mission99_2"
+            onNext={() => setCurrentScreen('sampleTemplateB')}
+          />
+        );
+
+      case 'sampleTemplateB':
+        return (
+          <SampleTemplateB
+            onComplete={() => setCurrentScreen('missionMain')}
+            onBack={() => setCurrentScreen('mission99_2')}
+          />
+        );
+
+      case 'dataAnalysis':
+        return (
+          <DataAnalysis
+            onBack={() => setCurrentScreen('missionMain')}
           />
         );
 

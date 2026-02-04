@@ -32,6 +32,10 @@
 - **A안**: 콘텐츠 업로드 및 AI 자막 추천 화면 A 버전
 - **B안**: 콘텐츠 업로드 화면 B 버전
 
+### 6. 미션 99 - A/B안 샘플미션 (`SampleTemplate`)
+- **A안**: 빈 샘플 화면 A 버전
+- **B안**: 빈 샘플 화면 B 버전
+
 ## 프로젝트 구조
 
 ```
@@ -57,7 +61,9 @@ src/
 │   ├── ContentUploadScreenA.jsx # 콘텐츠 업로드 A안
 │   ├── ContentUploadScreenB.jsx # 콘텐츠 업로드 B안
 │   ├── ContentUploadScreen.css
-│   └── ContentUploadScreenB.css
+│   ├── ContentUploadScreenB.css
+│   ├── SampleTemplateA.jsx      # 샘플미션 A안
+│   └── SampleTemplateB.jsx      # 샘플미션 B안
 └── utils/
     └── logger.js                # 사용자 행동 로깅 유틸리티
 ```
@@ -68,7 +74,8 @@ src/
 로그인 → 미션 메인
            ├── 미션 1 → 템플릿 상세 A → 템플릿 상세 B → 미션 메인
            ├── 미션 2 → 영상 기획 A → 영상 기획 B → 미션 메인
-           └── 미션 3 → 콘텐츠 업로드 A → 콘텐츠 업로드 B → 미션 메인
+           ├── 미션 3 → 콘텐츠 업로드 A → 콘텐츠 업로드 B → 미션 메인
+           └── 미션 99 → 샘플 A안 → 샘플 B안 → 미션 메인
 ```
 
 ## 실행 방법
