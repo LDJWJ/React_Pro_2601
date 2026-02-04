@@ -42,6 +42,11 @@
   flex: 1;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+
+.story-scroll-content::-webkit-scrollbar {
+  display: none;
 }
 
 /* 콘텐츠 영역 */
@@ -152,6 +157,7 @@
 .sp-timeline-wrapper {
   display: flex;
   flex-direction: column;
+  gap: 20px;
 }
 
 /* 타임라인 행 (인디케이터 + 카드) */
@@ -480,7 +486,6 @@
   padding: 16px 20px 37px;
   background-color: #1a1a1a;
   flex-shrink: 0;
-  border-top: 1px solid #333;
 }
 
 .story-save-btn {
@@ -498,6 +503,11 @@
 
 .story-save-btn:active {
   opacity: 0.8;
+}
+
+/* B안 저장하기 버튼 - 353px 고정 너비 */
+.story-save-btn.story-save-btn-b {
+  width: 353px;
 }
 
 /* 하단 버튼 - 두 개 버전 */
@@ -550,7 +560,7 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 20px;
+  padding: 20px 20px 0;
 }
 
 .story-complete-message {
@@ -587,7 +597,7 @@
   width: 100%;
   display: flex;
   justify-content: center;
-  padding-bottom: 32px;
+  padding-bottom: 37px;
 }
 
 /* 모바일 대응 */
@@ -610,8 +620,11 @@
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 8px;
   cursor: pointer;
+}
+
+.sp-cut-wrapper > .sp-cut-header-outside {
+  margin-bottom: 8px;
 }
 
 /* 타이틀 행 (카드 바깥) */
@@ -626,15 +639,19 @@
 .sp-cut-card {
   display: flex;
   gap: 12px;
-  padding: 12px;
+  padding: 14px 12px;
+  height: 84px;
+  box-sizing: border-box;
   background-color: #222;
   border: 1px solid #333;
-  border-radius: 12px;
+  border-radius: 12px 12px 12px 12px;
   transition: border-color 0.2s ease;
 }
 
 .sp-cut-card.active {
-  border-color: #333;
+  border-color: #F8FF33;
+  border-bottom: none;
+  border-radius: 12px 12px 0 0;
 }
 
 /* 선택된 썸네일 노란 테두리 */
@@ -657,9 +674,12 @@
   flex-direction: column;
   gap: 8px;
   padding: 12px;
-  background-color: #1a1a1a;
-  border: 1px solid #333;
-  border-radius: 12px;
+  height: 112px;
+  box-sizing: border-box;
+  background-color: #272727;
+  border: 1px solid #F8FF33;
+  border-top: none;
+  border-radius: 0 0 12px 12px;
 }
 
 .sp-memo-label {
