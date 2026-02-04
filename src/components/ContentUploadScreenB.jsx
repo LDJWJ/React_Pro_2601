@@ -413,7 +413,7 @@ function ContentUploadScreenB({ onComplete, onBack }) {
                   생성 중...
                 </>
               ) : (
-                '✨ AI 자막 추천'
+                <><img src="/icons/star.png" alt="" className="cub-ai-btn-icon" /> AI 자막 추천</>
               )}
             </button>
           </div>

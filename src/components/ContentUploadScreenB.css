@@ -338,10 +338,9 @@
 /* ===== 메인 스크롤 영역 ===== */
 .cub-main {
   flex: 1;
-  overflow: hidden;
+  overflow-y: auto;
   padding: 16px;
-  display: flex;
-  flex-direction: column;
+  scrollbar-width: none;
 }
 
 .cub-main::-webkit-scrollbar {
@@ -404,11 +403,7 @@
 
 /* ===== 자막 작성 섹션 ===== */
 .cub-subtitle-section {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  min-height: 0;
-  overflow: hidden;
+  margin-bottom: 20px;
 }
 
 .cub-subtitle-header {
@@ -422,6 +417,11 @@
   font-size: 18px;
   font-weight: 600;
   color: var(--text-primary);
+}
+
+.cub-ai-btn-icon {
+  width: 16px;
+  height: 16px;
 }
 
 .cub-ai-btn {
@@ -553,7 +553,7 @@
   height: 48px;
   margin: 0 auto;
   padding: 0 16px;
-  background: var(--fill-normal);
+  background: #272727;
   border: none;
   border-radius: 0;
   color: var(--text-primary);
@@ -565,13 +565,21 @@
   flex-shrink: 0;
 }
 
+.cub-ai-suggestion:first-child {
+  border-radius: 8px 8px 0 0;
+}
+
+.cub-ai-suggestion:last-child {
+  border-radius: 0 0 8px 8px;
+}
+
 .cub-ai-suggestion:hover {
-  background: var(--fill-subtle);
+  background: #333;
 }
 
 .cub-ai-suggestion.selected {
-  background: var(--fill-primary);
-  color: #000;
+  background: rgba(255, 255, 255, 0.15);
+  color: #F8FF33;
 }
 
 /* ===== 하단 액션 버튼 ===== */
