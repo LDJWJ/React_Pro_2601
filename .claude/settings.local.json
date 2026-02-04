@@ -18,7 +18,13 @@
       "Bash(git rm:*)",
       "WebFetch(domain:hookhook2.netlify.app)",
       "Bash(git add:*)",
-      "Bash(git commit:*)"
+      "Bash(git commit:*)",
+      "Bash(cat:*)",
+      "Bash(ss:*)",
+      "Bash(npx netlify:*)",
+      "Bash(npx netlify dev:*)",
+      "Bash(npx netlify --version)",
+      "Bash(ls:*)"
     ]
   }
 }
