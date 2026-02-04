@@ -3,6 +3,7 @@ import './MissionMain.css';
 import { logScreenView, logButtonClick, logMissionStart } from '../utils/logger';
 
 const missions = [
+  { id: 9, title: '미션 1-1', subtitle: '영상 추가 후 재생하기', enabled: true },
   { id: 7, title: '미션 2-1', subtitle: '컷을 이동하며 원하는 구간 찾기', enabled: true },
   { id: 8, title: '미션 6-1', subtitle: 'AI 자막 추천', enabled: true },
   { id: 2, title: '미션 1', subtitle: '영상 기획하기', enabled: true },
