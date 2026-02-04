@@ -389,7 +389,7 @@ function ContentUploadScreenB({ onComplete, onBack }) {
         {/* 컷 정보 카드 */}
         <div className="cub-cut-info">
           <div className="cub-cut-badge">
-            <img src="/icons/media.png" alt="" className="cub-cut-icon" />
+            <img src="/icons/Icons_v2.png" alt="" className="cub-cut-icon" />
             <span className="cub-cut-number">{currentCutIndex + 1}</span>
           </div>
           <div className="cub-cut-text">
