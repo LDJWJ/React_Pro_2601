@@ -106,7 +106,7 @@ function ContentUpload1_1B({ onComplete, onBack }) {
     }
   };
 
-  // 재생/정지 — 영상 업로드 후 재생 버튼을 누르면 미션 완료
+  // 재생/정지 — 영상 업로드 후 재생 버튼을 누르면 1.5초 후 미션 완료
   const handlePlayToggle = () => {
     logButtonClick('content_upload_1_1b', 'play_toggle');
     if (videoRef.current) {
@@ -114,10 +114,12 @@ function ContentUpload1_1B({ onComplete, onBack }) {
         videoRef.current.pause();
       } else {
         videoRef.current.play();
-        // 재생 시 영상이 업로드된 상태이면 미션 완료
+        // 재생 시 영상이 업로드된 상태이면 1.5초 후 미션 완료
         if (hasUploaded) {
-          logMissionComplete('content_upload_1_1b', 'mission_1_1');
-          setCompleted(true);
+          setTimeout(() => {
+            logMissionComplete('content_upload_1_1b', 'mission_1_1');
+            setCompleted(true);
+          }, 1500);
         }
       }
       setIsPlaying(!isPlaying);

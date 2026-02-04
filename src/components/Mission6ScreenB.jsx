@@ -24,7 +24,8 @@ function Mission6ScreenB({ onComplete, onBack }) {
   const [isLoadingAI, setIsLoadingAI] = useState(false);
   const [selectedAiIndex, setSelectedAiIndex] = useState(null);
   const [completed, setCompleted] = useState(false);
-
+  const [missionStage, setMissionStage] = useState(0); // 0: 초기, 1: 팝업 표시, 2: 재추천 대기
+  const [showPopup, setShowPopup] = useState(false);
 
   const fileInputRef = useRef(null);
   const videoRef = useRef(null);
@@ -232,6 +233,18 @@ function Mission6ScreenB({ onComplete, onBack }) {
       }
     } finally {
       setIsLoadingAI(false);
+      // 첫 번째 미션: AI 자막 추천 버튼을 누르면 1차 미션 완료 팝업 표시
+      if (missionStage === 0) {
+        setMissionStage(1);
+        setShowPopup(true);
+      }
+      // 두 번째 미션: 재추천 대기 상태에서 AI 자막 추천을 다시 누르면 2초 후 완료
+      if (missionStage === 2) {
+        setTimeout(() => {
+          logMissionComplete('mission6_screen_b', 'mission_8');
+          setCompleted(true);
+        }, 2000);
+      }
     }
   };
 
@@ -242,6 +255,12 @@ function Mission6ScreenB({ onComplete, onBack }) {
     setCutData(prev => prev.map((cut, i) =>
       i === currentCutIndex ? { ...cut, subtitle: suggestion } : cut
     ));
+  };
+
+  // 팝업 확인 버튼
+  const handlePopupConfirm = () => {
+    setShowPopup(false);
+    setMissionStage(2);
   };
 
   // 자막 직접 입력 (직접 입력 시 AI 추천 숨김)
@@ -417,8 +436,10 @@ function Mission6ScreenB({ onComplete, onBack }) {
                   <span className="spinner"></span>
                   생성 중...
                 </>
+              ) : aiSuggestions.length > 0 ? (
+                <><img src="/icons/AI_02.png" alt="" className="cub-ai-btn-icon" /> AI 자막 추천</>
               ) : (
-                <><img src="/icons/star.png" alt="" className="cub-ai-btn-icon" /> AI 자막 추천</>
+                <><img src="/icons/AI_01.png" alt="" className="cub-ai-btn-icon" /> AI 자막 추천</>
               )}
             </button>
           </div>
@@ -448,6 +469,50 @@ function Mission6ScreenB({ onComplete, onBack }) {
           )}
         </div>
       </div>
+
+      {/* 미션 팝업 */}
+      {showPopup && (
+        <div style={{
+          position: 'fixed',
+          top: 0, left: 0, right: 0, bottom: 0,
+          background: 'rgba(0,0,0,0.5)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 100,
+        }}>
+          <div style={{
+            background: '#fff',
+            borderRadius: 12,
+            padding: '24px 20px',
+            width: '80%',
+            maxWidth: 300,
+            textAlign: 'center',
+          }}>
+            <p style={{ fontSize: 15, fontWeight: 600, marginBottom: 12 }}>
+              첫번째 미션을 완료했습니다.
+            </p>
+            <p style={{ fontSize: 13, color: '#555', marginBottom: 20, lineHeight: 1.5 }}>
+              [미션] 자막이 마음이 안들 경우, AI 자막 추천 버튼을 눌러 다시 추천을 받아보세요.
+            </p>
+            <button
+              onClick={handlePopupConfirm}
+              style={{
+                background: '#4A7CFE',
+                color: '#fff',
+                border: 'none',
+                borderRadius: 8,
+                padding: '10px 32px',
+                fontSize: 14,
+                fontWeight: 600,
+                cursor: 'pointer',
+              }}
+            >
+              확인
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* 하단 액션 버튼 - 고정 */}
       <div className="cub-footer">

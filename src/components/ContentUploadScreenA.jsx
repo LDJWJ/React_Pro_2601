@@ -189,21 +189,49 @@ function ContentUploadScreenA({ onComplete, onBack }) {
               <span className="cua-info-text">00:12</span>
             </div>
             <div className="cua-info-item">
-              <span className="cua-info-icon">🎬</span>
+              <img src="/icons/Icons_v2.png" alt="" className="cua-info-icon" style={{ width: 16, height: 16 }} />
               <span className="cua-info-text">{totalCuts}컷</span>
             </div>
           </div>
 
           {/* 영상 추가 영역 - 중앙 */}
-          <div className="cua-video-area" onClick={() => fileInputRef.current?.click()}>
+          <div className="cua-video-area" onClick={() => !currentCut.videoPreview && fileInputRef.current?.click()}>
             {currentCut.videoPreview ? (
-              <video
-                ref={videoRef}
-                src={currentCut.videoPreview}
-                className="cua-video-player"
-                preload="auto"
-                playsInline
-              />
+              <>
+                <video
+                  ref={videoRef}
+                  src={currentCut.videoPreview}
+                  className="cua-video-player"
+                  preload="auto"
+                  playsInline
+                />
+                <button
+                  className="cua-play-overlay"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    if (videoRef.current) {
+                      if (videoRef.current.paused) {
+                        videoRef.current.play();
+                      } else {
+                        videoRef.current.pause();
+                      }
+                    }
+                  }}
+                  style={{
+                    position: 'absolute',
+                    top: '50%',
+                    left: '50%',
+                    transform: 'translate(-50%, -50%)',
+                    background: 'none',
+                    border: 'none',
+                    cursor: 'pointer',
+                    padding: 0,
+                    zIndex: 2,
+                  }}
+                >
+                  <img src="/icons/PLAY.png" alt="재생" style={{ width: 24, height: 24 }} />
+                </button>
+              </>
             ) : (
               <div className="cua-video-placeholder">
                 <span className="cua-plus-icon">+</span>
@@ -243,7 +271,7 @@ function ContentUploadScreenA({ onComplete, onBack }) {
 
         {/* 컷 정보 카드 */}
         <div className="cua-cut-info">
-          <span className="cua-cut-icon">🎬</span>
+          <img src="/icons/Icons_v2.png" alt="" className="cua-cut-icon" style={{ width: 16, height: 16 }} />
           <span className="cua-cut-number">{currentCutIndex + 1}</span>
           <span className="cua-cut-title">{currentCut.title}</span>
         </div>

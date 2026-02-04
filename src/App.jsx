@@ -9,11 +9,8 @@ import StoryPlanningScreenA from './components/StoryPlanningScreenA';
 import StoryPlanningScreenB from './components/StoryPlanningScreenB';
 import ContentUploadScreenA from './components/ContentUploadScreenA';
 import ContentUploadScreenB from './components/ContentUploadScreenB';
-import ContentUpload2A from './components/ContentUpload2A';
 import ContentUpload2B from './components/ContentUpload2B';
-import ContentUpload1_1A from './components/ContentUpload1_1A';
 import ContentUpload1_1B from './components/ContentUpload1_1B';
-import Mission6ScreenA from './components/Mission6ScreenA';
 import Mission6ScreenB from './components/Mission6ScreenB';
 import SampleTemplateA from './components/SampleTemplateA';
 import SampleTemplateB from './components/SampleTemplateB';
@@ -56,11 +53,11 @@ function App() {
     } else if (missionId === 6) {
       setCurrentScreen('dataAnalysis');
     } else if (missionId === 7) {
-      setCurrentScreen('mission2_1_1');
+      setCurrentScreen('mission2_1_2');
     } else if (missionId === 8) {
-      setCurrentScreen('mission7_1');
+      setCurrentScreen('mission7_2');
     } else if (missionId === 9) {
-      setCurrentScreen('mission1_1_1');
+      setCurrentScreen('mission1_1_2');
     }
   };
 
@@ -230,29 +227,10 @@ function App() {
           />
         );
 
-      case 'mission1_1_1':
-        return (
-          <MissionStep
-            stepTitle="콘텐츠 업로드 A안"
-            description="[미션] 영상을 추가하고, 추가한 영상이 제대로 들어갔는지 재생해보세요."
-            buttonText="다음"
-            screenName="mission1_1_1"
-            onNext={() => setCurrentScreen('contentUpload1_1A')}
-          />
-        );
-
-      case 'contentUpload1_1A':
-        return (
-          <ContentUpload1_1A
-            onComplete={() => setCurrentScreen('mission1_1_2')}
-            onBack={() => setCurrentScreen('mission1_1_1')}
-          />
-        );
-
       case 'mission1_1_2':
         return (
           <MissionStep
-            stepTitle="콘텐츠 업로드 B안"
+            stepTitle="템플릿을 이용해 편집 시작하기"
             description="[미션] 영상을 추가하고, 추가한 영상이 제대로 들어갔는지 재생해보세요."
             buttonText="다음"
             screenName="mission1_1_2"
@@ -268,30 +246,12 @@ function App() {
           />
         );
 
-      case 'mission2_1_1':
-        return (
-          <MissionStep
-            stepTitle="콘텐츠 업로드 A안"
-            description="[미션] 현재 1번 컷을 편집 중입니다. 👉 4번째 컷을 수정하고 싶습니다. 4번째 컷을 선택해주세요."
-            buttonText="다음"
-            screenName="mission2_1_1"
-            onNext={() => setCurrentScreen('contentUpload2A')}
-          />
-        );
-
-      case 'contentUpload2A':
-        return (
-          <ContentUpload2A
-            onComplete={() => setCurrentScreen('mission2_1_2')}
-            onBack={() => setCurrentScreen('mission2_1_1')}
-          />
-        );
-
       case 'mission2_1_2':
         return (
           <MissionStep
-            stepTitle="콘텐츠 업로드 B안"
-            description="[미션] 현재 1번 컷을 편집 중입니다. 👉 4번째 컷을 수정하고 싶습니다. 4번째 컷을 선택해주세요."
+            stepTitle="컷을 이동하며 원하는 구간 찾기"
+            description="[미션] 현재 1번 컷을 편집 중입니다.
+👉 4번째 컷을 수정하고 싶습니다. 4번째 컷을 선택해주세요."
             buttonText="다음"
             screenName="mission2_1_2"
             onNext={() => setCurrentScreen('contentUpload2B')}
@@ -306,30 +266,11 @@ function App() {
           />
         );
 
-      case 'mission7_1':
-        return (
-          <MissionStep
-            stepTitle="AI 자막 추천 A안"
-            description="이 장면에 어울리는 자막을 AI 추천 기능을 이용해 추가해보세요. 마음에 드는 자막이 없다면, 다른 추천 자막을 확인해보세요."
-            buttonText="다음"
-            screenName="mission7_1"
-            onNext={() => setCurrentScreen('mission6ScreenA')}
-          />
-        );
-
-      case 'mission6ScreenA':
-        return (
-          <Mission6ScreenA
-            onComplete={() => setCurrentScreen('mission7_2')}
-            onBack={() => setCurrentScreen('mission7_1')}
-          />
-        );
-
       case 'mission7_2':
         return (
           <MissionStep
-            stepTitle="AI 자막 추천 B안"
-            description="이 장면에 어울리는 자막을 AI 추천 기능을 이용해 추가해보세요. 마음에 드는 자막이 없다면, 다른 추천 자막을 확인해보세요."
+            stepTitle="추천 자막 중 하나 선택하기"
+            description={`[미션]\n이 장면에 어울리는 자막을 AI 추천 기능을 이용해 추가해보세요.\n마음에 드는 자막이 없다면,\n다른 추천 자막을 확인해보세요.`}
             buttonText="다음"
             screenName="mission7_2"
             onNext={() => setCurrentScreen('mission6ScreenB')}

@@ -84,8 +84,10 @@ function ContentUpload2B({ onComplete, onBack }) {
     setSelectedAiIndex(null);
 
     if (index === 3) {
-      logMissionComplete('content_upload_2b', 'mission_2_1');
-      setCompleted(true);
+      setTimeout(() => {
+        logMissionComplete('content_upload_2b', 'mission_2_1');
+        setCompleted(true);
+      }, 2000);
     }
   };
 
