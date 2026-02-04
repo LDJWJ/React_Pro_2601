@@ -373,6 +373,7 @@
   width: 20px;
   height: 20px;
   flex-shrink: 0;
+  filter: brightness(0) saturate(100%) invert(93%) sepia(69%) saturate(491%) hue-rotate(11deg) brightness(103%) contrast(104%);
 }
 
 .cub-cut-number {
