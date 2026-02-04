@@ -75,6 +75,10 @@ function ContentUploadScreenB({ onComplete, onBack }) {
   // 컷 선택
   const handleCutSelect = (index) => {
     logButtonClick('content_upload_b', 'cut_select', String(index + 1));
+    if (videoRef.current && isPlaying) {
+      videoRef.current.pause();
+    }
+    setIsPlaying(false);
     setCurrentCutIndex(index);
     setAiSuggestions([]);
     setSelectedAiIndex(null);
