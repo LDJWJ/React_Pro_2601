@@ -11,6 +11,8 @@ import ContentUploadScreenA from './components/ContentUploadScreenA';
 import ContentUploadScreenB from './components/ContentUploadScreenB';
 import ContentUpload2A from './components/ContentUpload2A';
 import ContentUpload2B from './components/ContentUpload2B';
+import Mission6ScreenA from './components/Mission6ScreenA';
+import Mission6ScreenB from './components/Mission6ScreenB';
 import SampleTemplateA from './components/SampleTemplateA';
 import SampleTemplateB from './components/SampleTemplateB';
 import DataAnalysis from './components/DataAnalysis';
@@ -53,6 +55,8 @@ function App() {
       setCurrentScreen('dataAnalysis');
     } else if (missionId === 7) {
       setCurrentScreen('mission2_1_1');
+    } else if (missionId === 8) {
+      setCurrentScreen('mission7_1');
     }
   };
 
@@ -257,6 +261,44 @@ function App() {
           <ContentUpload2B
             onComplete={() => setCurrentScreen('missionMain')}
             onBack={() => setCurrentScreen('mission2_1_2')}
+          />
+        );
+
+      case 'mission7_1':
+        return (
+          <MissionStep
+            stepTitle="AI 자막 추천 A안"
+            description="이 장면에 어울리는 자막을 AI 추천 기능을 이용해 추가해보세요. 마음에 드는 자막이 없다면, 다른 추천 자막을 확인해보세요."
+            buttonText="다음"
+            screenName="mission7_1"
+            onNext={() => setCurrentScreen('mission6ScreenA')}
+          />
+        );
+
+      case 'mission6ScreenA':
+        return (
+          <Mission6ScreenA
+            onComplete={() => setCurrentScreen('mission7_2')}
+            onBack={() => setCurrentScreen('mission7_1')}
+          />
+        );
+
+      case 'mission7_2':
+        return (
+          <MissionStep
+            stepTitle="AI 자막 추천 B안"
+            description="이 장면에 어울리는 자막을 AI 추천 기능을 이용해 추가해보세요. 마음에 드는 자막이 없다면, 다른 추천 자막을 확인해보세요."
+            buttonText="다음"
+            screenName="mission7_2"
+            onNext={() => setCurrentScreen('mission6ScreenB')}
+          />
+        );
+
+      case 'mission6ScreenB':
+        return (
+          <Mission6ScreenB
+            onComplete={() => setCurrentScreen('missionMain')}
+            onBack={() => setCurrentScreen('mission7_2')}
           />
         );
 
