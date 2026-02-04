@@ -549,16 +549,20 @@
 }
 
 .cub-ai-suggestion {
-  width: 100%;
-  padding: 14px 16px;
+  width: 353px;
+  height: 48px;
+  margin: 0 auto;
+  padding: 0 16px;
   background: var(--fill-normal);
-  border: 2px solid transparent;
-  border-radius: var(--radius-md);
+  border: none;
+  border-radius: 0;
   color: var(--text-primary);
   font-size: 14px;
   text-align: left;
   cursor: pointer;
   transition: all 0.2s;
+  box-sizing: border-box;
+  flex-shrink: 0;
 }
 
 .cub-ai-suggestion:hover {
@@ -566,9 +570,8 @@
 }
 
 .cub-ai-suggestion.selected {
-  background: rgba(248, 255, 51, 0.1);
-  border-color: var(--fill-primary);
-  color: var(--fill-primary);
+  background: var(--fill-primary);
+  color: #000;
 }
 
 /* ===== 하단 액션 버튼 ===== */
