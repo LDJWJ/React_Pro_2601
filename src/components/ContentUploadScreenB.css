@@ -237,14 +237,14 @@
 }
 
 .cub-plus-icon {
-  font-size: 24px;
-  color: var(--text-subtle);
-  font-weight: 300;
-  transition: color 0.2s;
+  width: 24px;
+  height: 24px;
+  opacity: 0.6;
+  transition: opacity 0.2s;
 }
 
 .cub-mobile-frame:hover .cub-plus-icon {
-  color: var(--line-accent);
+  opacity: 1;
 }
 
 /* 왼쪽 상단 정보 */
@@ -330,16 +330,23 @@
 }
 
 .cub-edit-btn img {
-  width: 16px;
-  height: 16px;
+  width: 24px;
+  height: 24px;
   filter: brightness(0) invert(1);
 }
 
 /* ===== 메인 스크롤 영역 ===== */
 .cub-main {
   flex: 1;
-  overflow-y: auto;
+  overflow: hidden;
   padding: 16px;
+  display: flex;
+  flex-direction: column;
+}
+
+.cub-main::-webkit-scrollbar {
+  display: none;
+  /* unused but kept for consistency */
 }
 
 /* ===== 컷 정보 카드 ===== */
@@ -397,7 +404,11 @@
 
 /* ===== 자막 작성 섹션 ===== */
 .cub-subtitle-section {
-  margin-bottom: 20px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
 }
 
 .cub-subtitle-header {
@@ -529,8 +540,12 @@
 .cub-ai-suggestions {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 0;
   margin-top: 12px;
+}
+
+.cub-ai-suggestions::-webkit-scrollbar {
+  display: none;
 }
 
 .cub-ai-suggestion {

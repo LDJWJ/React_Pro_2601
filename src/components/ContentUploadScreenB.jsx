@@ -356,7 +356,7 @@ function ContentUploadScreenB({ onComplete, onBack }) {
         ) : (
           <div className="cub-preview-placeholder" onClick={() => fileInputRef.current?.click()}>
             <div className="cub-mobile-frame">
-              <span className="cub-plus-icon">+</span>
+              <img src="/icons/plus.png" alt="+" className="cub-plus-icon" />
             </div>
           </div>
         )}
