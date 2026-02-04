@@ -429,6 +429,7 @@
   display: flex;
   gap: 12px;
   margin-top: 24px;
+  padding-bottom: 37px;
 }
 
 .content-upload-btn-primary {

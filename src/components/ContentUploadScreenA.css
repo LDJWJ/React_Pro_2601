@@ -200,7 +200,7 @@
   color: #000;
   border: none;
   padding: 10px 18px;
-  border-radius: 20px;
+  border-radius: 8px;
   font-size: 13px;
   font-weight: 600;
   cursor: pointer;
@@ -250,7 +250,7 @@
   border: 1px solid #444;
   color: #fff;
   padding: 10px 16px;
-  border-radius: 20px;
+  border-radius: 8px;
   font-size: 13px;
   cursor: pointer;
   transition: all 0.2s;
@@ -269,7 +269,7 @@
 
 /* 하단 버튼 - 고정 */
 .cua-footer {
-  padding: 16px;
+  padding: 16px 16px 37px;
   flex-shrink: 0;
   border-top: 1px solid #333;
   background: #0a0a0a;
@@ -281,7 +281,7 @@
   background: #ffe033;
   color: #000;
   border: none;
-  border-radius: 12px;
+  border-radius: 8px;
   font-size: 16px;
   font-weight: 600;
   cursor: pointer;
@@ -336,7 +336,7 @@
   background: #ffe033;
   color: #000;
   border: none;
-  border-radius: 12px;
+  border-radius: 8px;
   font-size: 16px;
   font-weight: 600;
   cursor: pointer;

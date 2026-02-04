@@ -36,7 +36,7 @@
 }
 
 .mission-step-footer {
-  padding-bottom: env(safe-area-inset-bottom);
+  padding-bottom: 37px;
 }
 
 .mission-step-btn {
@@ -44,7 +44,7 @@
   padding: 16px;
   border: none;
   border-radius: 12px;
-  background-color: #ffd700;
+  background-color: #F8FF33;
   color: #1a1a1a;
   font-size: 16px;
   font-weight: 600;
@@ -53,5 +53,5 @@
 }
 
 .mission-step-btn:hover {
-  background-color: #ffcd00;
+  background-color: #e6ec2e;
 }
