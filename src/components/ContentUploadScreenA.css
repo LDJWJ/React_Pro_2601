@@ -123,7 +123,7 @@
 }
 
 .cua-timeline-item.active .cua-timeline-thumb {
-  border-color: #ffe033;
+  border-color: #F8FF33;
 }
 
 .cua-timeline-thumb img {
@@ -170,7 +170,7 @@
 .cua-cut-number {
   font-size: 14px;
   font-weight: 600;
-  color: #ffe033;
+  color: #F8FF33;
 }
 
 .cua-cut-title {
@@ -196,7 +196,7 @@
 }
 
 .cua-ai-button {
-  background: #ffe033;
+  background: #F8FF33;
   color: #000;
   border: none;
   padding: 10px 18px;
@@ -208,7 +208,7 @@
 }
 
 .cua-ai-button:hover {
-  background: #ffd000;
+  background: #e6ec2e;
 }
 
 .cua-ai-button.loading {
@@ -234,7 +234,7 @@
 }
 
 .cua-subtitle-input:focus {
-  border-color: #ffe033;
+  border-color: #F8FF33;
 }
 
 /* AI 추천 자막 */
@@ -262,23 +262,22 @@
 }
 
 .cua-suggestion-chip.selected {
-  background: #ffe033;
+  background: #F8FF33;
   color: #000;
-  border-color: #ffe033;
+  border-color: #F8FF33;
 }
 
 /* 하단 버튼 - 고정 */
 .cua-footer {
   padding: 16px 16px 37px;
   flex-shrink: 0;
-  border-top: 1px solid #333;
   background: #0a0a0a;
 }
 
 .cua-complete-button {
   width: 100%;
   padding: 16px;
-  background: #ffe033;
+  background: #F8FF33;
   color: #000;
   border: none;
   border-radius: 8px;
@@ -289,20 +288,24 @@
 }
 
 .cua-complete-button:hover {
-  background: #ffd000;
+  background: #e6ec2e;
 }
 
 /* 완료 화면 */
 .cua-complete-overlay {
+  flex: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  min-height: 100vh;
   padding: 20px 20px 0;
 }
 
 .cua-complete-message {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
   text-align: center;
 }
 
@@ -310,7 +313,7 @@
   width: 80px;
   height: 80px;
   border-radius: 50%;
-  background: #ffe033;
+  background: #F8FF33;
   color: #000;
   font-size: 40px;
   display: flex;
@@ -325,16 +328,14 @@
 }
 
 .cua-complete-footer {
-  margin-top: 40px;
-  width: 100%;
-  max-width: 300px;
+  width: 90%;
   padding-bottom: 37px;
 }
 
 .cua-complete-btn {
   width: 100%;
   padding: 16px;
-  background: #ffe033;
+  background: #F8FF33;
   color: #000;
   border: none;
   border-radius: 8px;

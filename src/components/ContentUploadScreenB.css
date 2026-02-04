@@ -90,7 +90,7 @@
 
 .cub-timeline-scroll {
   display: flex;
-  gap: 8px;
+  gap: 13px;
   padding: 0 16px;
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
@@ -103,8 +103,8 @@
 
 .cub-cut-card {
   flex-shrink: 0;
-  width: 72px;
-  height: 72px;
+  width: 59px;
+  height: 60px;
   background: var(--fill-normal);
   border: 2px solid transparent;
   border-radius: var(--radius-md);
@@ -131,16 +131,24 @@
   object-fit: cover;
 }
 
-/* 숫자 오버레이 (좌상단) */
+/* 숫자 오버레이 (좌상단 모서리에 붙임) */
 .cub-cut-number-overlay {
   position: absolute;
-  top: 6px;
-  left: 8px;
+  top: 0;
+  left: 0;
   font-size: 14px;
   font-weight: 600;
   color: var(--text-primary);
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
   z-index: 1;
+  padding: 2px 6px;
+  border-radius: 0;
+}
+
+.cub-cut-card.active .cub-cut-number-overlay {
+  background-color: var(--fill-primary);
+  color: #000;
+  text-shadow: none;
 }
 
 /* 시간 오버레이 (하단 중앙) */
@@ -154,6 +162,11 @@
   color: var(--text-primary);
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
   z-index: 1;
+}
+
+.cub-cut-card.active .cub-cut-time-overlay {
+  color: var(--fill-primary);
+  text-shadow: none;
 }
 
 .cub-add-card {
@@ -181,9 +194,11 @@
 .cub-preview {
   position: relative;
   background: var(--bg-assistive);
-  aspect-ratio: 16 / 9;
-  max-height: 220px;
+  height: 255px;
   flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .cub-preview-video {
@@ -206,8 +221,8 @@
 
 /* 9:16 모바일 프레임 */
 .cub-mobile-frame {
-  width: 90px;
-  height: 160px;
+  width: 121px;
+  height: 215px;
   background: var(--fill-normal);
   border: 2px dashed var(--line-normal);
   border-radius: var(--radius-lg);
@@ -222,7 +237,7 @@
 }
 
 .cub-plus-icon {
-  font-size: 32px;
+  font-size: 24px;
   color: var(--text-subtle);
   font-weight: 300;
   transition: color 0.2s;
@@ -255,8 +270,8 @@
 }
 
 .cub-info-badge img {
-  width: 20px;
-  height: 20px;
+  width: 16px;
+  height: 16px;
   filter: brightness(0) invert(1);
 }
 
@@ -285,8 +300,8 @@
 }
 
 .cub-play-btn img {
-  width: 24px;
-  height: 24px;
+  width: 16px;
+  height: 16px;
   filter: brightness(0) invert(1);
 }
 
@@ -315,8 +330,8 @@
 }
 
 .cub-edit-btn img {
-  width: 24px;
-  height: 24px;
+  width: 16px;
+  height: 16px;
   filter: brightness(0) invert(1);
 }
 
@@ -329,42 +344,54 @@
 
 /* ===== 컷 정보 카드 ===== */
 .cub-cut-info {
+  width: 353px;
+  height: 78px;
   background: var(--fill-normal);
   border-radius: var(--radius-lg);
   padding: 16px;
-  margin-bottom: 20px;
-}
-
-.cub-cut-info-header {
+  margin: 0 auto 20px;
+  box-sizing: border-box;
   display: flex;
   align-items: center;
-  gap: 8px;
-  margin-bottom: 8px;
+  gap: 25px;
+}
+
+.cub-cut-badge {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.cub-cut-icon {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
 }
 
 .cub-cut-number {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 24px;
-  height: 24px;
-  background: var(--fill-primary);
-  color: #000;
-  border-radius: var(--radius-full);
-  font-size: 13px;
+  font-size: 16px;
   font-weight: 700;
+  color: var(--fill-primary);
+}
+
+.cub-cut-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
 }
 
 .cub-cut-title {
-  font-size: 15px;
+  font-size: 16px;
   font-weight: 600;
   color: var(--fill-primary);
 }
 
 .cub-cut-desc {
-  font-size: 13px;
+  font-size: 14px;
   color: var(--text-secondary);
-  line-height: 1.5;
+  line-height: 1.4;
   margin: 0;
 }
 
@@ -381,7 +408,7 @@
 }
 
 .cub-subtitle-label {
-  font-size: 15px;
+  font-size: 18px;
   font-weight: 600;
   color: var(--text-primary);
 }
@@ -389,13 +416,15 @@
 .cub-ai-btn {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 6px;
-  padding: 8px 14px;
-  background: var(--fill-primary);
-  border: none;
-  border-radius: var(--radius-md);
-  color: #000;
-  font-size: 13px;
+  width: 116px;
+  height: 36px;
+  background: var(--bg-primary);
+  border: 1px solid var(--fill-primary);
+  border-radius: 200px;
+  color: var(--text-primary);
+  font-size: 14px;
   font-weight: 600;
   cursor: pointer;
   transition: opacity 0.2s;
@@ -413,8 +442,8 @@
 .cub-ai-btn .spinner {
   width: 14px;
   height: 14px;
-  border: 2px solid rgba(0, 0, 0, 0.2);
-  border-top-color: #000;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  border-top-color: #fff;
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
 }
@@ -531,15 +560,15 @@
 .cub-footer {
   display: flex;
   gap: 12px;
-  padding: 16px 16px 37px;
+  padding: 16px 18px 37px;
   background: var(--bg-primary);
-  border-top: 1px solid var(--line-subtle);
   flex-shrink: 0;
 }
 
 .cub-btn-secondary {
-  flex: 1;
-  padding: 14px 0;
+  width: 96px;
+  height: 52px;
+  flex-shrink: 0;
   background: transparent;
   border: 1px solid var(--line-normal);
   border-radius: var(--radius-md);
@@ -555,8 +584,9 @@
 }
 
 .cub-btn-primary {
-  flex: 1.5;
-  padding: 14px 0;
+  width: 249px;
+  height: 52px;
+  flex-shrink: 0;
   background: var(--fill-primary);
   border: none;
   border-radius: var(--radius-md);
@@ -573,14 +603,16 @@
 
 /* ===== 자막 입력 필드 ===== */
 .cub-subtitle-input {
-  width: 100%;
-  padding: 12px 16px;
+  width: 353px;
+  height: 52px;
+  padding: 0 16px;
   background: var(--fill-normal);
-  border: 2px solid transparent;
+  border: 1px solid var(--line-normal);
   border-radius: var(--radius-md);
   color: var(--text-primary);
   font-size: 14px;
-  margin-bottom: 8px;
+  margin: 0 auto 8px;
+  display: block;
   box-sizing: border-box;
   transition: border-color 0.2s;
 }
@@ -600,7 +632,6 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
   padding: 20px 20px 0;
 }
 

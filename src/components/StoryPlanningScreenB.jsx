@@ -30,6 +30,10 @@ function StoryPlanningScreenB({ onComplete, onBack }) {
     logButtonClick('story_planning_b', 'cut_select', String(cut.id));
   };
 
+  // 모든 컷에 메모가 작성되면 step2 활성화
+  const allMemosCompleted = cuts.every(cut => memos[cut.id]?.trim());
+  const activeStep = allMemosCompleted ? 2 : 1;
+
   const handleMemoChange = (cutId, value) => {
     setMemos(prev => ({ ...prev, [cutId]: value }));
   };
@@ -86,7 +90,7 @@ function StoryPlanningScreenB({ onComplete, onBack }) {
           {/* Step 1 - 타임라인 밖에 위치 */}
           <div className="story-step-box-left story-step-box-with-line-bottom">
             <span className="story-step-label">step 1</span>
-            <span className="story-step-text">각 컷을 간단하게 메모해보세요.</span>
+            <span className={`story-step-text ${activeStep === 1 ? 'active' : 'inactive'}`}>각 컷을 간단하게 메모해보세요.</span>
           </div>
 
           <div className="sp-cut-list-container">
@@ -163,10 +167,9 @@ function StoryPlanningScreenB({ onComplete, onBack }) {
                       {isActive && (
                         <div className="sp-memo-section">
                           <label className="sp-memo-label">메모</label>
-                          <input
-                            type="text"
+                          <textarea
                             className="sp-memo-input"
-                            placeholder=""
+                            placeholder="떠오르는 생각을 자유롭게 작성해주세요"
                             value={memos[cut.id] || ''}
                             onChange={(e) => handleMemoChange(cut.id, e.target.value)}
                           />
@@ -183,7 +186,7 @@ function StoryPlanningScreenB({ onComplete, onBack }) {
           {/* Step 2 - 타임라인 밖에 위치 */}
           <div className="story-step-box-left story-step-box-with-line-top">
             <span className="story-step-label">step 2</span>
-            <span className="story-step-text">작성한 메모는 영상 설명으로 사용돼요.</span>
+            <span className={`story-step-text ${activeStep === 2 ? 'active' : 'inactive'}`}>작성한 메모는 영상 설명으로 사용돼요.</span>
           </div>
 
           <div className="story-bottom-buttons">

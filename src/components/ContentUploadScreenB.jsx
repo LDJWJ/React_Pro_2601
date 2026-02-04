@@ -3,11 +3,12 @@ import './ContentUploadScreenB.css';
 import { logScreenView, logButtonClick, logScreenExit } from '../utils/logger';
 
 const defaultCuts = [
-  { id: 1, title: '인트로 (첫 장면)', duration: 2, description: '성수동 자주 가는 카페에서 분위기 있게 셀카 찍기' },
-  { id: 2, title: '제품 보여주기', duration: 3, description: '제품이 손이나 얼굴에 닿는 순간만 보여줘도 좋아요.' },
-  { id: 3, title: '사용 장면', duration: 3, description: '이 제품의 특징이 잘 보이는 부분을 담아요.' },
-  { id: 4, title: '리액션 컷', duration: 2, description: '사용 후 만족스러운 표정이나 반응을 보여주세요.' },
-  { id: 5, title: '마무리 컷', duration: 2, description: '제품과 함께 자연스러운 엔딩 장면을 담아요.' },
+  { id: 1, title: '인트로 (첫 장면)', duration: 6, description: '성수동 자주 가는 카페에서 분위기 있게 셀카 찍기' },
+  { id: 2, title: '제품 보여주기', duration: 4, description: '제품이 손이나 얼굴에 닿는 순간만 보여줘도 좋아요.' },
+  { id: 3, title: '사용 장면', duration: 5, description: '이 제품의 특징이 잘 보이는 부분을 담아요.' },
+  { id: 4, title: '리액션 컷', duration: 5, description: '사용 후 만족스러운 표정이나 반응을 보여주세요.' },
+  { id: 5, title: '마무리 컷', duration: 8, description: '제품과 함께 자연스러운 엔딩 장면을 담아요.' },
+  { id: 6, title: '엔딩 장면', duration: 5, description: '영상의 마지막을 장식하는 인상적인 엔딩을 담아요.' },
 ];
 
 // 시간 형식 변환 (초 → "Xs")
@@ -308,7 +309,7 @@ function ContentUploadScreenB({ onComplete, onBack }) {
         <button className="cub-back-btn" onClick={handleBack}>
           ‹
         </button>
-        <span className="cub-title">새 프로젝트</span>
+        <span className="cub-title">작업하기 좋은 카페 추천</span>
       </div>
 
       {/* 컷 타임라인 */}
@@ -387,11 +388,14 @@ function ContentUploadScreenB({ onComplete, onBack }) {
       <div className="cub-main">
         {/* 컷 정보 카드 */}
         <div className="cub-cut-info">
-          <div className="cub-cut-info-header">
+          <div className="cub-cut-badge">
+            <img src="/icons/media.png" alt="" className="cub-cut-icon" />
             <span className="cub-cut-number">{currentCutIndex + 1}</span>
-            <span className="cub-cut-title">{currentCut.title}</span>
           </div>
-          <p className="cub-cut-desc">{currentCut.description}</p>
+          <div className="cub-cut-text">
+            <span className="cub-cut-title">{currentCut.title}</span>
+            <p className="cub-cut-desc">{currentCut.description}</p>
+          </div>
         </div>
 
         {/* 자막 작성 섹션 */}
@@ -418,7 +422,7 @@ function ContentUploadScreenB({ onComplete, onBack }) {
           <input
             type="text"
             className="cub-subtitle-input"
-            placeholder="자막을 입력하세요"
+            placeholder="자막을 입력해주세요."
             value={currentCut.subtitle || ''}
             onChange={handleSubtitleChange}
           />
@@ -440,7 +444,7 @@ function ContentUploadScreenB({ onComplete, onBack }) {
         </div>
       </div>
 
-      {/* 하단 액션 버튼 */}
+      {/* 하단 액션 버튼 - 고정 */}
       <div className="cub-footer">
         <button className="cub-btn-secondary" onClick={handleSave}>
           저장하기
