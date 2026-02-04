@@ -145,23 +145,20 @@ function StoryPlanningScreenB({ onComplete, onBack }) {
                               <span className="sp-cut-thumbnail-time">{cut.time.replaceAll('초', 's')}</span>
                             </div>
                           )}
-                          {hasMemo && !isActive && (
-                            <div className="sp-cut-thumbnail-check">
-                              <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                                <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z" fill="#F8FF33"/>
-                              </svg>
-                            </div>
-                          )}
                         </div>
                         <div className="sp-cut-description-area">
                           {cut.description && (
                             <p className="sp-cut-description">{cut.description}</p>
                           )}
-                          {!isActive && hasMemo && (
-                            <p className="sp-cut-memo-display">{memos[cut.id]}</p>
-                          )}
                         </div>
                       </div>
+
+                      {/* 메모 표시 (비선택 시, 메모가 있으면 카드 아래에 표시) */}
+                      {!isActive && hasMemo && (
+                        <div className="sp-memo-display-box">
+                          <p className="sp-memo-display-text">{memos[cut.id]}</p>
+                        </div>
+                      )}
 
                       {/* 메모 섹션 (선택 시에만 표시) */}
                       {isActive && (
