@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import './MissionMain.css';
-import { logScreenView, logButtonClick } from '../utils/logger';
+import { logScreenView, logButtonClick, logMissionStart } from '../utils/logger';
 
 const missions = [
   { id: 2, title: '미션 1', subtitle: '영상 기획하기', enabled: true },
@@ -17,6 +17,7 @@ function MissionMain({ user, onMissionSelect, onLogout }) {
   const handleMissionClick = (mission) => {
     if (!mission.enabled) return;
     logButtonClick('mission_main', `mission_${mission.id}`);
+    logMissionStart('mission_main', `mission_${mission.id}`);
     onMissionSelect(mission.id);
   };
 

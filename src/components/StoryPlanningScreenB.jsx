@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import './StoryPlanningScreen.css';
-import { logScreenView, logButtonClick } from '../utils/logger';
+import { logScreenView, logButtonClick, logMissionComplete, logScreenExit } from '../utils/logger';
 
 const VIDEO_URL = '/videos/sample-2.mp4';
 
@@ -21,6 +21,11 @@ function StoryPlanningScreenB({ onComplete, onBack }) {
 
   useEffect(() => {
     logScreenView('story_planning_b');
+    const enterTime = Date.now();
+    return () => {
+      const dwellTime = Date.now() - enterTime;
+      logScreenExit('story_planning_b', dwellTime);
+    };
   }, []);
 
   // 영상에서 각 컷 시간대의 프레임을 썸네일로 추출
@@ -83,6 +88,7 @@ function StoryPlanningScreenB({ onComplete, onBack }) {
 
   const handleStartEdit = () => {
     logButtonClick('story_planning_b', 'start_edit');
+    logMissionComplete('story_planning_b', 'mission_2');
     setCompleted(true);
   };
 

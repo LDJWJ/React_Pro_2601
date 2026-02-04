@@ -54,6 +54,8 @@ function handleTrackingLog(data) {
       '값',
       '행동',
       '브라우저',
+      '세션ID',
+      '체류시간(ms)',
     ]);
   }
 
@@ -66,6 +68,8 @@ function handleTrackingLog(data) {
     data.value || '',
     data.action || '',
     data.browser || '',
+    data.sessionId || '',
+    data.dwellTime || '',
   ]);
 
   return ContentService.createTextOutput(

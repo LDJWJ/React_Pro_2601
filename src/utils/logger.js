@@ -28,7 +28,9 @@ const EVENT_LABELS = {
   button_click: '버튼 클릭',
   select: '선택',
   login: '로그인',
+  mission_start: '미션 시작',
   mission_complete: '미션 완료',
+  screen_exit: '화면 이탈',
 };
 
 // 대상(target) 한글 매핑
@@ -71,6 +73,9 @@ function generateAction(screen, event, target) {
   if (event === 'screen_view') {
     return `${screenKr} ${eventKr}`;
   }
+  if (event === 'screen_exit') {
+    return `${screenKr} ${eventKr} ${target}`;
+  }
   if (!target) {
     return `${screenKr} ${eventKr}`;
   }
@@ -88,7 +93,7 @@ const getSessionId = () => {
 };
 
 // 로그 전송 함수
-// 시트 컬럼: 타임스탬프 | 사용자ID | 화면 | 이벤트 | 대상 | 값 | 행동 | 브라우저
+// 시트 컬럼: 타임스탬프 | 사용자ID | 화면 | 이벤트 | 대상 | 값 | 행동 | 브라우저 | 세션ID | 체류시간(ms)
 export const sendLog = async (logData) => {
   if (!SCRIPT_URL) {
     console.log('[Tracking] URL not configured:', logData);
@@ -109,6 +114,8 @@ export const sendLog = async (logData) => {
       value: logData.value || '',
       action: action,
       browser: navigator.userAgent,
+      sessionId: getSessionId(),
+      dwellTime: logData.dwellTime || '',
     };
 
     const fetchOptions = {
@@ -160,6 +167,26 @@ export const logSelect = (screenName, itemName, value) => {
   });
 };
 
+// 미션 시작 로그
+export const logMissionStart = (screenName, missionTarget) => {
+  sendLog({
+    screen: screenName,
+    event: 'mission_start',
+    target: missionTarget,
+    value: '',
+  });
+};
+
+// 미션 완료 로그
+export const logMissionComplete = (screenName, missionTarget) => {
+  sendLog({
+    screen: screenName,
+    event: 'mission_complete',
+    target: missionTarget,
+    value: '',
+  });
+};
+
 // 로그인 이벤트 로그
 export const logLogin = (method, userEmail = '') => {
   sendLog({
@@ -170,10 +197,25 @@ export const logLogin = (method, userEmail = '') => {
   });
 };
 
+// 화면 이탈 로그
+export const logScreenExit = (screenName, dwellTimeMs) => {
+  const dwellTimeSec = (dwellTimeMs / 1000).toFixed(1);
+  sendLog({
+    screen: screenName,
+    event: 'screen_exit',
+    target: '',
+    value: dwellTimeSec + '초',
+    dwellTime: dwellTimeMs,
+  });
+};
+
 export default {
   sendLog,
   logScreenView,
   logButtonClick,
   logSelect,
+  logMissionStart,
+  logMissionComplete,
   logLogin,
+  logScreenExit,
 };

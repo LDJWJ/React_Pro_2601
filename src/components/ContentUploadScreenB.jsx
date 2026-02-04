@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import './ContentUploadScreenB.css';
-import { logScreenView, logButtonClick } from '../utils/logger';
+import { logScreenView, logButtonClick, logScreenExit } from '../utils/logger';
 
 const defaultCuts = [
   { id: 1, title: '인트로 (첫 장면)', duration: 2, description: '성수동 자주 가는 카페에서 분위기 있게 셀카 찍기' },
@@ -30,12 +30,17 @@ function ContentUploadScreenB({ onComplete, onBack }) {
 
   useEffect(() => {
     logScreenView('content_upload_b');
+    const enterTime = Date.now();
     setCutData(defaultCuts.map(cut => ({
       ...cut,
       videoFile: null,
       videoPreview: null,
       subtitle: '',
     })));
+    return () => {
+      const dwellTime = Date.now() - enterTime;
+      logScreenExit('content_upload_b', dwellTime);
+    };
   }, []);
 
   const currentCut = cutData[currentCutIndex];

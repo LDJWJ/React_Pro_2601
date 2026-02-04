@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import './ContentUploadScreenA.css';
-import { logScreenView, logButtonClick } from '../utils/logger';
+import { logScreenView, logButtonClick, logScreenExit } from '../utils/logger';
 
 const defaultCuts = [
   { id: 1, title: '인트로 (첫 장면)', duration: '2초', description: '시선을 끌고 분위기를 시작하는 장면이에요.' },
@@ -23,12 +23,17 @@ function ContentUploadScreenA({ onComplete, onBack }) {
 
   useEffect(() => {
     logScreenView('content_upload_a');
+    const enterTime = Date.now();
     setCutData(defaultCuts.map(cut => ({
       ...cut,
       videoFile: null,
       videoPreview: null,
       subtitle: '',
     })));
+    return () => {
+      const dwellTime = Date.now() - enterTime;
+      logScreenExit('content_upload_a', dwellTime);
+    };
   }, []);
 
   const currentCut = cutData[currentCutIndex];
