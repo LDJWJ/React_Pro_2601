@@ -227,6 +227,7 @@
 /* Step 박스에서 위로 연결선 (step 2용) */
 .story-step-box-with-line-top {
   position: relative;
+  margin-top: 10px;
 }
 
 .story-step-box-with-line-top::before {
@@ -411,7 +412,7 @@
   padding: 4px 10px;
   background-color: transparent;
   border: 1px solid #555;
-  border-radius: 20px;
+  border-radius: 4px;
   font-size: 12px;
   font-weight: 600;
   color: #888;

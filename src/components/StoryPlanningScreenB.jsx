@@ -3,9 +3,9 @@ import './StoryPlanningScreen.css';
 import { logScreenView, logButtonClick, logMissionComplete, logScreenExit } from '../utils/logger';
 
 const defaultCuts = [
-  { id: 1, label: "1", title: "인트로(첫 장면)", description: "시선을 사로잡을 수 있는 포인트를 담아주세요. 디저트나 커피 클로즈업도 좋아요.", time: "3초", thumbnail: '/images/story01.png' },
-  { id: 2, label: "2 - 5", title: "카페 보여주기", description: "이 장면에서는 '작업하기 좋다'는 이유가 보이는 장면을 담아주세요.", time: "3초", thumbnail: '/images/story03.png' },
-  { id: 3, label: "6", title: "마무리 장면", description: "여운을 남길 수 있는 장면이에요. 분위기를 한 번 더 강조하면 좋아요.", time: "3초", thumbnail: '/images/story06.png' },
+  { id: 1, label: "1", title: "인트로(첫 장면)", description: "시선을 사로잡을 수 있는 포인트를 담아주세요. 디저트나 커피 클로즈업도 좋아요.", time: "3초", startTime: 0, thumbnail: '/images/story01.png' },
+  { id: 2, label: "2 - 5", title: "카페 보여주기", description: "이 장면에서는 '작업하기 좋다'는 이유가 보이는 장면을 담아주세요.", time: "3초", startTime: 3, thumbnail: '/images/story03.png' },
+  { id: 3, label: "6", title: "마무리 장면", description: "여운을 남길 수 있는 장면이에요. 분위기를 한 번 더 강조하면 좋아요.", time: "3초", startTime: 6, thumbnail: '/images/story06.png' },
 ];
 
 function StoryPlanningScreenB({ onComplete, onBack }) {
@@ -128,7 +128,7 @@ function StoryPlanningScreenB({ onComplete, onBack }) {
                           <span className={`sp-cut-title ${isActive ? 'active' : ''}`}>{cut.title}</span>
                         </div>
                         {isActive && cut.time && (
-                          <span className="sp-cut-time-tag active">{cut.time}</span>
+                          <span className="sp-cut-time-tag active">{cut.startTime}초~{cut.startTime + parseInt(cut.time)}초</span>
                         )}
                       </div>
 
