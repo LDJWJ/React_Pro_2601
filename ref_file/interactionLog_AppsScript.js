@@ -26,13 +26,7 @@ function getOrCreateSheet(name) {
 function doPost(e) {
   try {
     var data = JSON.parse(e.postData.contents);
-    var logType = data.logType || 'tracking';
-
-    if (logType === 'interaction') {
-      return handleInteractionLog(data);
-    } else {
-      return handleTrackingLog(data);
-    }
+    return handleTrackingLog(data);
   } catch (error) {
     return ContentService.createTextOutput(
       JSON.stringify({ status: 'error', message: error.toString() })
@@ -53,9 +47,8 @@ function handleTrackingLog(data) {
       '대상',
       '값',
       '행동',
-      '브라우저',
-      '세션ID',
       '체류시간(ms)',
+      '브라우저',
     ]);
   }
 
@@ -67,9 +60,9 @@ function handleTrackingLog(data) {
     data.target || '',
     data.value || '',
     data.action || '',
-    data.browser || '',
-    data.sessionId || '',
-    data.dwellTime || '',
+    data.dwellTime || ''
+    data.browser || ''
+,
   ]);
 
   return ContentService.createTextOutput(
@@ -77,63 +70,41 @@ function handleTrackingLog(data) {
   ).setMimeType(ContentService.MimeType.JSON);
 }
 
-// --- Interaction_Log: 마우스/터치/스크롤 행동 로그 ---
-function handleInteractionLog(data) {
-  var sheet = getOrCreateSheet('Interaction_Log');
-
-  if (sheet.getLastRow() === 0) {
-    sheet.appendRow([
-      '타임스탬프',
-      '세션ID',
-      '사용자이메일',
-      '화면',
-      '디바이스',
-      '이벤트타입',
-      'X좌표',
-      'Y좌표',
-      'scrollX',
-      'scrollY',
-      '뷰포트너비',
-      '뷰포트높이',
-      '이벤트시간',
-      '브라우저',
-    ]);
-  }
-
-  var events = data.events || [];
-  var rows = [];
-
-  for (var i = 0; i < events.length; i++) {
-    var evt = events[i];
-    rows.push([
-      new Date(),
-      data.sessionId || '',
-      data.userEmail || '',
-      data.screen || '',
-      data.device || '',
-      evt.type || '',
-      evt.x || '',
-      evt.y || '',
-      evt.scrollX || '',
-      evt.scrollY || '',
-      evt.viewportWidth || '',
-      evt.viewportHeight || '',
-      evt.timestamp || '',
-      data.browser || '',
-    ]);
-  }
-
-  // 한 번에 여러 행 추가 (성능 최적화)
-  if (rows.length > 0) {
-    sheet
-      .getRange(sheet.getLastRow() + 1, 1, rows.length, rows[0].length)
-      .setValues(rows);
-  }
-
-  return ContentService.createTextOutput(
-    JSON.stringify({ status: 'ok', count: rows.length })
-  ).setMimeType(ContentService.MimeType.JSON);
-}
+// --- Interaction_Log: 마우스/터치/스크롤 행동 로그 (현재 미사용) ---
+// function handleInteractionLog(data) {
+//   var sheet = getOrCreateSheet('Interaction_Log');
+//
+//   if (sheet.getLastRow() === 0) {
+//     sheet.appendRow([
+//       '타임스탬프', '세션ID', '사용자이메일', '화면', '디바이스',
+//       '이벤트타입', 'X좌표', 'Y좌표', 'scrollX', 'scrollY',
+//       '뷰포트너비', '뷰포트높이', '이벤트시간', '브라우저',
+//     ]);
+//   }
+//
+//   var events = data.events || [];
+//   var rows = [];
+//
+//   for (var i = 0; i < events.length; i++) {
+//     var evt = events[i];
+//     rows.push([
+//       new Date(), data.sessionId || '', data.userEmail || '',
+//       data.screen || '', data.device || '', evt.type || '',
+//       evt.x || '', evt.y || '', evt.scrollX || '', evt.scrollY || '',
+//       evt.viewportWidth || '', evt.viewportHeight || '',
+//       evt.timestamp || '', data.browser || '',
+//     ]);
+//   }
+//
+//   if (rows.length > 0) {
+//     sheet.getRange(sheet.getLastRow() + 1, 1, rows.length, rows[0].length)
+//       .setValues(rows);
+//   }
+//
+//   return ContentService.createTextOutput(
+//     JSON.stringify({ status: 'ok', count: rows.length })
+//   ).setMimeType(ContentService.MimeType.JSON);
+// }
 
 function doGet(e) {
   return ContentService.createTextOutput(

@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import './ContentUploadScreenA.css';
-import { logScreenView, logButtonClick, logScreenExit } from '../utils/logger';
+import { logScreenView, logButtonClick, logMissionComplete, logScreenExit } from '../utils/logger';
 
 const defaultCuts = [
   { id: 1, title: '인트로 (첫 장면)', duration: '2초', description: '시선을 끌고 분위기를 시작하는 장면이에요.' },
@@ -147,6 +147,7 @@ function ContentUploadScreenA({ onComplete, onBack }) {
   // "완성하기"
   const handleComplete = () => {
     logButtonClick('content_upload_a', 'complete');
+    logMissionComplete('content_upload_a', 'mission_3');
     setCompleted(true);
   };
 
@@ -179,111 +180,113 @@ function ContentUploadScreenA({ onComplete, onBack }) {
 
   return (
     <div className="cua-container">
-      {/* 메인 영역: 영상 추가 */}
-      <div className="cua-main-preview">
-        {/* 왼쪽 하단 정보 */}
-        <div className="cua-info-overlay">
-          <div className="cua-info-item">
-            <span className="cua-info-icon">⏱</span>
-            <span className="cua-info-text">00:12</span>
+      <div className="cua-scroll-content">
+        {/* 메인 영역: 영상 추가 */}
+        <div className="cua-main-preview">
+          {/* 왼쪽 하단 정보 */}
+          <div className="cua-info-overlay">
+            <div className="cua-info-item">
+              <span className="cua-info-icon">⏱</span>
+              <span className="cua-info-text">00:12</span>
+            </div>
+            <div className="cua-info-item">
+              <span className="cua-info-icon">🎬</span>
+              <span className="cua-info-text">{totalCuts}컷</span>
+            </div>
           </div>
-          <div className="cua-info-item">
-            <span className="cua-info-icon">🎬</span>
-            <span className="cua-info-text">{totalCuts}컷</span>
+
+          {/* 영상 추가 영역 - 중앙 */}
+          <div className="cua-video-area" onClick={() => fileInputRef.current?.click()}>
+            {currentCut.videoPreview ? (
+              <video
+                ref={videoRef}
+                src={currentCut.videoPreview}
+                className="cua-video-player"
+                preload="auto"
+                playsInline
+              />
+            ) : (
+              <div className="cua-video-placeholder">
+                <span className="cua-plus-icon">+</span>
+              </div>
+            )}
+          </div>
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="video/*"
+            onChange={handleVideoUpload}
+            style={{ display: 'none' }}
+          />
+        </div>
+
+        {/* 하단 타임라인 - duration이 썸네일 위에 오버레이 */}
+        <div className="cua-timeline">
+          <div className="cua-timeline-scroll">
+            {cutData.map((cut, index) => (
+              <div
+                key={cut.id}
+                className={`cua-timeline-item ${index === currentCutIndex ? 'active' : ''}`}
+                onClick={() => handleTimelineCutSelect(index)}
+              >
+                <div className="cua-timeline-thumb">
+                  {thumbnails[index] ? (
+                    <img src={thumbnails[index]} alt={`컷 ${index + 1}`} />
+                  ) : (
+                    <div className="cua-thumb-empty" />
+                  )}
+                  <span className="cua-timeline-duration">{cut.duration}</span>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
 
-        {/* 영상 추가 영역 - 중앙 */}
-        <div className="cua-video-area" onClick={() => fileInputRef.current?.click()}>
-          {currentCut.videoPreview ? (
-            <video
-              ref={videoRef}
-              src={currentCut.videoPreview}
-              className="cua-video-player"
-              preload="auto"
-              playsInline
-            />
-          ) : (
-            <div className="cua-video-placeholder">
-              <span className="cua-plus-icon">+</span>
+        {/* 컷 정보 카드 */}
+        <div className="cua-cut-info">
+          <span className="cua-cut-icon">🎬</span>
+          <span className="cua-cut-number">{currentCutIndex + 1}</span>
+          <span className="cua-cut-title">{currentCut.title}</span>
+        </div>
+
+        {/* 자막 섹션 */}
+        <div className="cua-subtitle-section">
+          <div className="cua-subtitle-header">
+            <span className="cua-subtitle-label">자막</span>
+            <button
+              className={`cua-ai-button ${isLoadingAI ? 'loading' : ''}`}
+              onClick={handleAISubtitle}
+              disabled={isLoadingAI}
+            >
+              {isLoadingAI ? '생성 중...' : '+ Ai 자막 추천'}
+            </button>
+          </div>
+          <input
+            type="text"
+            className="cua-subtitle-input"
+            placeholder="자막을 입력하세요"
+            value={currentCut.subtitle || ''}
+            onChange={handleSubtitleChange}
+          />
+
+          {/* AI 추천 자막 */}
+          {aiSuggestions.length > 0 && (
+            <div className="cua-ai-suggestions">
+              {aiSuggestions.map((suggestion, index) => (
+                <button
+                  key={index}
+                  className={`cua-suggestion-chip ${selectedSuggestionIndex === index ? 'selected' : ''}`}
+                  onClick={() => handleSelectSuggestion(suggestion, index)}
+                >
+                  {suggestion}
+                </button>
+              ))}
             </div>
           )}
         </div>
-        <input
-          ref={fileInputRef}
-          type="file"
-          accept="video/*"
-          onChange={handleVideoUpload}
-          style={{ display: 'none' }}
-        />
       </div>
 
-      {/* 하단 타임라인 - duration이 썸네일 위에 오버레이 */}
-      <div className="cua-timeline">
-        <div className="cua-timeline-scroll">
-          {cutData.map((cut, index) => (
-            <div
-              key={cut.id}
-              className={`cua-timeline-item ${index === currentCutIndex ? 'active' : ''}`}
-              onClick={() => handleTimelineCutSelect(index)}
-            >
-              <div className="cua-timeline-thumb">
-                {thumbnails[index] ? (
-                  <img src={thumbnails[index]} alt={`컷 ${index + 1}`} />
-                ) : (
-                  <div className="cua-thumb-empty" />
-                )}
-                <span className="cua-timeline-duration">{cut.duration}</span>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* 컷 정보 카드 */}
-      <div className="cua-cut-info">
-        <span className="cua-cut-icon">🎬</span>
-        <span className="cua-cut-number">{currentCutIndex + 1}</span>
-        <span className="cua-cut-title">{currentCut.title}</span>
-      </div>
-
-      {/* 자막 섹션 */}
-      <div className="cua-subtitle-section">
-        <div className="cua-subtitle-header">
-          <span className="cua-subtitle-label">자막</span>
-          <button
-            className={`cua-ai-button ${isLoadingAI ? 'loading' : ''}`}
-            onClick={handleAISubtitle}
-            disabled={isLoadingAI}
-          >
-            {isLoadingAI ? '생성 중...' : '+ Ai 자막 추천'}
-          </button>
-        </div>
-        <input
-          type="text"
-          className="cua-subtitle-input"
-          placeholder="자막을 입력하세요"
-          value={currentCut.subtitle || ''}
-          onChange={handleSubtitleChange}
-        />
-
-        {/* AI 추천 자막 */}
-        {aiSuggestions.length > 0 && (
-          <div className="cua-ai-suggestions">
-            {aiSuggestions.map((suggestion, index) => (
-              <button
-                key={index}
-                className={`cua-suggestion-chip ${selectedSuggestionIndex === index ? 'selected' : ''}`}
-                onClick={() => handleSelectSuggestion(suggestion, index)}
-              >
-                {suggestion}
-              </button>
-            ))}
-          </div>
-        )}
-      </div>
-
-      {/* 하단 버튼 */}
+      {/* 하단 버튼 - 고정 */}
       <div className="cua-footer">
         <button className="cua-complete-button" onClick={handleComplete}>
           완성하기

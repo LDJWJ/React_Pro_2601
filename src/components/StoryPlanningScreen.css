@@ -414,9 +414,9 @@
 }
 
 .sp-cut-time-tag.active {
-  background-color: rgba(248, 255, 51, 0.15);
-  border-color: #F8FF33;
-  color: #F8FF33;
+  background-color: rgba(255, 114, 26, 0.2);
+  border-color: #FF721A;
+  color: #FF721A;
 }
 
 .sp-cut-description {
