@@ -88,6 +88,14 @@ function computeBasicStats(data) {
   });
 
   // 화면별 미션 완료 통계
+  // 먼저 미션별 전체 시작 수 집계 (화면 무관)
+  const missionTotalStarts = {};
+  validRows.forEach(r => {
+    if (r['이벤트'] === '미션 시작' && r['대상']) {
+      missionTotalStarts[r['대상']] = (missionTotalStarts[r['대상']] || 0) + 1;
+    }
+  });
+
   const screenMissionMap = {};
   validRows.forEach(r => {
     const screen = r['화면'];
@@ -114,14 +122,19 @@ function computeBasicStats(data) {
     .map(([screen, missions]) => ({
       screen,
       missions: Object.entries(missions)
-        .map(([name, { starts, completes, users }]) => ({
-          name,
-          starts,
-          completes,
-          rate: starts > 0 ? ((completes / starts) * 100).toFixed(1) : '0.0',
-          userCount: users.size,
-        }))
-        .sort((a, b) => b.starts - a.starts),
+        .map(([name, { starts, completes, users }]) => {
+          // 해당 화면에 시작이 없으면 전체 시작 수를 참조하여 완료율 계산
+          const effectiveStarts = starts > 0 ? starts : (missionTotalStarts[name] || 0);
+          return {
+            name,
+            starts,
+            completes,
+            totalStarts: missionTotalStarts[name] || 0,
+            rate: effectiveStarts > 0 ? ((completes / effectiveStarts) * 100).toFixed(1) : '0.0',
+            userCount: users.size,
+          };
+        })
+        .sort((a, b) => b.completes - a.completes),
     }));
 
   return {
@@ -247,7 +260,100 @@ function computeMissionStats(data) {
       };
     });
 
-  return { missionSummary, missionAvgDuration, abComparison };
+  // 미션별 A/B 퍼널(이탈률) 분석
+  // 각 미션의 시작 → A 화면 진입 → A 완료(버튼 클릭) → B 화면 진입 → B 완료(미션 완료) 추적
+  const funnelData = {};
+  const ensureFunnel = (mission) => {
+    if (!funnelData[mission]) {
+      funnelData[mission] = {
+        startUsers: new Set(),
+        aViewUsers: new Set(),
+        aClickUsers: new Set(),
+        bViewUsers: new Set(),
+        bCompleteUsers: new Set(),
+      };
+    }
+  };
+
+  // 미션 시작 사용자 수집
+  validRows.forEach(r => {
+    if (r['이벤트'] === '미션 시작' && r['대상']) {
+      const target = r['대상'];
+      // target → mission 이름 매핑 (미션 1, 미션 2 등)
+      // 여기서는 대상 값 자체를 키로 사용
+      ensureFunnel(target);
+      funnelData[target].startUsers.add(r['사용자ID']);
+    }
+  });
+
+  // A/B 화면별 사용자 수집
+  validRows.forEach(r => {
+    const parsed = extractVariant(r['화면']);
+    if (!parsed) return;
+    const { mission, variant } = parsed;
+
+    // mission 이름으로 funnelData의 키 찾기 (예: "미션1" → 대상 "미션 1" 매칭)
+    const funnelKey = Object.keys(funnelData).find(k => {
+      const normalized = k.replace(/\s/g, '');
+      const missionNorm = mission.replace(/\s/g, '');
+      return normalized === missionNorm;
+    });
+    if (!funnelKey) return;
+
+    const userId = r['사용자ID'];
+    const evt = r['이벤트'];
+
+    if (variant === 'A') {
+      if (evt === '화면 진입') funnelData[funnelKey].aViewUsers.add(userId);
+      if (evt === '버튼 클릭') funnelData[funnelKey].aClickUsers.add(userId);
+    } else if (variant === 'B') {
+      if (evt === '화면 진입') funnelData[funnelKey].bViewUsers.add(userId);
+      if (evt === '미션 완료') funnelData[funnelKey].bCompleteUsers.add(userId);
+    }
+  });
+
+  // B에서 미션 완료가 아닌 버튼 클릭으로 완료를 추적하는 경우도 고려
+  validRows.forEach(r => {
+    if (r['이벤트'] !== '미션 완료') return;
+    const parsed = extractVariant(r['화면']);
+    if (!parsed) return;
+    const { mission, variant } = parsed;
+    if (variant !== 'B') return;
+    const funnelKey = Object.keys(funnelData).find(k => {
+      const normalized = k.replace(/\s/g, '');
+      const missionNorm = mission.replace(/\s/g, '');
+      return normalized === missionNorm;
+    });
+    if (funnelKey) {
+      funnelData[funnelKey].bCompleteUsers.add(r['사용자ID']);
+    }
+  });
+
+  const funnelStats = Object.entries(funnelData)
+    .filter(([, v]) => v.startUsers.size > 0)
+    .sort(([a], [b]) => a.localeCompare(b))
+    .map(([name, v]) => {
+      const started = v.startUsers.size;
+      const aViewed = v.aViewUsers.size;
+      const aClicked = v.aClickUsers.size;
+      const bViewed = v.bViewUsers.size;
+      const bCompleted = v.bCompleteUsers.size;
+      const calcRate = (count) => started > 0 ? ((count / started) * 100).toFixed(1) : '0.0';
+      const calcDropoff = (from, to) => from > 0 ? (((from - to) / from) * 100).toFixed(1) : '0.0';
+      return {
+        name,
+        steps: [
+          { label: '미션 시작', count: started, rate: '100.0', dropoff: '-' },
+          { label: 'A안 진입', count: aViewed, rate: calcRate(aViewed), dropoff: calcDropoff(started, aViewed) },
+          { label: 'A안 액션', count: aClicked, rate: calcRate(aClicked), dropoff: calcDropoff(aViewed, aClicked) },
+          { label: 'B안 진입', count: bViewed, rate: calcRate(bViewed), dropoff: calcDropoff(aClicked, bViewed) },
+          { label: 'B안 완료', count: bCompleted, rate: calcRate(bCompleted), dropoff: calcDropoff(bViewed, bCompleted) },
+        ],
+        overallDropoff: calcDropoff(started, bCompleted),
+      };
+    });
+
+  return { missionSummary, missionAvgDuration, abComparison, funnelStats };
 }
 
 // 버튼 클릭 상세 분석
@@ -478,7 +584,8 @@ function DataAnalysis({ onBack }) {
                             <thead>
                               <tr>
                                 <th>미션</th>
-                                <th>시작</th>
+                                <th>시작(화면)</th>
+                                <th>시작(전체)</th>
                                 <th>완료</th>
                                 <th>완료율</th>
                                 <th>사용자</th>
@@ -489,6 +596,7 @@ function DataAnalysis({ onBack }) {
                                 <tr key={m.name}>
                                   <td>{m.name}</td>
                                   <td className="da-num">{m.starts}</td>
+                                  <td className="da-num" style={{ color: '#888' }}>{m.totalStarts}</td>
                                   <td className="da-num">{m.completes}</td>
                                   <td className="da-num da-highlight">{m.rate}%</td>
                                   <td className="da-num">{m.userCount}</td>
@@ -616,6 +724,58 @@ function DataAnalysis({ onBack }) {
                         </tbody>
                       </table>
                     </div>
+                  </>
+                )}
+
+                {missionStats.funnelStats.length > 0 && (
+                  <>
+                    <div className="da-sub-title" style={{ marginTop: 24 }}>미션별 퍼널 / 이탈률 분석</div>
+                    {missionStats.funnelStats.map(f => (
+                      <div key={f.name} style={{ marginBottom: 20 }}>
+                        <div className="da-screen-label">
+                          {f.name} <span className="da-screen-total">전체 이탈률 {f.overallDropoff}%</span>
+                        </div>
+                        <div className="da-table-wrap">
+                          <table className="da-table">
+                            <thead>
+                              <tr>
+                                <th>단계</th>
+                                <th>사용자</th>
+                                <th>잔존율</th>
+                                <th>이탈률</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {f.steps.map((s, i) => (
+                                <tr key={i}>
+                                  <td>{s.label}</td>
+                                  <td className="da-num">{s.count}</td>
+                                  <td className="da-num" style={{ color: '#4CAF50' }}>{s.rate}%</td>
+                                  <td className="da-num" style={{ color: s.dropoff !== '-' && parseFloat(s.dropoff) > 0 ? '#ff6b6b' : '#888' }}>
+                                    {s.dropoff === '-' ? '-' : `${s.dropoff}%`}
+                                  </td>
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
+                        </div>
+                        {/* 퍼널 바 시각화 */}
+                        <div className="da-funnel-bars">
+                          {f.steps.map((s, i) => (
+                            <div key={i} className="da-funnel-step">
+                              <div className="da-funnel-label">{s.label}</div>
+                              <div className="da-funnel-bar-bg">
+                                <div
+                                  className="da-funnel-bar-fill"
+                                  style={{ width: `${s.rate}%` }}
+                                />
+                              </div>
+                              <div className="da-funnel-pct">{s.rate}%</div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    ))}
                   </>
                 )}
               </div>

@@ -9,6 +9,8 @@ import StoryPlanningScreenA from './components/StoryPlanningScreenA';
 import StoryPlanningScreenB from './components/StoryPlanningScreenB';
 import ContentUploadScreenA from './components/ContentUploadScreenA';
 import ContentUploadScreenB from './components/ContentUploadScreenB';
+import ContentUpload2A from './components/ContentUpload2A';
+import ContentUpload2B from './components/ContentUpload2B';
 import SampleTemplateA from './components/SampleTemplateA';
 import SampleTemplateB from './components/SampleTemplateB';
 import DataAnalysis from './components/DataAnalysis';
@@ -49,6 +51,8 @@ function App() {
       setCurrentScreen('mission99_1');
     } else if (missionId === 6) {
       setCurrentScreen('dataAnalysis');
+    } else if (missionId === 7) {
+      setCurrentScreen('mission2_1_1');
     }
   };
 
@@ -215,6 +219,44 @@ function App() {
           <SampleTemplateB
             onComplete={() => setCurrentScreen('missionMain')}
             onBack={() => setCurrentScreen('mission99_2')}
+          />
+        );
+
+      case 'mission2_1_1':
+        return (
+          <MissionStep
+            stepTitle="콘텐츠 업로드 A안"
+            description="[미션] 현재 1번 컷을 편집 중입니다. 👉 4번째 컷을 수정하고 싶습니다. 4번째 컷을 선택해주세요."
+            buttonText="다음"
+            screenName="mission2_1_1"
+            onNext={() => setCurrentScreen('contentUpload2A')}
+          />
+        );
+
+      case 'contentUpload2A':
+        return (
+          <ContentUpload2A
+            onComplete={() => setCurrentScreen('mission2_1_2')}
+            onBack={() => setCurrentScreen('mission2_1_1')}
+          />
+        );
+
+      case 'mission2_1_2':
+        return (
+          <MissionStep
+            stepTitle="콘텐츠 업로드 B안"
+            description="[미션] 현재 1번 컷을 편집 중입니다. 👉 4번째 컷을 수정하고 싶습니다. 4번째 컷을 선택해주세요."
+            buttonText="다음"
+            screenName="mission2_1_2"
+            onNext={() => setCurrentScreen('contentUpload2B')}
+          />
+        );
+
+      case 'contentUpload2B':
+        return (
+          <ContentUpload2B
+            onComplete={() => setCurrentScreen('missionMain')}
+            onBack={() => setCurrentScreen('mission2_1_2')}
           />
         );
 

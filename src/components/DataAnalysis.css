@@ -248,6 +248,52 @@
   margin-left: 6px;
 }
 
+/* 퍼널 바 시각화 */
+.da-funnel-bars {
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.da-funnel-step {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.da-funnel-label {
+  font-size: 11px;
+  color: #aaa;
+  width: 62px;
+  flex-shrink: 0;
+  text-align: right;
+}
+
+.da-funnel-bar-bg {
+  flex: 1;
+  height: 14px;
+  background: #333;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.da-funnel-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #F8FF33, #a8b000);
+  border-radius: 4px;
+  transition: width 0.3s ease;
+  min-width: 2px;
+}
+
+.da-funnel-pct {
+  font-size: 11px;
+  color: #ccc;
+  width: 40px;
+  flex-shrink: 0;
+  text-align: right;
+}
+
 .da-loading {
   text-align: center;
   padding: 40px 0;

@@ -8,6 +8,7 @@ const missions = [
   { id: 1, title: '미션 9', subtitle: '영상 기획하기', enabled: true },
   { id: 4, title: '미션 4', subtitle: '준비 중', enabled: false },
   { id: 5, title: '미션 99', subtitle: 'A/B안 샘플미션', enabled: true },
+  { id: 7, title: '미션 2-1', subtitle: '콘텐츠 업로드', enabled: true },
   { id: 6, title: '데이터 분석', subtitle: '트래킹 로그 분석', enabled: true },
 ];
 

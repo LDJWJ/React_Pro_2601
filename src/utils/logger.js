@@ -20,6 +20,10 @@ const SCREEN_LABELS = {
   mission3_2: '미션2',
   content_upload_a: '미션2 A안',
   content_upload_b: '미션2 B안',
+  mission2_1_1: '미션2-1',
+  mission2_1_2: '미션2-1',
+  content_upload_2a: '미션2-1 A안',
+  content_upload_2b: '미션2-1 B안',
   mission99_1: '미션99',
   mission99_2: '미션99',
   sample_template_a: '미션99 A안',
@@ -48,6 +52,7 @@ const TARGET_LABELS = {
   mission_3: '미션 2',
   mission_4: '미션 4',
   mission_5: '미션 99',
+  mission_7: '미션 2-1',
   logout_button: '로그아웃',
   // 미션 스텝
   next_button: '다음',

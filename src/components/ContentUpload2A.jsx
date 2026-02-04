@@ -10,7 +10,7 @@ const defaultCuts = [
   { id: 5, title: '마무리 컷', duration: '0.5초', description: '제품과 함께 자연스러운 엔딩 장면을 담아요.' },
 ];
 
-function ContentUploadScreenA({ onComplete, onBack }) {
+function ContentUpload2A({ onComplete, onBack }) {
   const [currentCutIndex, setCurrentCutIndex] = useState(0);
   const [cutData, setCutData] = useState([]);
   const [aiSuggestions, setAiSuggestions] = useState([]);
@@ -22,7 +22,7 @@ function ContentUploadScreenA({ onComplete, onBack }) {
   const videoRef = useRef(null);
 
   useEffect(() => {
-    logScreenView('content_upload_a');
+    logScreenView('content_upload_2a');
     const enterTime = Date.now();
     setCutData(defaultCuts.map(cut => ({
       ...cut,
@@ -32,7 +32,7 @@ function ContentUploadScreenA({ onComplete, onBack }) {
     })));
     return () => {
       const dwellTime = Date.now() - enterTime;
-      logScreenExit('content_upload_a', dwellTime);
+      logScreenExit('content_upload_2a', dwellTime);
     };
   }, []);
 
@@ -61,17 +61,21 @@ function ContentUploadScreenA({ onComplete, onBack }) {
     });
   };
 
-  // 타임라인 클릭 시 컷 전환
+  // 타임라인 클릭 시 컷 전환 — 4번째 컷(index 3) 선택 시 자동 완료
   const handleTimelineCutSelect = (index) => {
-    logButtonClick('content_upload_a', 'timeline_cut_select', String(index + 1));
+    logButtonClick('content_upload_2a', 'timeline_cut_select', String(index + 1));
     setAiSuggestions([]);
     setSelectedSuggestionIndex(null);
     setCurrentCutIndex(index);
+
+    if (index === 3) {
+      setCompleted(true);
+    }
   };
 
   // 뒤로가기
   const handleBack = () => {
-    logButtonClick('content_upload_a', 'back');
+    logButtonClick('content_upload_2a', 'back');
     onBack();
   };
 
@@ -79,7 +83,7 @@ function ContentUploadScreenA({ onComplete, onBack }) {
   const handleVideoUpload = (e) => {
     const file = e.target.files[0];
     if (file) {
-      logButtonClick('content_upload_a', 'video_upload');
+      logButtonClick('content_upload_2a', 'video_upload');
       const videoUrl = URL.createObjectURL(file);
       setCutData(prev => prev.map((cut, index) =>
         index === currentCutIndex
@@ -100,7 +104,7 @@ function ContentUploadScreenA({ onComplete, onBack }) {
   };
 
   const handleAISubtitle = async () => {
-    logButtonClick('content_upload_a', 'ai_subtitle');
+    logButtonClick('content_upload_2a', 'ai_subtitle');
     setIsLoadingAI(true);
     setAiSuggestions([]);
     setSelectedSuggestionIndex(null);
@@ -135,7 +139,7 @@ function ContentUploadScreenA({ onComplete, onBack }) {
   };
 
   const handleSelectSuggestion = (suggestion, index) => {
-    logButtonClick('content_upload_a', 'ai_suggestion_select', suggestion);
+    logButtonClick('content_upload_2a', 'ai_suggestion_select', suggestion);
     setSelectedSuggestionIndex(index);
     setCutData(prev => prev.map((cut, i) =>
       i === currentCutIndex
@@ -144,10 +148,9 @@ function ContentUploadScreenA({ onComplete, onBack }) {
     ));
   };
 
-  // "완성하기"
+  // "완성하기" — 로그만 남기고, 완료 처리는 4번째 컷 선택 시에만 동작
   const handleComplete = () => {
-    logButtonClick('content_upload_a', 'complete');
-    setCompleted(true);
+    logButtonClick('content_upload_2a', 'complete');
   };
 
   if (!currentCut) {
@@ -295,4 +298,4 @@ function ContentUploadScreenA({ onComplete, onBack }) {
   );
 }
 
-export default ContentUploadScreenA;
+export default ContentUpload2A;

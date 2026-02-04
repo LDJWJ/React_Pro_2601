@@ -15,7 +15,7 @@ const defaultCuts = [
 const formatTime = (seconds) => `${seconds}s`;
 
 
-function ContentUploadScreenB({ onComplete, onBack }) {
+function ContentUpload2B({ onComplete, onBack }) {
   const [currentCutIndex, setCurrentCutIndex] = useState(0);
   const [cutData, setCutData] = useState([]);
   const [thumbnails, setThumbnails] = useState({});
@@ -30,7 +30,7 @@ function ContentUploadScreenB({ onComplete, onBack }) {
   const videoRef = useRef(null);
 
   useEffect(() => {
-    logScreenView('content_upload_b');
+    logScreenView('content_upload_2b');
     const enterTime = Date.now();
     setCutData(defaultCuts.map(cut => ({
       ...cut,
@@ -40,7 +40,7 @@ function ContentUploadScreenB({ onComplete, onBack }) {
     })));
     return () => {
       const dwellTime = Date.now() - enterTime;
-      logScreenExit('content_upload_b', dwellTime);
+      logScreenExit('content_upload_2b', dwellTime);
     };
   }, []);
 
@@ -72,9 +72,9 @@ function ContentUploadScreenB({ onComplete, onBack }) {
     });
   };
 
-  // 컷 선택
+  // 컷 선택 — 4번째 컷(index 3) 선택 시 자동 완료
   const handleCutSelect = (index) => {
-    logButtonClick('content_upload_b', 'cut_select', String(index + 1));
+    logButtonClick('content_upload_2b', 'cut_select', String(index + 1));
     if (videoRef.current && isPlaying) {
       videoRef.current.pause();
     }
@@ -82,11 +82,16 @@ function ContentUploadScreenB({ onComplete, onBack }) {
     setCurrentCutIndex(index);
     setAiSuggestions([]);
     setSelectedAiIndex(null);
+
+    if (index === 3) {
+      logMissionComplete('content_upload_2b', 'mission_2_1');
+      setCompleted(true);
+    }
   };
 
   // 뒤로가기
   const handleBack = () => {
-    logButtonClick('content_upload_b', 'back');
+    logButtonClick('content_upload_2b', 'back');
     onBack();
   };
 
@@ -94,7 +99,7 @@ function ContentUploadScreenB({ onComplete, onBack }) {
   const handleVideoUpload = (e) => {
     const file = e.target.files[0];
     if (file) {
-      logButtonClick('content_upload_b', 'video_upload');
+      logButtonClick('content_upload_2b', 'video_upload');
       const videoUrl = URL.createObjectURL(file);
       setCutData(prev => prev.map((cut, index) =>
         index === currentCutIndex
@@ -107,7 +112,7 @@ function ContentUploadScreenB({ onComplete, onBack }) {
 
   // 재생/정지
   const handlePlayToggle = () => {
-    logButtonClick('content_upload_b', 'play_toggle');
+    logButtonClick('content_upload_2b', 'play_toggle');
     if (videoRef.current) {
       if (isPlaying) {
         videoRef.current.pause();
@@ -178,7 +183,7 @@ function ContentUploadScreenB({ onComplete, onBack }) {
 
   // AI 자막 추천
   const handleAISubtitle = async () => {
-    logButtonClick('content_upload_b', 'ai_subtitle');
+    logButtonClick('content_upload_2b', 'ai_subtitle');
     setIsLoadingAI(true);
     setAiSuggestions([]);
     setSelectedAiIndex(null);
@@ -237,7 +242,7 @@ function ContentUploadScreenB({ onComplete, onBack }) {
 
   // AI 추천 선택
   const handleSelectAiSuggestion = (suggestion, index) => {
-    logButtonClick('content_upload_b', 'ai_suggestion_select', suggestion);
+    logButtonClick('content_upload_2b', 'ai_suggestion_select', suggestion);
     setSelectedAiIndex(index);
     setCutData(prev => prev.map((cut, i) =>
       i === currentCutIndex ? { ...cut, subtitle: suggestion } : cut
@@ -257,7 +262,7 @@ function ContentUploadScreenB({ onComplete, onBack }) {
 
   // 저장하기
   const handleSave = () => {
-    logButtonClick('content_upload_b', 'save_progress');
+    logButtonClick('content_upload_2b', 'save_progress');
     const saveData = {
       cutData: cutData.map(cut => ({
         id: cut.id,
@@ -267,15 +272,13 @@ function ContentUploadScreenB({ onComplete, onBack }) {
       currentCutIndex,
       savedAt: new Date().toISOString(),
     };
-    localStorage.setItem('content_upload_progress_b', JSON.stringify(saveData));
+    localStorage.setItem('content_upload_progress_2b', JSON.stringify(saveData));
     alert('저장되었습니다.');
   };
 
-  // 완료
+  // 완료 — 로그만 남기고, 완료 처리는 4번째 컷 선택 시에만 동작
   const handleComplete = () => {
-    logButtonClick('content_upload_b', 'complete');
-    logMissionComplete('content_upload_b', 'mission_3');
-    setCompleted(true);
+    logButtonClick('content_upload_2b', 'complete');
   };
 
   if (!currentCut) {
@@ -462,4 +465,4 @@ function ContentUploadScreenB({ onComplete, onBack }) {
   );
 }
 
-export default ContentUploadScreenB;
+export default ContentUpload2B;

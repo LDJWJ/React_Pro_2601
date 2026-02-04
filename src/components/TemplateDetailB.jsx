@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import './TemplateDetailB.css';
-import { logScreenView, logButtonClick } from '../utils/logger';
+import { logScreenView, logButtonClick, logMissionComplete } from '../utils/logger';
 
 const defaultTemplate = {
   id: 2,
@@ -38,6 +38,7 @@ function TemplateDetailB({ onComplete, onBack }) {
 
   const handleStoryPlanning = () => {
     logButtonClick('template_detail_b', 'story_planning_button');
+    logMissionComplete('template_detail_b', 'mission_1');
     setShowComplete(true);
     setTimeout(() => {
       onComplete();
