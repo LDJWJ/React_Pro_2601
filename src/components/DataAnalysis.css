@@ -232,6 +232,22 @@
   font-size: 14px;
 }
 
+/* 화면별 버튼 라벨 */
+.da-screen-label {
+  font-size: 13px;
+  font-weight: 700;
+  color: #F8FF33;
+  margin-bottom: 6px;
+  padding-left: 2px;
+}
+
+.da-screen-total {
+  font-weight: 400;
+  color: #888;
+  font-size: 12px;
+  margin-left: 6px;
+}
+
 .da-loading {
   text-align: center;
   padding: 40px 0;
