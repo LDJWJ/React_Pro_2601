@@ -29,8 +29,17 @@ function Plan1_1BScreen({ onComplete, onBack }) {
   }, []);
 
   const handleCutSelect = (cut) => {
+    const prevCutId = activeCutId;
     setActiveCutId(cut.id);
-    logButtonClick('기획1-1B_화면', 'cut_select', String(cut.id));
+    const state = {
+      cutId: cut.id,
+      cutLabel: cut.label,
+      cutTitle: cut.title,
+      prevCutId: prevCutId,
+      hasMemo: !!memos[cut.id]?.trim(),
+      memoLength: memos[cut.id]?.length || 0
+    };
+    logButtonClick('기획1-1B_화면', 'cut_select', JSON.stringify(state));
   };
 
   // 모든 컷에 메모가 작성되면 step2 활성화
@@ -39,6 +48,21 @@ function Plan1_1BScreen({ onComplete, onBack }) {
 
   const handleMemoChange = (cutId, value) => {
     setMemos(prev => ({ ...prev, [cutId]: value }));
+  };
+
+  // 메모 입력 완료 시 (포커스 해제 시) 로그
+  const handleMemoBlur = (cutId, value) => {
+    if (value && value.trim()) {
+      const cut = cuts.find(c => c.id === cutId);
+      const state = {
+        cutId: cutId,
+        cutLabel: cut?.label || '',
+        cutTitle: cut?.title || '',
+        memoLength: value.length,
+        memoText: value.substring(0, 50) + (value.length > 50 ? '...' : '')
+      };
+      logButtonClick('기획1-1B_화면', '메모입력완료', JSON.stringify(state));
+    }
   };
 
   const handleSave = () => {
@@ -204,6 +228,7 @@ function Plan1_1BScreen({ onComplete, onBack }) {
                             placeholder="떠오르는 생각을 자유롭게 작성해주세요"
                             value={memos[cut.id] || ''}
                             onChange={(e) => handleMemoChange(cut.id, e.target.value)}
+                            onBlur={(e) => handleMemoBlur(cut.id, e.target.value)}
                           />
                         </div>
                       )}

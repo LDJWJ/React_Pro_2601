@@ -167,13 +167,13 @@ function Edit1_1Screen({ onComplete, onBack }) {
         videoRef.current.pause();
       } else {
         videoRef.current.play();
-        // 재생 시 영상이 업로드된 상태이면 1.5초 후 미션 완료
+        // 재생 시 영상이 업로드된 상태이면 2초 후 미션 완료
         if (hasUploaded) {
           setTimeout(() => {
             const completionTime = ((Date.now() - missionStartTime.current) / 1000).toFixed(1);
             logMissionComplete('편집1-1_화면', '편집1-1_미션완료', `완료시간:${completionTime}초`);
             setCompleted(true);
-          }, 1500);
+          }, 2000);
         }
       }
       setIsPlaying(!isPlaying);

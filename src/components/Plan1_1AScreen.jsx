@@ -79,12 +79,34 @@ function Plan1_1AScreen({ onComplete, onBack }) {
   }, []);
 
   const handleCutSelect = (cut) => {
+    const prevCutId = activeCutId;
     setActiveCutId(cut.id);
-    logButtonClick('기획1-1A_화면', 'cut_select', String(cut.id));
+    const state = {
+      cutId: cut.id,
+      cutTitle: cut.title,
+      prevCutId: prevCutId,
+      hasMemo: !!memos[cut.id]?.trim(),
+      memoLength: memos[cut.id]?.length || 0
+    };
+    logButtonClick('기획1-1A_화면', 'cut_select', JSON.stringify(state));
   };
 
   const handleMemoChange = (cutId, value) => {
     setMemos(prev => ({ ...prev, [cutId]: value }));
+  };
+
+  // 메모 입력 완료 시 (포커스 해제 시) 로그
+  const handleMemoBlur = (cutId, value) => {
+    if (value && value.trim()) {
+      const cut = cuts.find(c => c.id === cutId);
+      const state = {
+        cutId: cutId,
+        cutTitle: cut?.title || '',
+        memoLength: value.length,
+        memoText: value.substring(0, 50) + (value.length > 50 ? '...' : '')
+      };
+      logButtonClick('기획1-1A_화면', '메모입력완료', JSON.stringify(state));
+    }
   };
 
   const handleSave = () => {
@@ -233,6 +255,7 @@ function Plan1_1AScreen({ onComplete, onBack }) {
                   value={memos[cut.id] || ''}
                   onChange={(e) => handleMemoChange(cut.id, e.target.value)}
                   onFocus={() => handleCutSelect(cut)}
+                  onBlur={(e) => handleMemoBlur(cut.id, e.target.value)}
                 />
               </div>
             ))}
