@@ -14,11 +14,21 @@ function MissionStep({ stepTitle, description, buttonText, onNext, screenName })
     onNext();
   };
 
+  const renderDescription = (text) => {
+    const parts = text.split(/(\[기본 미션\]|\[추가 미션\]|\[미션\])/g);
+    return parts.map((part, index) => {
+      if (part === '[기본 미션]' || part === '[추가 미션]' || part === '[미션]') {
+        return <strong key={index} className="mission-highlight">{part}</strong>;
+      }
+      return <span key={index}>{part}</span>;
+    });
+  };
+
   return (
     <div className="mission-step-container">
       <div className="mission-step-content">
         <h2 className="mission-step-title">{stepTitle}</h2>
-        <p className="mission-step-description">{description}</p>
+        <p className="mission-step-description">{renderDescription(description)}</p>
       </div>
       <div className="mission-step-footer">
         <button className="mission-step-btn" onClick={handleClick}>

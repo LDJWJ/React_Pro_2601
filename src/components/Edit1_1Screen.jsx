@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import './ContentUploadScreenB.css';
-import { logScreenView, logButtonClick, logMissionComplete, logScreenExit } from '../utils/logger';
+import { logScreenView, logButtonClick, logMissionComplete, logMissionStart, logScreenExit } from '../utils/logger';
 
 const defaultCuts = [
   { id: 1, title: '인트로 (첫 장면)', duration: 6, description: '성수동 자주 가는 카페에서 분위기 있게 셀카 찍기' },
@@ -15,7 +15,7 @@ const defaultCuts = [
 const formatTime = (seconds) => `${seconds}s`;
 
 
-function ContentUpload1_1B({ onComplete, onBack }) {
+function Edit1_1Screen({ onComplete, onBack }) {
   const [currentCutIndex, setCurrentCutIndex] = useState(0);
   const [cutData, setCutData] = useState([]);
   const [thumbnails, setThumbnails] = useState({});
@@ -28,10 +28,13 @@ function ContentUpload1_1B({ onComplete, onBack }) {
 
   const fileInputRef = useRef(null);
   const videoRef = useRef(null);
+  const missionStartTime = useRef(null);
 
   useEffect(() => {
-    logScreenView('content_upload_1_1b');
     const enterTime = Date.now();
+    missionStartTime.current = enterTime;
+    logScreenView('편집1-1_화면');
+    logMissionStart('편집1-1_화면', '편집1-1_미션시작');
     setCutData(defaultCuts.map(cut => ({
       ...cut,
       videoFile: null,
@@ -40,7 +43,7 @@ function ContentUpload1_1B({ onComplete, onBack }) {
     })));
     return () => {
       const dwellTime = Date.now() - enterTime;
-      logScreenExit('content_upload_1_1b', dwellTime);
+      logScreenExit('편집1-1_화면', dwellTime);
     };
   }, []);
 
@@ -74,7 +77,13 @@ function ContentUpload1_1B({ onComplete, onBack }) {
 
   // 컷 선택
   const handleCutSelect = (index) => {
-    logButtonClick('content_upload_1_1b', 'cut_select', String(index + 1));
+    const state = {
+      currentCut: currentCutIndex + 1,
+      targetCut: index + 1,
+      hasVideo: !!cutData[index]?.videoPreview,
+      isPlaying
+    };
+    logButtonClick('편집1-1_화면', `컷${index + 1}`, JSON.stringify(state));
     if (videoRef.current && isPlaying) {
       videoRef.current.pause();
     }
@@ -84,17 +93,52 @@ function ContentUpload1_1B({ onComplete, onBack }) {
     setSelectedAiIndex(null);
   };
 
-  // 뒤로가기
+  // 뒤로가기 (미션 포기)
   const handleBack = () => {
-    logButtonClick('content_upload_1_1b', 'back');
+    const uploadedCuts = cutData.filter(cut => cut.videoPreview).length;
+    const subtitledCuts = cutData.filter(cut => cut.subtitle?.trim()).length;
+    const state = {
+      currentCut: currentCutIndex + 1,
+      hasUploaded,
+      uploadedCuts,
+      subtitledCuts
+    };
+    logButtonClick('편집1-1_화면', '미션포기', JSON.stringify(state));
     onBack();
+  };
+
+  // 영상 추가 버튼 클릭 (플러스 아이콘)
+  const handleVideoAddClick = () => {
+    const state = {
+      currentCut: currentCutIndex + 1,
+      hasVideo: !!currentCut?.videoPreview,
+      isPlaying
+    };
+    logButtonClick('편집1-1_화면', '영상추가', JSON.stringify(state));
+    fileInputRef.current?.click();
+  };
+
+  // 영상 교체 버튼 클릭 (편집 아이콘)
+  const handleVideoReplaceClick = () => {
+    const state = {
+      currentCut: currentCutIndex + 1,
+      hasVideo: !!currentCut?.videoPreview,
+      isPlaying
+    };
+    logButtonClick('편집1-1_화면', '영상교체', JSON.stringify(state));
+    fileInputRef.current?.click();
   };
 
   // 영상 업로드
   const handleVideoUpload = (e) => {
     const file = e.target.files[0];
     if (file) {
-      logButtonClick('content_upload_1_1b', 'video_upload');
+      const state = {
+        currentCut: currentCutIndex + 1,
+        fileName: file.name,
+        fileSize: file.size
+      };
+      logButtonClick('편집1-1_화면', '영상업로드완료', JSON.stringify(state));
       const videoUrl = URL.createObjectURL(file);
       setCutData(prev => prev.map((cut, index) =>
         index === currentCutIndex
@@ -108,7 +152,16 @@ function ContentUpload1_1B({ onComplete, onBack }) {
 
   // 재생/정지 — 영상 업로드 후 재생 버튼을 누르면 1.5초 후 미션 완료
   const handlePlayToggle = () => {
-    logButtonClick('content_upload_1_1b', 'play_toggle');
+    const buttonName = isPlaying ? '정지' : '재생';
+    const state = {
+      currentCut: currentCutIndex + 1,
+      hasVideo: !!currentCut?.videoPreview,
+      hasUploaded,
+      isPlaying,
+      expected: !!currentCut?.videoPreview  // 영상이 있어야 정상 클릭
+    };
+    logButtonClick('편집1-1_화면', buttonName, JSON.stringify(state));
+
     if (videoRef.current) {
       if (isPlaying) {
         videoRef.current.pause();
@@ -117,7 +170,8 @@ function ContentUpload1_1B({ onComplete, onBack }) {
         // 재생 시 영상이 업로드된 상태이면 1.5초 후 미션 완료
         if (hasUploaded) {
           setTimeout(() => {
-            logMissionComplete('content_upload_1_1b', 'mission_1_1');
+            const completionTime = ((Date.now() - missionStartTime.current) / 1000).toFixed(1);
+            logMissionComplete('편집1-1_화면', '편집1-1_미션완료', `완료시간:${completionTime}초`);
             setCompleted(true);
           }, 1500);
         }
@@ -182,7 +236,12 @@ function ContentUpload1_1B({ onComplete, onBack }) {
 
   // AI 자막 추천
   const handleAISubtitle = async () => {
-    logButtonClick('content_upload_1_1b', 'ai_subtitle');
+    const state = {
+      currentCut: currentCutIndex + 1,
+      hasVideo: !!currentCut?.videoPreview,
+      currentSubtitle: currentCut?.subtitle || ''
+    };
+    logButtonClick('편집1-1_화면', 'AI자막추천', JSON.stringify(state));
     setIsLoadingAI(true);
     setAiSuggestions([]);
     setSelectedAiIndex(null);
@@ -237,11 +296,26 @@ function ContentUpload1_1B({ onComplete, onBack }) {
 
   // AI 추천 선택
   const handleSelectAiSuggestion = (suggestion, index) => {
-    logButtonClick('content_upload_1_1b', 'ai_suggestion_select', suggestion);
+    const state = {
+      currentCut: currentCutIndex + 1,
+      selectedIndex: index + 1,
+      selectedText: suggestion
+    };
+    logButtonClick('편집1-1_화면', `AI추천${index + 1}`, JSON.stringify(state));
     setSelectedAiIndex(index);
     setCutData(prev => prev.map((cut, i) =>
       i === currentCutIndex ? { ...cut, subtitle: suggestion } : cut
     ));
+  };
+
+  // 자막 입력 필드 포커스
+  const handleSubtitleFocus = () => {
+    const state = {
+      currentCut: currentCutIndex + 1,
+      hasVideo: !!currentCut?.videoPreview,
+      currentSubtitle: currentCut?.subtitle || ''
+    };
+    logButtonClick('편집1-1_화면', '자막입력필드', JSON.stringify(state));
   };
 
   // 자막 직접 입력
@@ -256,7 +330,15 @@ function ContentUpload1_1B({ onComplete, onBack }) {
 
   // 저장하기
   const handleSave = () => {
-    logButtonClick('content_upload_1_1b', 'save_progress');
+    const uploadedCuts = cutData.filter(cut => cut.videoPreview).length;
+    const subtitledCuts = cutData.filter(cut => cut.subtitle?.trim()).length;
+    const state = {
+      currentCut: currentCutIndex + 1,
+      uploadedCuts,
+      subtitledCuts,
+      hasUploaded
+    };
+    logButtonClick('편집1-1_화면', '저장하기', JSON.stringify(state));
     const saveData = {
       cutData: cutData.map(cut => ({
         id: cut.id,
@@ -272,7 +354,14 @@ function ContentUpload1_1B({ onComplete, onBack }) {
 
   // 완료 — 로그만 남기고, 완료 처리는 영상 업로드+재생 시에만 동작
   const handleComplete = () => {
-    logButtonClick('content_upload_1_1b', 'complete');
+    const uploadedCuts = cutData.filter(cut => cut.videoPreview).length;
+    const state = {
+      currentCut: currentCutIndex + 1,
+      hasUploaded,
+      uploadedCuts,
+      expected: hasUploaded  // 영상 업로드 후에 클릭해야 정상
+    };
+    logButtonClick('편집1-1_화면', '바로편집시작', JSON.stringify(state));
   };
 
   if (!currentCut) {
@@ -353,7 +442,7 @@ function ContentUpload1_1B({ onComplete, onBack }) {
             onEnded={() => setIsPlaying(false)}
           />
         ) : (
-          <div className="cub-preview-placeholder" onClick={() => fileInputRef.current?.click()}>
+          <div className="cub-preview-placeholder" onClick={handleVideoAddClick}>
             <div className="cub-mobile-frame">
               <img src="/icons/plus.png" alt="+" className="cub-plus-icon" />
             </div>
@@ -377,8 +466,8 @@ function ContentUpload1_1B({ onComplete, onBack }) {
           <img src={isPlaying ? '/icons/video-stop.png' : '/icons/PLAY.png'} alt="" />
         </button>
 
-        {/* 편집 버튼 */}
-        <button className="cub-edit-btn" onClick={() => fileInputRef.current?.click()}>
+        {/* 편집 버튼 (영상 교체) */}
+        <button className="cub-edit-btn" onClick={handleVideoReplaceClick}>
           <img src="/icons/edit.png" alt="" />
         </button>
       </div>
@@ -423,6 +512,7 @@ function ContentUpload1_1B({ onComplete, onBack }) {
             placeholder="자막을 입력해주세요."
             value={currentCut.subtitle || ''}
             onChange={handleSubtitleChange}
+            onFocus={handleSubtitleFocus}
           />
 
           {aiSuggestions.length > 0 && (
@@ -454,4 +544,4 @@ function ContentUpload1_1B({ onComplete, onBack }) {
   );
 }
 
-export default ContentUpload1_1B;
+export default Edit1_1Screen;

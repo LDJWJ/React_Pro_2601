@@ -198,12 +198,12 @@ export const logMissionStart = (screenName, missionTarget) => {
 };
 
 // 미션 완료 로그
-export const logMissionComplete = (screenName, missionTarget) => {
+export const logMissionComplete = (screenName, missionTarget, value = '') => {
   sendLog({
     screen: screenName,
     event: 'mission_complete',
     target: missionTarget,
-    value: '',
+    value: value,
   });
 };
 

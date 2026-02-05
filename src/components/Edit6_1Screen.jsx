@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import './ContentUploadScreenB.css';
-import { logScreenView, logButtonClick, logMissionComplete, logScreenExit } from '../utils/logger';
+import { logScreenView, logButtonClick, logMissionComplete, logMissionStart, logScreenExit } from '../utils/logger';
 
 const defaultCuts = [
   { id: 1, title: '인트로 (첫 장면)', duration: 6, description: '성수동 자주 가는 카페에서 분위기 있게 셀카 찍기' },
@@ -15,7 +15,7 @@ const defaultCuts = [
 const formatTime = (seconds) => `${seconds}s`;
 
 
-function ContentUpload2B({ onComplete, onBack }) {
+function Edit6_1Screen({ onComplete, onBack }) {
   const [currentCutIndex, setCurrentCutIndex] = useState(0);
   const [cutData, setCutData] = useState([]);
   const [thumbnails, setThumbnails] = useState({});
@@ -24,14 +24,18 @@ function ContentUpload2B({ onComplete, onBack }) {
   const [isLoadingAI, setIsLoadingAI] = useState(false);
   const [selectedAiIndex, setSelectedAiIndex] = useState(null);
   const [completed, setCompleted] = useState(false);
-
+  const [missionStage, setMissionStage] = useState(0); // 0: 초기, 1: 팝업 표시, 2: 재추천 대기
+  const [showPopup, setShowPopup] = useState(false);
 
   const fileInputRef = useRef(null);
   const videoRef = useRef(null);
+  const missionStartTime = useRef(null);
 
   useEffect(() => {
-    logScreenView('content_upload_2b');
     const enterTime = Date.now();
+    missionStartTime.current = enterTime;
+    logScreenView('편집6-1_화면');
+    logMissionStart('편집6-1_화면', '편집6-1_기본미션시작');
     setCutData(defaultCuts.map(cut => ({
       ...cut,
       videoFile: null,
@@ -40,7 +44,7 @@ function ContentUpload2B({ onComplete, onBack }) {
     })));
     return () => {
       const dwellTime = Date.now() - enterTime;
-      logScreenExit('content_upload_2b', dwellTime);
+      logScreenExit('편집6-1_화면', dwellTime);
     };
   }, []);
 
@@ -72,9 +76,16 @@ function ContentUpload2B({ onComplete, onBack }) {
     });
   };
 
-  // 컷 선택 — 4번째 컷(index 3) 선택 시 자동 완료
+  // 컷 선택
   const handleCutSelect = (index) => {
-    logButtonClick('content_upload_2b', 'cut_select', String(index + 1));
+    const state = {
+      currentCut: currentCutIndex + 1,
+      targetCut: index + 1,
+      hasVideo: !!cutData[index]?.videoPreview,
+      isPlaying,
+      missionStage
+    };
+    logButtonClick('편집6-1_화면', `컷${index + 1}`, JSON.stringify(state));
     if (videoRef.current && isPlaying) {
       videoRef.current.pause();
     }
@@ -82,26 +93,58 @@ function ContentUpload2B({ onComplete, onBack }) {
     setCurrentCutIndex(index);
     setAiSuggestions([]);
     setSelectedAiIndex(null);
-
-    if (index === 3) {
-      setTimeout(() => {
-        logMissionComplete('content_upload_2b', 'mission_2_1');
-        setCompleted(true);
-      }, 2000);
-    }
   };
 
-  // 뒤로가기
+  // 뒤로가기 (미션 포기)
   const handleBack = () => {
-    logButtonClick('content_upload_2b', 'back');
+    const uploadedCuts = cutData.filter(cut => cut.videoPreview).length;
+    const subtitledCuts = cutData.filter(cut => cut.subtitle?.trim()).length;
+    const state = {
+      currentCut: currentCutIndex + 1,
+      uploadedCuts,
+      subtitledCuts,
+      missionStage,  // 0: 기본미션 진행중, 1: 팝업 표시됨, 2: 추가미션 진행중
+      aiUsed: aiSuggestions.length > 0 || selectedAiIndex !== null
+    };
+    logButtonClick('편집6-1_화면', '뒤로가기', JSON.stringify(state));
     onBack();
+  };
+
+  // 영상 추가 버튼 클릭 (플러스 아이콘)
+  const handleVideoAddClick = () => {
+    const state = {
+      currentCut: currentCutIndex + 1,
+      hasVideo: !!currentCut?.videoPreview,
+      isPlaying,
+      missionStage
+    };
+    logButtonClick('편집6-1_화면', '영상추가', JSON.stringify(state));
+    fileInputRef.current?.click();
+  };
+
+  // 영상 교체 버튼 클릭 (편집 아이콘)
+  const handleVideoReplaceClick = () => {
+    const state = {
+      currentCut: currentCutIndex + 1,
+      hasVideo: !!currentCut?.videoPreview,
+      isPlaying,
+      missionStage
+    };
+    logButtonClick('편집6-1_화면', '영상교체', JSON.stringify(state));
+    fileInputRef.current?.click();
   };
 
   // 영상 업로드
   const handleVideoUpload = (e) => {
     const file = e.target.files[0];
     if (file) {
-      logButtonClick('content_upload_2b', 'video_upload');
+      const state = {
+        currentCut: currentCutIndex + 1,
+        fileName: file.name,
+        fileSize: file.size,
+        missionStage
+      };
+      logButtonClick('편집6-1_화면', '영상업로드완료', JSON.stringify(state));
       const videoUrl = URL.createObjectURL(file);
       setCutData(prev => prev.map((cut, index) =>
         index === currentCutIndex
@@ -114,7 +157,14 @@ function ContentUpload2B({ onComplete, onBack }) {
 
   // 재생/정지
   const handlePlayToggle = () => {
-    logButtonClick('content_upload_2b', 'play_toggle');
+    const buttonName = isPlaying ? '정지' : '재생';
+    const state = {
+      currentCut: currentCutIndex + 1,
+      hasVideo: !!currentCut?.videoPreview,
+      isPlaying,
+      missionStage
+    };
+    logButtonClick('편집6-1_화면', buttonName, JSON.stringify(state));
     if (videoRef.current) {
       if (isPlaying) {
         videoRef.current.pause();
@@ -185,7 +235,14 @@ function ContentUpload2B({ onComplete, onBack }) {
 
   // AI 자막 추천
   const handleAISubtitle = async () => {
-    logButtonClick('content_upload_2b', 'ai_subtitle');
+    const state = {
+      currentCut: currentCutIndex + 1,
+      hasVideo: !!currentCut?.videoPreview,
+      currentSubtitle: currentCut?.subtitle || '',
+      missionStage,
+      isRecommend: missionStage === 2  // 추가 미션에서 재추천인 경우
+    };
+    logButtonClick('편집6-1_화면', 'AI자막추천', JSON.stringify(state));
     setIsLoadingAI(true);
     setAiSuggestions([]);
     setSelectedAiIndex(null);
@@ -239,16 +296,63 @@ function ContentUpload2B({ onComplete, onBack }) {
       }
     } finally {
       setIsLoadingAI(false);
+      // 첫 번째 미션: AI 자막 추천 버튼을 누르면 2초 후 1차 미션 완료 팝업 표시
+      if (missionStage === 0) {
+        setTimeout(() => {
+          const completionTime = ((Date.now() - missionStartTime.current) / 1000).toFixed(1);
+          logMissionComplete('편집6-1_화면', '편집6-1_기본미션완료', `완료시간:${completionTime}초`);
+          logMissionStart('편집6-1_화면', '편집6-1_추가미션시작');
+          missionStartTime.current = Date.now(); // 추가 미션 시작 시간 초기화
+          setMissionStage(1);
+          setShowPopup(true);
+        }, 2000);
+      }
+      // 두 번째 미션: 재추천 대기 상태에서 AI 자막 추천을 다시 누르면 2초 후 완료
+      if (missionStage === 2) {
+        setTimeout(() => {
+          const completionTime = ((Date.now() - missionStartTime.current) / 1000).toFixed(1);
+          logMissionComplete('편집6-1_화면', '편집6-1_추가미션완료', `완료시간:${completionTime}초`);
+          setCompleted(true);
+        }, 2000);
+      }
     }
   };
 
   // AI 추천 선택
   const handleSelectAiSuggestion = (suggestion, index) => {
-    logButtonClick('content_upload_2b', 'ai_suggestion_select', suggestion);
+    const state = {
+      currentCut: currentCutIndex + 1,
+      selectedIndex: index + 1,
+      selectedText: suggestion,
+      missionStage
+    };
+    logButtonClick('편집6-1_화면', `AI추천${index + 1}`, JSON.stringify(state));
     setSelectedAiIndex(index);
     setCutData(prev => prev.map((cut, i) =>
       i === currentCutIndex ? { ...cut, subtitle: suggestion } : cut
     ));
+  };
+
+  // 팝업 확인 버튼
+  const handlePopupConfirm = () => {
+    const state = {
+      currentCut: currentCutIndex + 1,
+      missionStage: 1
+    };
+    logButtonClick('편집6-1_화면', '팝업확인', JSON.stringify(state));
+    setShowPopup(false);
+    setMissionStage(2);
+  };
+
+  // 자막 입력 필드 포커스
+  const handleSubtitleFocus = () => {
+    const state = {
+      currentCut: currentCutIndex + 1,
+      hasVideo: !!currentCut?.videoPreview,
+      currentSubtitle: currentCut?.subtitle || '',
+      missionStage
+    };
+    logButtonClick('편집6-1_화면', '자막입력필드', JSON.stringify(state));
   };
 
   // 자막 직접 입력 (직접 입력 시 AI 추천 숨김)
@@ -264,7 +368,15 @@ function ContentUpload2B({ onComplete, onBack }) {
 
   // 저장하기
   const handleSave = () => {
-    logButtonClick('content_upload_2b', 'save_progress');
+    const uploadedCuts = cutData.filter(cut => cut.videoPreview).length;
+    const subtitledCuts = cutData.filter(cut => cut.subtitle?.trim()).length;
+    const state = {
+      currentCut: currentCutIndex + 1,
+      uploadedCuts,
+      subtitledCuts,
+      missionStage
+    };
+    logButtonClick('편집6-1_화면', '저장하기', JSON.stringify(state));
     const saveData = {
       cutData: cutData.map(cut => ({
         id: cut.id,
@@ -274,13 +386,28 @@ function ContentUpload2B({ onComplete, onBack }) {
       currentCutIndex,
       savedAt: new Date().toISOString(),
     };
-    localStorage.setItem('content_upload_progress_2b', JSON.stringify(saveData));
+    localStorage.setItem('mission6_progress_b', JSON.stringify(saveData));
     alert('저장되었습니다.');
   };
 
-  // 완료 — 로그만 남기고, 완료 처리는 4번째 컷 선택 시에만 동작
+  // 완료
   const handleComplete = () => {
-    logButtonClick('content_upload_2b', 'complete');
+    const uploadedCuts = cutData.filter(cut => cut.videoPreview).length;
+    const state = {
+      currentCut: currentCutIndex + 1,
+      uploadedCuts,
+      missionStage,
+      expected: missionStage > 0  // AI 자막 추천 후에 클릭해야 정상
+    };
+    logButtonClick('편집6-1_화면', '바로편집시작', JSON.stringify(state));
+    // AI 자막 추천을 눌러야만 미션 완료 가능
+    if (missionStage === 0) {
+      alert('AI 자막 추천 버튼을 눌러 미션을 완료해주세요.');
+      return;
+    }
+    const completionTime = ((Date.now() - missionStartTime.current) / 1000).toFixed(1);
+    logMissionComplete('편집6-1_화면', '편집6-1_기본미션완료', `완료시간:${completionTime}초`);
+    setCompleted(true);
   };
 
   if (!currentCut) {
@@ -364,7 +491,7 @@ function ContentUpload2B({ onComplete, onBack }) {
             onEnded={() => setIsPlaying(false)}
           />
         ) : (
-          <div className="cub-preview-placeholder" onClick={() => fileInputRef.current?.click()}>
+          <div className="cub-preview-placeholder" onClick={handleVideoAddClick}>
             <div className="cub-mobile-frame">
               <img src="/icons/plus.png" alt="+" className="cub-plus-icon" />
             </div>
@@ -388,8 +515,8 @@ function ContentUpload2B({ onComplete, onBack }) {
           <img src={isPlaying ? '/icons/video-stop.png' : '/icons/PLAY.png'} alt="" />
         </button>
 
-        {/* 편집 버튼 */}
-        <button className="cub-edit-btn" onClick={() => fileInputRef.current?.click()}>
+        {/* 편집 버튼 (영상 교체) */}
+        <button className="cub-edit-btn" onClick={handleVideoReplaceClick}>
           <img src="/icons/edit.png" alt="" />
         </button>
       </div>
@@ -422,8 +549,10 @@ function ContentUpload2B({ onComplete, onBack }) {
                   <span className="spinner"></span>
                   생성 중...
                 </>
+              ) : aiSuggestions.length > 0 ? (
+                <><img src="/icons/AI_02.png" alt="" className="cub-ai-btn-icon" /> AI 자막 추천</>
               ) : (
-                <><img src="/icons/star.png" alt="" className="cub-ai-btn-icon" /> AI 자막 추천</>
+                <><img src="/icons/AI_01.png" alt="" className="cub-ai-btn-icon" /> AI 자막 추천</>
               )}
             </button>
           </div>
@@ -435,6 +564,7 @@ function ContentUpload2B({ onComplete, onBack }) {
             placeholder="자막을 입력해주세요."
             value={currentCut.subtitle || ''}
             onChange={handleSubtitleChange}
+            onFocus={handleSubtitleFocus}
           />
 
           {/* AI 추천 자막 (A안처럼 버튼 형태) */}
@@ -454,6 +584,50 @@ function ContentUpload2B({ onComplete, onBack }) {
         </div>
       </div>
 
+      {/* 미션 팝업 */}
+      {showPopup && (
+        <div style={{
+          position: 'fixed',
+          top: 0, left: 0, right: 0, bottom: 0,
+          background: 'rgba(0,0,0,0.5)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 100,
+        }}>
+          <div style={{
+            background: '#fff',
+            borderRadius: 12,
+            padding: '24px 20px',
+            width: '80%',
+            maxWidth: 300,
+            textAlign: 'center',
+          }}>
+            <p style={{ fontSize: 15, fontWeight: 600, marginBottom: 12 }}>
+              첫번째 미션을 완료했습니다.
+            </p>
+            <p style={{ fontSize: 13, color: '#555', marginBottom: 20, lineHeight: 1.5 }}>
+              [추가 미션] 자막이 마음이 안들 경우, AI 자막 추천 버튼을 눌러 다시 추천을 받아보세요.
+            </p>
+            <button
+              onClick={handlePopupConfirm}
+              style={{
+                background: '#4A7CFE',
+                color: '#fff',
+                border: 'none',
+                borderRadius: 8,
+                padding: '10px 32px',
+                fontSize: 14,
+                fontWeight: 600,
+                cursor: 'pointer',
+              }}
+            >
+              확인
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* 하단 액션 버튼 - 고정 */}
       <div className="cub-footer">
         <button className="cub-btn-secondary" onClick={handleSave}>
@@ -467,4 +641,4 @@ function ContentUpload2B({ onComplete, onBack }) {
   );
 }
 
-export default ContentUpload2B;
+export default Edit6_1Screen;

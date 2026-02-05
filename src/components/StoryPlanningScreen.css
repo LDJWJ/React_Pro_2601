@@ -543,6 +543,16 @@
   opacity: 0.8;
 }
 
+.story-save-btn.disabled {
+  background-color: #444;
+  color: #888;
+  cursor: not-allowed;
+}
+
+.story-save-btn.disabled:active {
+  opacity: 1;
+}
+
 /* B안 저장하기 버튼 - 353px 고정 너비 */
 .story-save-btn.story-save-btn-b {
   width: 353px;

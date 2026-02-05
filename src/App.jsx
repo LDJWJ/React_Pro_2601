@@ -9,12 +9,14 @@ import StoryPlanningScreenA from './components/StoryPlanningScreenA';
 import StoryPlanningScreenB from './components/StoryPlanningScreenB';
 import ContentUploadScreenA from './components/ContentUploadScreenA';
 import ContentUploadScreenB from './components/ContentUploadScreenB';
-import ContentUpload2B from './components/ContentUpload2B';
-import ContentUpload1_1B from './components/ContentUpload1_1B';
-import Mission6ScreenB from './components/Mission6ScreenB';
+import Edit2_1Screen from './components/Edit2_1Screen';
+import Edit1_1Screen from './components/Edit1_1Screen';
+import Edit6_1Screen from './components/Edit6_1Screen';
 import SampleTemplateA from './components/SampleTemplateA';
 import SampleTemplateB from './components/SampleTemplateB';
 import DataAnalysis from './components/DataAnalysis';
+import Plan1_1AScreen from './components/Plan1_1AScreen';
+import Plan1_1BScreen from './components/Plan1_1BScreen';
 import { startInteractionLogging, setInteractionScreen } from './utils/interactionLogger';
 
 function App() {
@@ -53,11 +55,13 @@ function App() {
     } else if (missionId === 6) {
       setCurrentScreen('dataAnalysis');
     } else if (missionId === 7) {
-      setCurrentScreen('mission2_1_2');
+      setCurrentScreen('편집2-1');
     } else if (missionId === 8) {
-      setCurrentScreen('mission7_2');
+      setCurrentScreen('편집6-1');
     } else if (missionId === 9) {
-      setCurrentScreen('mission1_1_2');
+      setCurrentScreen('편집1-1');
+    } else if (missionId === 10) {
+      setCurrentScreen('기획1-1A');
     }
   };
 
@@ -227,61 +231,98 @@ function App() {
           />
         );
 
-      case 'mission1_1_2':
+      case '편집1-1':
         return (
           <MissionStep
             stepTitle="템플릿을 이용해 편집 시작하기"
             description="[미션] 영상을 추가하고, 추가한 영상이 제대로 들어갔는지 재생해보세요."
             buttonText="다음"
-            screenName="mission1_1_2"
-            onNext={() => setCurrentScreen('contentUpload1_1B')}
+            screenName="편집1-1"
+            onNext={() => setCurrentScreen('편집1-1_화면')}
           />
         );
 
-      case 'contentUpload1_1B':
+      case '편집1-1_화면':
         return (
-          <ContentUpload1_1B
+          <Edit1_1Screen
             onComplete={() => setCurrentScreen('missionMain')}
-            onBack={() => setCurrentScreen('mission1_1_2')}
+            onBack={() => setCurrentScreen('편집1-1')}
           />
         );
 
-      case 'mission2_1_2':
+      case '편집2-1':
         return (
           <MissionStep
             stepTitle="컷을 이동하며 원하는 구간 찾기"
-            description="[미션] 현재 1번 컷을 편집 중입니다.
-👉 4번째 컷을 수정하고 싶습니다. 4번째 컷을 선택해주세요."
+            description={`[미션] 현재 1번 컷을 편집 중입니다.\n👉 4번째 컷을 수정하고 싶습니다. 4번째 컷을 선택해주세요.`}
             buttonText="다음"
-            screenName="mission2_1_2"
-            onNext={() => setCurrentScreen('contentUpload2B')}
+            screenName="편집2-1"
+            onNext={() => setCurrentScreen('편집2-1_화면')}
           />
         );
 
-      case 'contentUpload2B':
+      case '편집2-1_화면':
         return (
-          <ContentUpload2B
+          <Edit2_1Screen
             onComplete={() => setCurrentScreen('missionMain')}
-            onBack={() => setCurrentScreen('mission2_1_2')}
+            onBack={() => setCurrentScreen('편집2-1')}
           />
         );
 
-      case 'mission7_2':
+      case '편집6-1':
         return (
           <MissionStep
             stepTitle="추천 자막 중 하나 선택하기"
-            description={`[미션]\n이 장면에 어울리는 자막을 AI 추천 기능을 이용해 추가해보세요.\n마음에 드는 자막이 없다면,\n다른 추천 자막을 확인해보세요.`}
+            description={`[기본 미션]\n이 장면에 어울리는 자막을 AI 추천 기능을 이용해 추가해보세요.\n\n[추가 미션]\n마음에 드는 자막이 없다면, 다른 추천 자막을 확인해보세요.`}
             buttonText="다음"
-            screenName="mission7_2"
-            onNext={() => setCurrentScreen('mission6ScreenB')}
+            screenName="편집6-1"
+            onNext={() => setCurrentScreen('편집6-1_화면')}
           />
         );
 
-      case 'mission6ScreenB':
+      case '편집6-1_화면':
         return (
-          <Mission6ScreenB
+          <Edit6_1Screen
             onComplete={() => setCurrentScreen('missionMain')}
-            onBack={() => setCurrentScreen('mission7_2')}
+            onBack={() => setCurrentScreen('편집6-1')}
+          />
+        );
+
+      case '기획1-1A':
+        return (
+          <MissionStep
+            stepTitle="기획 기능 사용성 개선 A안"
+            description={`[미션]영상 아이디어를 메모하려고 합니다. 아이디어 노트를 활용해, 메모가 작성이 완료되면 저장하기를 선택해 주세요.\n하나 이상은 메모 작성이 필요합니다.`}
+            buttonText="다음"
+            screenName="기획1-1A"
+            onNext={() => setCurrentScreen('기획1-1A_화면')}
+          />
+        );
+
+      case '기획1-1A_화면':
+        return (
+          <Plan1_1AScreen
+            onComplete={() => setCurrentScreen('기획1-1B')}
+            onBack={() => setCurrentScreen('기획1-1A')}
+          />
+        );
+
+      case '기획1-1B':
+        return (
+          <MissionStep
+            stepTitle="기획 기능 사용성 개선 B안"
+            description={`[미션]영상 아이디어를 메모하려고 합니다. 아이디어 노트를 활용해, 메모가 작성이 완료되면 저장하기를 선택해 주세요.\n하나 이상은 메모 작성이 필요합니다.`}
+            buttonText="다음"
+            screenName="기획1-1B"
+            onNext={() => setCurrentScreen('기획1-1B_화면')}
+          />
+        );
+
+      case '기획1-1B_화면':
+        return (
+          <Plan1_1BScreen
+            onComplete={() => setCurrentScreen('missionMain')}
+            onBack={() => setCurrentScreen('기획1-1B')}
           />
         );
 
