@@ -18,8 +18,10 @@ function Plan1_1AScreen({ onComplete, onBack }) {
   const [activeCutId, setActiveCutId] = useState(null);
   const [completed, setCompleted] = useState(false);
   const [cutThumbnails, setCutThumbnails] = useState({});
+  const [isSaving, setIsSaving] = useState(false);
   const scrollRef = useRef(null);
   const missionStartTime = useRef(null);
+  const missionStartLogged = useRef(false);
 
   const cuts = defaultCuts;
 
@@ -27,7 +29,13 @@ function Plan1_1AScreen({ onComplete, onBack }) {
     const enterTime = Date.now();
     missionStartTime.current = enterTime;
     logScreenView('기획1-1A_화면');
-    logMissionStart('기획1-1A_화면', '기획1-1_A미션시작');
+    // 미션 시작 로그를 약간 지연시켜 안정성 확보
+    if (!missionStartLogged.current) {
+      missionStartLogged.current = true;
+      setTimeout(() => {
+        logMissionStart('기획1-1A_화면', '기획1-1_A미션시작');
+      }, 100);
+    }
     return () => {
       const dwellTime = Date.now() - enterTime;
       logScreenExit('기획1-1A_화면', dwellTime);
@@ -79,6 +87,8 @@ function Plan1_1AScreen({ onComplete, onBack }) {
   }, []);
 
   const handleCutSelect = (cut) => {
+    // 저장 중에는 로그 남기지 않음
+    if (isSaving) return;
     const prevCutId = activeCutId;
     setActiveCutId(cut.id);
     const state = {
@@ -92,11 +102,14 @@ function Plan1_1AScreen({ onComplete, onBack }) {
   };
 
   const handleMemoChange = (cutId, value) => {
+    if (isSaving) return;
     setMemos(prev => ({ ...prev, [cutId]: value }));
   };
 
   // 메모 입력 완료 시 (포커스 해제 시) 로그
   const handleMemoBlur = (cutId, value) => {
+    // 저장 중에는 로그 남기지 않음
+    if (isSaving) return;
     if (value && value.trim()) {
       const cut = cuts.find(c => c.id === cutId);
       const state = {
@@ -110,6 +123,10 @@ function Plan1_1AScreen({ onComplete, onBack }) {
   };
 
   const handleSave = () => {
+    // 중복 클릭 방지
+    if (isSaving) return;
+    setIsSaving(true);
+
     // 메모 개수 및 길이 계산
     const memoCount = Object.values(memos).filter(memo => memo.trim() !== '').length;
     const totalMemoLength = Object.values(memos).reduce((sum, memo) => sum + (memo?.length || 0), 0);

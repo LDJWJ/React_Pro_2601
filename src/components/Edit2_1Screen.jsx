@@ -24,17 +24,24 @@ function Edit2_1Screen({ onComplete, onBack }) {
   const [isLoadingAI, setIsLoadingAI] = useState(false);
   const [selectedAiIndex, setSelectedAiIndex] = useState(null);
   const [completed, setCompleted] = useState(false);
-
+  const [isCompleting, setIsCompleting] = useState(false);
 
   const fileInputRef = useRef(null);
   const videoRef = useRef(null);
   const missionStartTime = useRef(null);
+  const missionStartLogged = useRef(false);
 
   useEffect(() => {
     const enterTime = Date.now();
     missionStartTime.current = enterTime;
     logScreenView('편집2-1_화면');
-    logMissionStart('편집2-1_화면', '편집2-1_미션시작');
+    // 미션 시작 로그 안정성 확보
+    if (!missionStartLogged.current) {
+      missionStartLogged.current = true;
+      setTimeout(() => {
+        logMissionStart('편집2-1_화면', '편집2-1_미션시작');
+      }, 100);
+    }
     setCutData(defaultCuts.map(cut => ({
       ...cut,
       videoFile: null,
@@ -77,6 +84,9 @@ function Edit2_1Screen({ onComplete, onBack }) {
 
   // 컷 선택 — 4번째 컷(index 3) 선택 시 자동 완료
   const handleCutSelect = (index) => {
+    // 미션 완료 대기 중에는 로그 남기지 않음
+    if (isCompleting) return;
+
     const state = {
       currentCut: currentCutIndex + 1,
       targetCut: index + 1,
@@ -94,6 +104,7 @@ function Edit2_1Screen({ onComplete, onBack }) {
     setSelectedAiIndex(null);
 
     if (index === 3) {
+      setIsCompleting(true);
       setTimeout(() => {
         const completionTime = ((Date.now() - missionStartTime.current) / 1000).toFixed(1);
         logMissionComplete('편집2-1_화면', '편집2-1_미션완료', `완료시간:${completionTime}초`);
@@ -117,6 +128,7 @@ function Edit2_1Screen({ onComplete, onBack }) {
 
   // 영상 추가 버튼 클릭 (플러스 아이콘)
   const handleVideoAddClick = () => {
+    if (isCompleting) return;
     const state = {
       currentCut: currentCutIndex + 1,
       hasVideo: !!currentCut?.videoPreview,
@@ -128,6 +140,7 @@ function Edit2_1Screen({ onComplete, onBack }) {
 
   // 영상 교체 버튼 클릭 (편집 아이콘)
   const handleVideoReplaceClick = () => {
+    if (isCompleting) return;
     const state = {
       currentCut: currentCutIndex + 1,
       hasVideo: !!currentCut?.videoPreview,
@@ -139,6 +152,7 @@ function Edit2_1Screen({ onComplete, onBack }) {
 
   // 영상 업로드
   const handleVideoUpload = (e) => {
+    if (isCompleting) return;
     const file = e.target.files[0];
     if (file) {
       const state = {
@@ -159,6 +173,7 @@ function Edit2_1Screen({ onComplete, onBack }) {
 
   // 재생/정지
   const handlePlayToggle = () => {
+    if (isCompleting) return;
     const buttonName = isPlaying ? '정지' : '재생';
     const state = {
       currentCut: currentCutIndex + 1,
@@ -236,6 +251,7 @@ function Edit2_1Screen({ onComplete, onBack }) {
 
   // AI 자막 추천
   const handleAISubtitle = async () => {
+    if (isCompleting) return;
     const state = {
       currentCut: currentCutIndex + 1,
       hasVideo: !!currentCut?.videoPreview,
@@ -300,6 +316,7 @@ function Edit2_1Screen({ onComplete, onBack }) {
 
   // AI 추천 선택
   const handleSelectAiSuggestion = (suggestion, index) => {
+    if (isCompleting) return;
     const state = {
       currentCut: currentCutIndex + 1,
       selectedIndex: index + 1,
@@ -314,6 +331,7 @@ function Edit2_1Screen({ onComplete, onBack }) {
 
   // 자막 입력 필드 포커스
   const handleSubtitleFocus = () => {
+    if (isCompleting) return;
     const state = {
       currentCut: currentCutIndex + 1,
       hasVideo: !!currentCut?.videoPreview,
@@ -324,6 +342,7 @@ function Edit2_1Screen({ onComplete, onBack }) {
 
   // 자막 직접 입력 (직접 입력 시 AI 추천 숨김)
   const handleSubtitleChange = (e) => {
+    if (isCompleting) return;
     const value = e.target.value;
     setCutData(prev => prev.map((cut, index) =>
       index === currentCutIndex ? { ...cut, subtitle: value } : cut

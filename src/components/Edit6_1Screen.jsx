@@ -26,16 +26,24 @@ function Edit6_1Screen({ onComplete, onBack }) {
   const [completed, setCompleted] = useState(false);
   const [missionStage, setMissionStage] = useState(0); // 0: 초기, 1: 팝업 표시, 2: 재추천 대기
   const [showPopup, setShowPopup] = useState(false);
+  const [isCompleting, setIsCompleting] = useState(false);
 
   const fileInputRef = useRef(null);
   const videoRef = useRef(null);
   const missionStartTime = useRef(null);
+  const missionStartLogged = useRef(false);
 
   useEffect(() => {
     const enterTime = Date.now();
     missionStartTime.current = enterTime;
     logScreenView('편집6-1_화면');
-    logMissionStart('편집6-1_화면', '편집6-1_기본미션시작');
+    // 미션 시작 로그 안정성 확보
+    if (!missionStartLogged.current) {
+      missionStartLogged.current = true;
+      setTimeout(() => {
+        logMissionStart('편집6-1_화면', '편집6-1_기본미션시작');
+      }, 100);
+    }
     setCutData(defaultCuts.map(cut => ({
       ...cut,
       videoFile: null,
@@ -78,6 +86,8 @@ function Edit6_1Screen({ onComplete, onBack }) {
 
   // 컷 선택
   const handleCutSelect = (index) => {
+    // 미션 완료 대기 중에는 로그 남기지 않음
+    if (isCompleting) return;
     const state = {
       currentCut: currentCutIndex + 1,
       targetCut: index + 1,
@@ -112,6 +122,7 @@ function Edit6_1Screen({ onComplete, onBack }) {
 
   // 영상 추가 버튼 클릭 (플러스 아이콘)
   const handleVideoAddClick = () => {
+    if (isCompleting) return;
     const state = {
       currentCut: currentCutIndex + 1,
       hasVideo: !!currentCut?.videoPreview,
@@ -124,6 +135,7 @@ function Edit6_1Screen({ onComplete, onBack }) {
 
   // 영상 교체 버튼 클릭 (편집 아이콘)
   const handleVideoReplaceClick = () => {
+    if (isCompleting) return;
     const state = {
       currentCut: currentCutIndex + 1,
       hasVideo: !!currentCut?.videoPreview,
@@ -136,6 +148,7 @@ function Edit6_1Screen({ onComplete, onBack }) {
 
   // 영상 업로드
   const handleVideoUpload = (e) => {
+    if (isCompleting) return;
     const file = e.target.files[0];
     if (file) {
       const state = {
@@ -157,6 +170,7 @@ function Edit6_1Screen({ onComplete, onBack }) {
 
   // 재생/정지
   const handlePlayToggle = () => {
+    if (isCompleting) return;
     const buttonName = isPlaying ? '정지' : '재생';
     const state = {
       currentCut: currentCutIndex + 1,
@@ -235,6 +249,9 @@ function Edit6_1Screen({ onComplete, onBack }) {
 
   // AI 자막 추천
   const handleAISubtitle = async () => {
+    // 미션 완료 대기 중에는 중복 실행 방지
+    if (isCompleting) return;
+
     const state = {
       currentCut: currentCutIndex + 1,
       hasVideo: !!currentCut?.videoPreview,
@@ -298,6 +315,7 @@ function Edit6_1Screen({ onComplete, onBack }) {
       setIsLoadingAI(false);
       // 첫 번째 미션: AI 자막 추천 버튼을 누르면 2초 후 1차 미션 완료 팝업 표시
       if (missionStage === 0) {
+        setIsCompleting(true);
         setTimeout(() => {
           const completionTime = ((Date.now() - missionStartTime.current) / 1000).toFixed(1);
           logMissionComplete('편집6-1_화면', '편집6-1_기본미션완료', `완료시간:${completionTime}초`);
@@ -305,10 +323,12 @@ function Edit6_1Screen({ onComplete, onBack }) {
           missionStartTime.current = Date.now(); // 추가 미션 시작 시간 초기화
           setMissionStage(1);
           setShowPopup(true);
+          setIsCompleting(false); // 팝업 표시 후 다시 활성화
         }, 2000);
       }
       // 두 번째 미션: 재추천 대기 상태에서 AI 자막 추천을 다시 누르면 2초 후 완료
       if (missionStage === 2) {
+        setIsCompleting(true);
         setTimeout(() => {
           const completionTime = ((Date.now() - missionStartTime.current) / 1000).toFixed(1);
           logMissionComplete('편집6-1_화면', '편집6-1_추가미션완료', `완료시간:${completionTime}초`);
@@ -320,6 +340,7 @@ function Edit6_1Screen({ onComplete, onBack }) {
 
   // AI 추천 선택
   const handleSelectAiSuggestion = (suggestion, index) => {
+    if (isCompleting) return;
     const state = {
       currentCut: currentCutIndex + 1,
       selectedIndex: index + 1,
@@ -346,6 +367,7 @@ function Edit6_1Screen({ onComplete, onBack }) {
 
   // 자막 입력 필드 포커스
   const handleSubtitleFocus = () => {
+    if (isCompleting) return;
     const state = {
       currentCut: currentCutIndex + 1,
       hasVideo: !!currentCut?.videoPreview,
@@ -357,6 +379,7 @@ function Edit6_1Screen({ onComplete, onBack }) {
 
   // 자막 직접 입력 (직접 입력 시 AI 추천 숨김)
   const handleSubtitleChange = (e) => {
+    if (isCompleting) return;
     const value = e.target.value;
     setCutData(prev => prev.map((cut, index) =>
       index === currentCutIndex ? { ...cut, subtitle: value } : cut
