@@ -39,391 +39,418 @@ function parseCSV(text) {
   return rows;
 }
 
-// 한국어 타임스탬프 파싱: "2026. 2. 4 오후 12:06:51"
-function parseTimestamp(ts) {
-  if (!ts) return null;
-  const match = ts.match(/(\d{4})\.\s*(\d{1,2})\.\s*(\d{1,2})\s*(오전|오후)\s*(\d{1,2}):(\d{2}):(\d{2})/);
-  if (!match) return null;
-  let [, year, month, day, ampm, hour, min, sec] = match;
-  hour = parseInt(hour);
-  if (ampm === '오후' && hour < 12) hour += 12;
-  if (ampm === '오전' && hour === 12) hour = 0;
-  return new Date(parseInt(year), parseInt(month) - 1, parseInt(day), hour, parseInt(min), parseInt(sec));
-}
+// 미션 정의
+const MISSIONS = {
+  'edit1-1': {
+    id: 'edit1-1',
+    name: '편집 1-1',
+    description: '영상 업로드 후 재생하기',
+    screenPrefix: '편집1-1',
+    missionStartTarget: '편집1-1_미션시작',
+    missionCompleteTarget: '편집1-1_미션완료',
+    analysisItems: ['completionRate', 'avgTime', 'firstTrySuccess', 'buttonClicks', 'deviceStats'],
+  },
+  'edit2-1': {
+    id: 'edit2-1',
+    name: '편집 2-1',
+    description: '4번째 컷 선택하기',
+    screenPrefix: '편집2-1',
+    missionStartTarget: '편집2-1_미션시작',
+    missionCompleteTarget: '편집2-1_미션완료',
+    analysisItems: ['completionRate', 'avgTime', 'firstTrySuccess', 'wrongPattern', 'buttonClicks', 'deviceStats'],
+  },
+  'edit6-1': {
+    id: 'edit6-1',
+    name: '편집 6-1',
+    description: 'AI 자막 추천 (2단계)',
+    screenPrefix: '편집6-1',
+    missionStartTarget: '편집6-1_기본미션시작',
+    missionCompleteTarget: '편집6-1_기본미션완료',
+    additionalMissionStart: '편집6-1_추가미션시작',
+    additionalMissionComplete: '편집6-1_추가미션완료',
+    analysisItems: ['completionRate', 'avgTime', 'stageFlow', 'aiUsage', 'buttonClicks', 'deviceStats'],
+  },
+  'plan1-1': {
+    id: 'plan1-1',
+    name: '기획 1-1',
+    description: '메모 작성 (A/B 비교)',
+    screenPrefix: '기획1-1',
+    isABTest: true,
+    aScreen: '기획1-1A_화면',
+    bScreen: '기획1-1B_화면',
+    aMissionStart: '기획1-1_A미션시작',
+    aMissionComplete: '기획1-1_A미션완료',
+    bMissionStart: '기획1-1_B미션시작',
+    bMissionComplete: '기획1-1_B미션완료',
+    analysisItems: ['completionRate', 'avgTime', 'memoAnalysis', 'abComparison', 'buttonClicks', 'deviceStats'],
+  },
+};
 
-// 기본 분석 계산
-function computeBasicStats(data) {
+// 분석 항목 정의
+const ANALYSIS_ITEMS = {
+  completionRate: { id: 'completionRate', name: '완료율', icon: '📊' },
+  avgTime: { id: 'avgTime', name: '소요시간', icon: '⏱️' },
+  firstTrySuccess: { id: 'firstTrySuccess', name: '첫시도 성공률', icon: '🎯' },
+  wrongPattern: { id: 'wrongPattern', name: '오답 패턴', icon: '❌' },
+  buttonClicks: { id: 'buttonClicks', name: '버튼 클릭', icon: '👆' },
+  deviceStats: { id: 'deviceStats', name: '디바이스별', icon: '📱' },
+  stageFlow: { id: 'stageFlow', name: '단계별 흐름', icon: '🔄' },
+  aiUsage: { id: 'aiUsage', name: 'AI 사용률', icon: '🤖' },
+  memoAnalysis: { id: 'memoAnalysis', name: '메모 분석', icon: '📝' },
+  abComparison: { id: 'abComparison', name: 'A/B 비교', icon: '⚖️' },
+};
+
+// 미션별 통계 계산
+function computeMissionStats(data, mission) {
   const validRows = data.filter(r => r['사용자ID']);
-  const sessions = new Set(validRows.map(r => r['사용자ID']));
-  const totalEvents = validRows.length;
 
-  // 이벤트 타입별 카운트
-  const eventCounts = {};
-  validRows.forEach(r => {
-    const evt = r['이벤트'];
-    if (evt) {
-      eventCounts[evt] = (eventCounts[evt] || 0) + 1;
+  // 해당 미션 관련 로우만 필터링
+  const missionRows = validRows.filter(r =>
+    r['화면']?.includes(mission.screenPrefix) ||
+    r['대상']?.includes(mission.screenPrefix)
+  );
+
+  // 세션 수 (미션 화면에 진입한 고유 사용자)
+  const sessions = new Set(missionRows.map(r => r['사용자ID']));
+
+  // 디바이스별 세션
+  const deviceSessions = { mobile: new Set(), desktop: new Set(), tablet: new Set() };
+  missionRows.forEach(r => {
+    const device = r['디바이스'] || 'desktop';
+    if (deviceSessions[device]) {
+      deviceSessions[device].add(r['사용자ID']);
     }
   });
 
-  // 화면별 체류시간 평균 (화면 이탈 이벤트)
-  const screenDwell = {};
+  // 미션 시작/완료 카운트
+  let starts = 0;
+  let completes = 0;
+  const completionTimes = [];
+
+  if (mission.isABTest) {
+    // A/B 테스트 미션
+    const aStarts = validRows.filter(r => r['이벤트'] === '미션 시작' && r['대상'] === mission.aMissionStart).length;
+    const aCompletes = validRows.filter(r => r['이벤트'] === '미션 완료' && r['대상'] === mission.aMissionComplete).length;
+    const bStarts = validRows.filter(r => r['이벤트'] === '미션 시작' && r['대상'] === mission.bMissionStart).length;
+    const bCompletes = validRows.filter(r => r['이벤트'] === '미션 완료' && r['대상'] === mission.bMissionComplete).length;
+
+    starts = aStarts; // A 시작 기준
+    completes = bCompletes; // B 완료 기준 (전체 완료)
+
+    // A/B 각각의 완료 시간
+    validRows.forEach(r => {
+      if (r['이벤트'] === '미션 완료' && (r['대상'] === mission.aMissionComplete || r['대상'] === mission.bMissionComplete)) {
+        const match = r['값']?.match(/완료시간:(\d+\.?\d*)초/);
+        if (match) completionTimes.push(parseFloat(match[1]));
+      }
+    });
+
+    return {
+      sessions: sessions.size,
+      deviceSessions: {
+        mobile: deviceSessions.mobile.size,
+        desktop: deviceSessions.desktop.size,
+        tablet: deviceSessions.tablet.size,
+      },
+      aStarts,
+      aCompletes,
+      bStarts,
+      bCompletes,
+      aCompletionRate: aStarts > 0 ? ((aCompletes / aStarts) * 100).toFixed(1) : '0.0',
+      bCompletionRate: bStarts > 0 ? ((bCompletes / bStarts) * 100).toFixed(1) : '0.0',
+      completionTimes,
+      avgTime: completionTimes.length > 0
+        ? (completionTimes.reduce((a, b) => a + b, 0) / completionTimes.length).toFixed(1)
+        : null,
+    };
+  } else if (mission.additionalMissionStart) {
+    // 2단계 미션 (편집 6-1)
+    const basicStarts = validRows.filter(r => r['이벤트'] === '미션 시작' && r['대상'] === mission.missionStartTarget).length;
+    const basicCompletes = validRows.filter(r => r['이벤트'] === '미션 완료' && r['대상'] === mission.missionCompleteTarget).length;
+    const additionalStarts = validRows.filter(r => r['이벤트'] === '미션 시작' && r['대상'] === mission.additionalMissionStart).length;
+    const additionalCompletes = validRows.filter(r => r['이벤트'] === '미션 완료' && r['대상'] === mission.additionalMissionComplete).length;
+
+    validRows.forEach(r => {
+      if (r['이벤트'] === '미션 완료' && (r['대상'] === mission.missionCompleteTarget || r['대상'] === mission.additionalMissionComplete)) {
+        const match = r['값']?.match(/완료시간:(\d+\.?\d*)초/);
+        if (match) completionTimes.push(parseFloat(match[1]));
+      }
+    });
+
+    return {
+      sessions: sessions.size,
+      deviceSessions: {
+        mobile: deviceSessions.mobile.size,
+        desktop: deviceSessions.desktop.size,
+        tablet: deviceSessions.tablet.size,
+      },
+      basicStarts,
+      basicCompletes,
+      additionalStarts,
+      additionalCompletes,
+      basicCompletionRate: basicStarts > 0 ? ((basicCompletes / basicStarts) * 100).toFixed(1) : '0.0',
+      additionalCompletionRate: additionalStarts > 0 ? ((additionalCompletes / additionalStarts) * 100).toFixed(1) : '0.0',
+      completionTimes,
+      avgTime: completionTimes.length > 0
+        ? (completionTimes.reduce((a, b) => a + b, 0) / completionTimes.length).toFixed(1)
+        : null,
+    };
+  } else {
+    // 일반 미션
+    starts = validRows.filter(r => r['이벤트'] === '미션 시작' && r['대상'] === mission.missionStartTarget).length;
+    completes = validRows.filter(r => r['이벤트'] === '미션 완료' && r['대상'] === mission.missionCompleteTarget).length;
+
+    validRows.forEach(r => {
+      if (r['이벤트'] === '미션 완료' && r['대상'] === mission.missionCompleteTarget) {
+        const match = r['값']?.match(/완료시간:(\d+\.?\d*)초/);
+        if (match) completionTimes.push(parseFloat(match[1]));
+      }
+    });
+
+    return {
+      sessions: sessions.size,
+      deviceSessions: {
+        mobile: deviceSessions.mobile.size,
+        desktop: deviceSessions.desktop.size,
+        tablet: deviceSessions.tablet.size,
+      },
+      starts,
+      completes,
+      completionRate: starts > 0 ? ((completes / starts) * 100).toFixed(1) : '0.0',
+      completionTimes,
+      avgTime: completionTimes.length > 0
+        ? (completionTimes.reduce((a, b) => a + b, 0) / completionTimes.length).toFixed(1)
+        : null,
+      minTime: completionTimes.length > 0 ? Math.min(...completionTimes).toFixed(1) : null,
+      maxTime: completionTimes.length > 0 ? Math.max(...completionTimes).toFixed(1) : null,
+    };
+  }
+}
+
+// 첫 시도 성공률 계산
+function computeFirstTrySuccess(data, mission) {
+  const validRows = data.filter(r => r['사용자ID']);
+  const screenName = `${mission.screenPrefix}_화면`;
+
+  // 세션별 첫 번째 관련 버튼 클릭 찾기
+  const sessionFirstClick = {};
+
   validRows.forEach(r => {
-    if (r['이벤트'] === '화면 이탈') {
-      const screen = r['화면'];
-      const ms = parseInt(r['체류시간(ms)']);
-      if (screen && !isNaN(ms) && ms > 0) {
-        if (!screenDwell[screen]) screenDwell[screen] = [];
-        screenDwell[screen].push(ms);
+    if (r['화면'] !== screenName || r['이벤트'] !== '버튼 클릭') return;
+
+    const session = r['사용자ID'];
+    const target = r['대상'];
+
+    // 편집 1-1: 재생 버튼의 expected
+    if (mission.id === 'edit1-1' && target === '재생') {
+      if (!sessionFirstClick[session]) {
+        try {
+          const value = JSON.parse(r['값'] || '{}');
+          sessionFirstClick[session] = value.expected === true;
+        } catch (e) {
+          sessionFirstClick[session] = false;
+        }
+      }
+    }
+
+    // 편집 2-1: 컷 선택의 expected (targetCut === 4)
+    if (mission.id === 'edit2-1' && target?.startsWith('컷')) {
+      if (!sessionFirstClick[session]) {
+        try {
+          const value = JSON.parse(r['값'] || '{}');
+          sessionFirstClick[session] = value.expected === true;
+        } catch (e) {
+          sessionFirstClick[session] = false;
+        }
       }
     }
   });
 
-  const screenDwellAvg = {};
-  Object.entries(screenDwell).forEach(([screen, times]) => {
-    screenDwellAvg[screen] = {
-      avg: Math.round(times.reduce((a, b) => a + b, 0) / times.length),
-      count: times.length,
-    };
-  });
-
-  // 화면별 미션 완료 통계
-  // 먼저 미션별 전체 시작 수 집계 (화면 무관)
-  const missionTotalStarts = {};
-  validRows.forEach(r => {
-    if (r['이벤트'] === '미션 시작' && r['대상']) {
-      missionTotalStarts[r['대상']] = (missionTotalStarts[r['대상']] || 0) + 1;
-    }
-  });
-
-  const screenMissionMap = {};
-  validRows.forEach(r => {
-    const screen = r['화면'];
-    const evt = r['이벤트'];
-    const target = r['대상'];
-    if (!screen || !target) return;
-    if (evt !== '미션 시작' && evt !== '미션 완료') return;
-
-    if (!screenMissionMap[screen]) screenMissionMap[screen] = {};
-    if (!screenMissionMap[screen][target]) {
-      screenMissionMap[screen][target] = { starts: 0, completes: 0, users: new Set() };
-    }
-    if (evt === '미션 시작') {
-      screenMissionMap[screen][target].starts += 1;
-      screenMissionMap[screen][target].users.add(r['사용자ID']);
-    } else if (evt === '미션 완료') {
-      screenMissionMap[screen][target].completes += 1;
-      screenMissionMap[screen][target].users.add(r['사용자ID']);
-    }
-  });
-
-  const screenMissionStats = Object.entries(screenMissionMap)
-    .sort(([a], [b]) => a.localeCompare(b))
-    .map(([screen, missions]) => ({
-      screen,
-      missions: Object.entries(missions)
-        .map(([name, { starts, completes, users }]) => {
-          // 해당 화면에 시작이 없으면 전체 시작 수를 참조하여 완료율 계산
-          const effectiveStarts = starts > 0 ? starts : (missionTotalStarts[name] || 0);
-          return {
-            name,
-            starts,
-            completes,
-            totalStarts: missionTotalStarts[name] || 0,
-            rate: effectiveStarts > 0 ? ((completes / effectiveStarts) * 100).toFixed(1) : '0.0',
-            userCount: users.size,
-          };
-        })
-        .sort((a, b) => b.completes - a.completes),
-    }));
+  const total = Object.keys(sessionFirstClick).length;
+  const success = Object.values(sessionFirstClick).filter(v => v).length;
 
   return {
-    sessionCount: sessions.size,
-    totalEvents,
-    eventCounts,
-    screenDwellAvg,
-    screenMissionStats,
+    total,
+    success,
+    rate: total > 0 ? ((success / total) * 100).toFixed(1) : '0.0',
   };
 }
 
-// 미션별 분석 계산
-function computeMissionStats(data) {
-  const validRows = data.filter(r => r['사용자ID']);
+// 오답 패턴 계산 (편집 2-1)
+function computeWrongPattern(data, mission) {
+  if (mission.id !== 'edit2-1') return null;
 
-  // 미션별 시작/완료 카운트
-  const missionStart = {};
-  const missionComplete = {};
+  const validRows = data.filter(r => r['사용자ID']);
+  const screenName = `${mission.screenPrefix}_화면`;
+
+  const wrongClicks = {};
+
   validRows.forEach(r => {
+    if (r['화면'] !== screenName || r['이벤트'] !== '버튼 클릭') return;
+    if (!r['대상']?.startsWith('컷')) return;
+
+    try {
+      const value = JSON.parse(r['값'] || '{}');
+      if (value.expected === false && value.targetCut) {
+        const cut = `컷${value.targetCut}`;
+        wrongClicks[cut] = (wrongClicks[cut] || 0) + 1;
+      }
+    } catch (e) {}
+  });
+
+  return Object.entries(wrongClicks)
+    .sort((a, b) => b[1] - a[1])
+    .map(([cut, count]) => ({ cut, count }));
+}
+
+// 버튼 클릭 분포 계산
+function computeButtonClicks(data, mission) {
+  const validRows = data.filter(r => r['사용자ID']);
+  const screenName = `${mission.screenPrefix}_화면`;
+
+  const buttonClicks = {};
+
+  validRows.forEach(r => {
+    if (!r['화면']?.includes(mission.screenPrefix) || r['이벤트'] !== '버튼 클릭') return;
+
     const target = r['대상'];
-    if (!target) return;
-    if (r['이벤트'] === '미션 시작') {
-      missionStart[target] = (missionStart[target] || 0) + 1;
-    } else if (r['이벤트'] === '미션 완료') {
-      missionComplete[target] = (missionComplete[target] || 0) + 1;
+    if (target) {
+      buttonClicks[target] = (buttonClicks[target] || 0) + 1;
     }
   });
 
-  const missions = [...new Set([...Object.keys(missionStart), ...Object.keys(missionComplete)])].sort();
+  return Object.entries(buttonClicks)
+    .sort((a, b) => b[1] - a[1])
+    .map(([name, count]) => ({ name, count }));
+}
 
-  const missionSummary = missions.map(m => {
-    const starts = missionStart[m] || 0;
-    const completes = missionComplete[m] || 0;
-    const rate = starts > 0 ? ((completes / starts) * 100).toFixed(1) : '0.0';
-    return { name: m, starts, completes, rate };
+// A/B 비교 분석 (기획 1-1)
+function computeABComparison(data, mission) {
+  if (!mission.isABTest) return null;
+
+  const validRows = data.filter(r => r['사용자ID']);
+
+  // A안 분석
+  const aRows = validRows.filter(r => r['화면'] === mission.aScreen);
+  const aCompleteTimes = [];
+  const aMemoStats = { totalLength: 0, count: 0, details: [] };
+
+  validRows.forEach(r => {
+    if (r['이벤트'] === '미션 완료' && r['대상'] === mission.aMissionComplete) {
+      const match = r['값']?.match(/완료시간:(\d+\.?\d*)초/);
+      if (match) aCompleteTimes.push(parseFloat(match[1]));
+
+      const memoMatch = r['값']?.match(/메모수:(\d+)/);
+      const lengthMatch = r['값']?.match(/총길이:(\d+)/);
+      if (memoMatch) aMemoStats.count = parseInt(memoMatch[1]);
+      if (lengthMatch) aMemoStats.totalLength = parseInt(lengthMatch[1]);
+    }
   });
 
-  // 미션별 소요 시간 (같은 세션에서 미션 시작 → 미션 완료 시간차)
-  const missionDurations = {};
-  const sessionMissionStarts = {};
+  // B안 분석
+  const bRows = validRows.filter(r => r['화면'] === mission.bScreen);
+  const bCompleteTimes = [];
+  const bMemoStats = { totalLength: 0, count: 0, details: [] };
+
+  validRows.forEach(r => {
+    if (r['이벤트'] === '미션 완료' && r['대상'] === mission.bMissionComplete) {
+      const match = r['값']?.match(/완료시간:(\d+\.?\d*)초/);
+      if (match) bCompleteTimes.push(parseFloat(match[1]));
+
+      const memoMatch = r['값']?.match(/메모수:(\d+)/);
+      const lengthMatch = r['값']?.match(/총길이:(\d+)/);
+      if (memoMatch) bMemoStats.count = parseInt(memoMatch[1]);
+      if (lengthMatch) bMemoStats.totalLength = parseInt(lengthMatch[1]);
+    }
+  });
+
+  // 저장하기 버튼에서 상세 메모 정보 추출
+  validRows.forEach(r => {
+    if (r['이벤트'] !== '버튼 클릭' || r['대상'] !== '저장하기') return;
+
+    try {
+      const value = JSON.parse(r['값'] || '{}');
+      if (r['화면'] === mission.aScreen && value.memoDetails) {
+        aMemoStats.details = value.memoDetails;
+        aMemoStats.totalCuts = value.totalCuts;
+        aMemoStats.avgLength = value.avgMemoLength;
+      }
+      if (r['화면'] === mission.bScreen && value.memoDetails) {
+        bMemoStats.details = value.memoDetails;
+        bMemoStats.totalCuts = value.totalCuts;
+        bMemoStats.avgLength = value.avgMemoLength;
+      }
+    } catch (e) {}
+  });
+
+  return {
+    a: {
+      avgTime: aCompleteTimes.length > 0
+        ? (aCompleteTimes.reduce((a, b) => a + b, 0) / aCompleteTimes.length).toFixed(1)
+        : null,
+      memoStats: aMemoStats,
+    },
+    b: {
+      avgTime: bCompleteTimes.length > 0
+        ? (bCompleteTimes.reduce((a, b) => a + b, 0) / bCompleteTimes.length).toFixed(1)
+        : null,
+      memoStats: bMemoStats,
+    },
+  };
+}
+
+// AI 사용률 계산 (편집 6-1)
+function computeAIUsage(data, mission) {
+  if (mission.id !== 'edit6-1') return null;
+
+  const validRows = data.filter(r => r['사용자ID']);
+  const screenName = `${mission.screenPrefix}_화면`;
+
+  const aiClicks = validRows.filter(r =>
+    r['화면'] === screenName &&
+    r['이벤트'] === '버튼 클릭' &&
+    r['대상'] === 'AI자막추천'
+  ).length;
+
+  const aiRecommendClicks = validRows.filter(r => {
+    if (r['화면'] !== screenName || r['이벤트'] !== '버튼 클릭') return false;
+    if (!r['대상']?.startsWith('AI추천')) return false;
+    return true;
+  }).length;
+
+  return {
+    aiButtonClicks: aiClicks,
+    aiRecommendSelections: aiRecommendClicks,
+  };
+}
+
+// 전체 요약 통계
+function computeOverallStats(data) {
+  const validRows = data.filter(r => r['사용자ID']);
+  const sessions = new Set(validRows.map(r => r['사용자ID']));
+
+  const deviceCounts = { mobile: 0, desktop: 0, tablet: 0 };
+  const sessionDevices = {};
 
   validRows.forEach(r => {
     const session = r['사용자ID'];
-    const target = r['대상'];
-    if (!target) return;
-    const ts = parseTimestamp(r['타임스탬프']);
-    if (!ts) return;
-
-    if (r['이벤트'] === '미션 시작') {
-      const key = `${session}__${target}`;
-      sessionMissionStarts[key] = ts;
-    } else if (r['이벤트'] === '미션 완료') {
-      const key = `${session}__${target}`;
-      if (sessionMissionStarts[key]) {
-        const diff = ts - sessionMissionStarts[key];
-        if (diff >= 0) {
-          if (!missionDurations[target]) missionDurations[target] = [];
-          missionDurations[target].push(diff);
-        }
-        delete sessionMissionStarts[key];
-      }
+    const device = r['디바이스'] || 'desktop';
+    if (!sessionDevices[session]) {
+      sessionDevices[session] = device;
     }
   });
 
-  const missionAvgDuration = {};
-  Object.entries(missionDurations).forEach(([m, durations]) => {
-    missionAvgDuration[m] = Math.round(durations.reduce((a, b) => a + b, 0) / durations.length);
+  Object.values(sessionDevices).forEach(device => {
+    if (deviceCounts[device] !== undefined) {
+      deviceCounts[device]++;
+    }
   });
 
-  // A/B안 종합 비교: 화면 이름에서 A안/B안 패턴 추출
-  function extractVariant(screen) {
-    if (!screen) return null;
-    if (/A안/.test(screen)) return { mission: screen.replace(/\s*A안/, '').trim(), variant: 'A' };
-    if (/B안/.test(screen)) return { mission: screen.replace(/\s*B안/, '').trim(), variant: 'B' };
-    return null;
-  }
-
-  const abStats = {};
-  const ensureAB = (mission) => {
-    if (!abStats[mission]) {
-      abStats[mission] = {
-        A: { views: 0, clicks: 0, dwellTimes: [] },
-        B: { views: 0, clicks: 0, dwellTimes: [] },
-      };
-    }
+  return {
+    totalSessions: sessions.size,
+    totalEvents: validRows.length,
+    deviceCounts,
   };
-
-  validRows.forEach(r => {
-    const parsed = extractVariant(r['화면']);
-    if (!parsed) return;
-    const { mission, variant } = parsed;
-    ensureAB(mission);
-
-    const evt = r['이벤트'];
-    if (evt === '화면 진입') {
-      abStats[mission][variant].views += 1;
-    } else if (evt === '버튼 클릭') {
-      abStats[mission][variant].clicks += 1;
-    } else if (evt === '화면 이탈') {
-      const ms = parseInt(r['체류시간(ms)']);
-      if (!isNaN(ms) && ms > 0) {
-        abStats[mission][variant].dwellTimes.push(ms);
-      }
-    }
-  });
-
-  const abComparison = Object.entries(abStats)
-    .filter(([, v]) => v.A.views > 0 || v.B.views > 0)
-    .sort(([a], [b]) => a.localeCompare(b))
-    .map(([name, v]) => {
-      const avgDwell = (times) =>
-        times.length > 0 ? Math.round(times.reduce((a, b) => a + b, 0) / times.length) : null;
-      return {
-        name,
-        viewsA: v.A.views,
-        viewsB: v.B.views,
-        clicksA: v.A.clicks,
-        clicksB: v.B.clicks,
-        dwellAvgA: avgDwell(v.A.dwellTimes),
-        dwellCountA: v.A.dwellTimes.length,
-        dwellAvgB: avgDwell(v.B.dwellTimes),
-        dwellCountB: v.B.dwellTimes.length,
-      };
-    });
-
-  // 미션별 A/B 퍼널(이탈률) 분석
-  // 각 미션의 시작 → A 화면 진입 → A 완료(버튼 클릭) → B 화면 진입 → B 완료(미션 완료) 추적
-  const funnelData = {};
-  const ensureFunnel = (mission) => {
-    if (!funnelData[mission]) {
-      funnelData[mission] = {
-        startUsers: new Set(),
-        aViewUsers: new Set(),
-        aClickUsers: new Set(),
-        bViewUsers: new Set(),
-        bCompleteUsers: new Set(),
-      };
-    }
-  };
-
-  // 미션 시작 사용자 수집
-  validRows.forEach(r => {
-    if (r['이벤트'] === '미션 시작' && r['대상']) {
-      const target = r['대상'];
-      // target → mission 이름 매핑 (미션 1, 미션 2 등)
-      // 여기서는 대상 값 자체를 키로 사용
-      ensureFunnel(target);
-      funnelData[target].startUsers.add(r['사용자ID']);
-    }
-  });
-
-  // A/B 화면별 사용자 수집
-  validRows.forEach(r => {
-    const parsed = extractVariant(r['화면']);
-    if (!parsed) return;
-    const { mission, variant } = parsed;
-
-    // mission 이름으로 funnelData의 키 찾기 (예: "미션1" → 대상 "미션 1" 매칭)
-    const funnelKey = Object.keys(funnelData).find(k => {
-      const normalized = k.replace(/\s/g, '');
-      const missionNorm = mission.replace(/\s/g, '');
-      return normalized === missionNorm;
-    });
-    if (!funnelKey) return;
-
-    const userId = r['사용자ID'];
-    const evt = r['이벤트'];
-
-    if (variant === 'A') {
-      if (evt === '화면 진입') funnelData[funnelKey].aViewUsers.add(userId);
-      if (evt === '버튼 클릭') funnelData[funnelKey].aClickUsers.add(userId);
-    } else if (variant === 'B') {
-      if (evt === '화면 진입') funnelData[funnelKey].bViewUsers.add(userId);
-      if (evt === '미션 완료') funnelData[funnelKey].bCompleteUsers.add(userId);
-    }
-  });
-
-  // B에서 미션 완료가 아닌 버튼 클릭으로 완료를 추적하는 경우도 고려
-  validRows.forEach(r => {
-    if (r['이벤트'] !== '미션 완료') return;
-    const parsed = extractVariant(r['화면']);
-    if (!parsed) return;
-    const { mission, variant } = parsed;
-    if (variant !== 'B') return;
-    const funnelKey = Object.keys(funnelData).find(k => {
-      const normalized = k.replace(/\s/g, '');
-      const missionNorm = mission.replace(/\s/g, '');
-      return normalized === missionNorm;
-    });
-    if (funnelKey) {
-      funnelData[funnelKey].bCompleteUsers.add(r['사용자ID']);
-    }
-  });
-
-  const funnelStats = Object.entries(funnelData)
-    .filter(([, v]) => v.startUsers.size > 0)
-    .sort(([a], [b]) => a.localeCompare(b))
-    .map(([name, v]) => {
-      const started = v.startUsers.size;
-      const aViewed = v.aViewUsers.size;
-      const aClicked = v.aClickUsers.size;
-      const bViewed = v.bViewUsers.size;
-      const bCompleted = v.bCompleteUsers.size;
-      const calcRate = (count) => started > 0 ? ((count / started) * 100).toFixed(1) : '0.0';
-      const calcDropoff = (from, to) => from > 0 ? (((from - to) / from) * 100).toFixed(1) : '0.0';
-      return {
-        name,
-        steps: [
-          { label: '미션 시작', count: started, rate: '100.0', dropoff: '-' },
-          { label: 'A안 진입', count: aViewed, rate: calcRate(aViewed), dropoff: calcDropoff(started, aViewed) },
-          { label: 'A안 액션', count: aClicked, rate: calcRate(aClicked), dropoff: calcDropoff(aViewed, aClicked) },
-          { label: 'B안 진입', count: bViewed, rate: calcRate(bViewed), dropoff: calcDropoff(aClicked, bViewed) },
-          { label: 'B안 완료', count: bCompleted, rate: calcRate(bCompleted), dropoff: calcDropoff(bViewed, bCompleted) },
-        ],
-        overallDropoff: calcDropoff(started, bCompleted),
-      };
-    });
-
-  return { missionSummary, missionAvgDuration, abComparison, funnelStats };
-}
-
-// 버튼 클릭 상세 분석
-function computeButtonStats(data) {
-  const validRows = data.filter(r => r['사용자ID'] && r['이벤트'] === '버튼 클릭' && r['대상']);
-
-  // 화면별 버튼 클릭 집계
-  const screenButtonMap = {};
-  validRows.forEach(r => {
-    const screen = r['화면'];
-    const target = r['대상'];
-    if (!screenButtonMap[screen]) screenButtonMap[screen] = {};
-    if (!screenButtonMap[screen][target]) {
-      screenButtonMap[screen][target] = { count: 0, users: new Set() };
-    }
-    screenButtonMap[screen][target].count += 1;
-    screenButtonMap[screen][target].users.add(r['사용자ID']);
-  });
-
-  // 화면별 버튼 클릭 요약 (정렬: 클릭 수 내림차순)
-  const screenButtonSummary = Object.entries(screenButtonMap)
-    .sort(([a], [b]) => a.localeCompare(b))
-    .map(([screen, buttons]) => ({
-      screen,
-      buttons: Object.entries(buttons)
-        .map(([name, { count, users }]) => ({ name, count, userCount: users.size }))
-        .sort((a, b) => b.count - a.count),
-      totalClicks: Object.values(buttons).reduce((sum, b) => sum + b.count, 0),
-    }));
-
-  // A/B안 버튼 비교: 같은 미션의 A안/B안에서 어떤 버튼이 클릭되었는지
-  function extractVariant(screen) {
-    if (!screen) return null;
-    if (/A안/.test(screen)) return { mission: screen.replace(/\s*A안/, '').trim(), variant: 'A' };
-    if (/B안/.test(screen)) return { mission: screen.replace(/\s*B안/, '').trim(), variant: 'B' };
-    return null;
-  }
-
-  const abButtonMap = {};
-  validRows.forEach(r => {
-    const parsed = extractVariant(r['화면']);
-    if (!parsed) return;
-    const { mission, variant } = parsed;
-    const target = r['대상'];
-    if (!abButtonMap[mission]) abButtonMap[mission] = { A: {}, B: {} };
-    if (!abButtonMap[mission][variant][target]) {
-      abButtonMap[mission][variant][target] = { count: 0, users: new Set() };
-    }
-    abButtonMap[mission][variant][target].count += 1;
-    abButtonMap[mission][variant][target].users.add(r['사용자ID']);
-  });
-
-  const abButtonComparison = Object.entries(abButtonMap)
-    .sort(([a], [b]) => a.localeCompare(b))
-    .map(([mission, variants]) => {
-      const allButtons = new Set([
-        ...Object.keys(variants.A),
-        ...Object.keys(variants.B),
-      ]);
-      const buttons = [...allButtons].map(name => ({
-        name,
-        countA: variants.A[name]?.count || 0,
-        usersA: variants.A[name]?.users.size || 0,
-        countB: variants.B[name]?.count || 0,
-        usersB: variants.B[name]?.users.size || 0,
-      }));
-      return { mission, buttons };
-    });
-
-  return { screenButtonSummary, abButtonComparison };
 }
 
 function formatMs(ms) {
@@ -434,12 +461,25 @@ function formatMs(ms) {
 
 function DataAnalysis({ onBack }) {
   const [csvData, setCsvData] = useState(null);
-  const [activeTab, setActiveTab] = useState('basic');
+  const [selectedMission, setSelectedMission] = useState(null);
+  const [selectedItems, setSelectedItems] = useState({});
   const [fileName, setFileName] = useState('');
 
   useEffect(() => {
     logScreenView('data_analysis');
   }, []);
+
+  // 미션 선택 시 기본 분석 항목 선택
+  useEffect(() => {
+    if (selectedMission) {
+      const mission = MISSIONS[selectedMission];
+      const defaultItems = {};
+      mission.analysisItems.forEach(item => {
+        defaultItems[item] = true;
+      });
+      setSelectedItems(defaultItems);
+    }
+  }, [selectedMission]);
 
   const handleBack = () => {
     logButtonClick('data_analysis', 'back');
@@ -455,25 +495,52 @@ function DataAnalysis({ onBack }) {
       const text = evt.target.result;
       const parsed = parseCSV(text);
       setCsvData(parsed);
-      setActiveTab('basic');
+      setSelectedMission(null);
     };
     reader.readAsText(file, 'UTF-8');
   };
 
-  const basicStats = useMemo(() => {
+  const toggleItem = (itemId) => {
+    setSelectedItems(prev => ({
+      ...prev,
+      [itemId]: !prev[itemId],
+    }));
+  };
+
+  // 전체 통계
+  const overallStats = useMemo(() => {
     if (!csvData) return null;
-    return computeBasicStats(csvData);
+    return computeOverallStats(csvData);
   }, [csvData]);
 
-  const missionStats = useMemo(() => {
-    if (!csvData) return null;
-    return computeMissionStats(csvData);
+  // 미션별 기본 통계
+  const missionStatsMap = useMemo(() => {
+    if (!csvData) return {};
+    const stats = {};
+    Object.values(MISSIONS).forEach(mission => {
+      stats[mission.id] = computeMissionStats(csvData, mission);
+    });
+    return stats;
   }, [csvData]);
 
-  const buttonStats = useMemo(() => {
-    if (!csvData) return null;
-    return computeButtonStats(csvData);
-  }, [csvData]);
+  // 선택된 미션의 상세 분석
+  const selectedMissionAnalysis = useMemo(() => {
+    if (!csvData || !selectedMission) return null;
+
+    const mission = MISSIONS[selectedMission];
+    const stats = missionStatsMap[selectedMission];
+
+    return {
+      stats,
+      firstTrySuccess: computeFirstTrySuccess(csvData, mission),
+      wrongPattern: computeWrongPattern(csvData, mission),
+      buttonClicks: computeButtonClicks(csvData, mission),
+      abComparison: computeABComparison(csvData, mission),
+      aiUsage: computeAIUsage(csvData, mission),
+    };
+  }, [csvData, selectedMission, missionStatsMap]);
+
+  const currentMission = selectedMission ? MISSIONS[selectedMission] : null;
 
   return (
     <div className="da-container">
@@ -485,8 +552,8 @@ function DataAnalysis({ onBack }) {
       <div className="da-content">
         {/* CSV 업로드 영역 */}
         <div className="da-upload-section">
-          <h3 className="da-section-title">트래킹 로그 분석</h3>
-          <p className="da-section-desc">CSV 파일을 업로드하여 사용자 행동 데이터를 분석합니다.</p>
+          <h3 className="da-section-title">미션별 데이터 분석</h3>
+          <p className="da-section-desc">CSV 파일을 업로드하여 미션별 사용자 행동을 분석합니다.</p>
           <label className="da-upload-btn">
             CSV 파일 선택
             <input
@@ -499,355 +566,357 @@ function DataAnalysis({ onBack }) {
           {fileName && <span className="da-file-name">{fileName}</span>}
         </div>
 
-        {/* 탭 UI */}
-        {csvData && (
+        {csvData && overallStats && (
           <>
-            <div className="da-tabs">
-              <button
-                className={`da-tab ${activeTab === 'basic' ? 'active' : ''}`}
-                onClick={() => setActiveTab('basic')}
-              >
-                기본 분석
-              </button>
-              <button
-                className={`da-tab ${activeTab === 'mission' ? 'active' : ''}`}
-                onClick={() => setActiveTab('mission')}
-              >
-                미션별 분석
-              </button>
-              <button
-                className={`da-tab ${activeTab === 'button' ? 'active' : ''}`}
-                onClick={() => setActiveTab('button')}
-              >
-                버튼 분석
-              </button>
+            {/* 전체 요약 */}
+            <div className="da-cards-row">
+              <div className="da-card">
+                <div className="da-card-label">총 세션</div>
+                <div className="da-card-value">{overallStats.totalSessions}</div>
+              </div>
+              <div className="da-card">
+                <div className="da-card-label">총 이벤트</div>
+                <div className="da-card-value">{overallStats.totalEvents}</div>
+              </div>
+              <div className="da-card">
+                <div className="da-card-label">PC</div>
+                <div className="da-card-value">{overallStats.deviceCounts.desktop}</div>
+              </div>
+              <div className="da-card">
+                <div className="da-card-label">모바일</div>
+                <div className="da-card-value">{overallStats.deviceCounts.mobile}</div>
+              </div>
             </div>
 
-            {/* 탭 1: 기본 분석 */}
-            {activeTab === 'basic' && basicStats && (
-              <div className="da-tab-content">
-                <div className="da-cards-row">
-                  <div className="da-card">
-                    <div className="da-card-label">총 세션 수</div>
-                    <div className="da-card-value">{basicStats.sessionCount}</div>
+            {/* 미션 선택 카드 */}
+            <div className="da-sub-title">미션 선택</div>
+            <div className="da-mission-cards">
+              {Object.values(MISSIONS).map(mission => {
+                const stats = missionStatsMap[mission.id];
+                const isSelected = selectedMission === mission.id;
+
+                return (
+                  <div
+                    key={mission.id}
+                    className={`da-mission-card ${isSelected ? 'selected' : ''}`}
+                    onClick={() => setSelectedMission(mission.id)}
+                  >
+                    <div className="da-mission-card-header">
+                      <span className="da-mission-card-name">{mission.name}</span>
+                      {isSelected && <span className="da-mission-card-check">✓</span>}
+                    </div>
+                    <div className="da-mission-card-desc">{mission.description}</div>
+                    <div className="da-mission-card-stats">
+                      <div className="da-mission-card-stat">
+                        <span className="da-mission-card-stat-icon">👤</span>
+                        <span>{stats?.sessions || 0}명</span>
+                      </div>
+                      <div className="da-mission-card-stat">
+                        <span className="da-mission-card-stat-icon">📱</span>
+                        <span>{stats?.deviceSessions?.mobile || 0}</span>
+                      </div>
+                      <div className="da-mission-card-stat">
+                        <span className="da-mission-card-stat-icon">💻</span>
+                        <span>{stats?.deviceSessions?.desktop || 0}</span>
+                      </div>
+                    </div>
+                    <div className="da-mission-card-rate">
+                      {mission.isABTest ? (
+                        <>A {stats?.aCompletionRate || 0}% / B {stats?.bCompletionRate || 0}%</>
+                      ) : mission.additionalMissionStart ? (
+                        <>기본 {stats?.basicCompletionRate || 0}% / 추가 {stats?.additionalCompletionRate || 0}%</>
+                      ) : (
+                        <>완료율 {stats?.completionRate || 0}%</>
+                      )}
+                    </div>
+                    <div className="da-mission-card-bar">
+                      <div
+                        className="da-mission-card-bar-fill"
+                        style={{
+                          width: `${mission.isABTest
+                            ? stats?.bCompletionRate
+                            : mission.additionalMissionStart
+                              ? stats?.additionalCompletionRate
+                              : stats?.completionRate || 0}%`
+                        }}
+                      />
+                    </div>
                   </div>
-                  <div className="da-card">
-                    <div className="da-card-label">총 이벤트 수</div>
-                    <div className="da-card-value">{basicStats.totalEvents}</div>
+                );
+              })}
+            </div>
+
+            {/* 분석 항목 선택 */}
+            {selectedMission && currentMission && (
+              <>
+                <div className="da-sub-title" style={{ marginTop: 20 }}>분석 항목 선택</div>
+                <div className="da-analysis-items">
+                  {currentMission.analysisItems.map(itemId => {
+                    const item = ANALYSIS_ITEMS[itemId];
+                    return (
+                      <button
+                        key={itemId}
+                        className={`da-analysis-item ${selectedItems[itemId] ? 'selected' : ''}`}
+                        onClick={() => toggleItem(itemId)}
+                      >
+                        <span className="da-analysis-item-check">
+                          {selectedItems[itemId] ? '✅' : '☐'}
+                        </span>
+                        <span className="da-analysis-item-name">{item.name}</span>
+                      </button>
+                    );
+                  })}
+                </div>
+
+                {/* 분석 결과 */}
+                <div className="da-sub-title" style={{ marginTop: 20 }}>
+                  📈 분석 결과: {currentMission.name}
+                </div>
+                <div className="da-results">
+                  <div className="da-result-header">
+                    {currentMission.isABTest ? '📝' : '🎬'} {currentMission.description}
                   </div>
-                </div>
 
-                <div className="da-sub-title">이벤트 타입별 횟수</div>
-                <div className="da-cards-grid">
-                  {Object.entries(basicStats.eventCounts)
-                    .sort((a, b) => b[1] - a[1])
-                    .map(([evt, count]) => (
-                      <div className="da-card-small" key={evt}>
-                        <div className="da-card-label">{evt}</div>
-                        <div className="da-card-value-sm">{count}</div>
-                      </div>
-                    ))}
-                </div>
-
-                <div className="da-sub-title">화면별 평균 체류시간</div>
-                <div className="da-table-wrap">
-                  <table className="da-table">
-                    <thead>
-                      <tr>
-                        <th>화면</th>
-                        <th>평균 체류시간</th>
-                        <th>건수</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {Object.entries(basicStats.screenDwellAvg)
-                        .sort((a, b) => b[1].avg - a[1].avg)
-                        .map(([screen, { avg, count }]) => (
-                          <tr key={screen}>
-                            <td>{screen}</td>
-                            <td className="da-num">{formatMs(avg)}</td>
-                            <td className="da-num">{count}</td>
-                          </tr>
-                        ))}
-                    </tbody>
-                  </table>
-                </div>
-
-                {basicStats.screenMissionStats.length > 0 && (
-                  <>
-                    <div className="da-sub-title">화면별 미션 완료 통계</div>
-                    {basicStats.screenMissionStats.map(s => (
-                      <div key={s.screen} style={{ marginBottom: 16 }}>
-                        <div className="da-screen-label">{s.screen}</div>
-                        <div className="da-table-wrap">
-                          <table className="da-table">
-                            <thead>
-                              <tr>
-                                <th>미션</th>
-                                <th>시작(화면)</th>
-                                <th>시작(전체)</th>
-                                <th>완료</th>
-                                <th>완료율</th>
-                                <th>사용자</th>
-                              </tr>
-                            </thead>
-                            <tbody>
-                              {s.missions.map(m => (
-                                <tr key={m.name}>
-                                  <td>{m.name}</td>
-                                  <td className="da-num">{m.starts}</td>
-                                  <td className="da-num" style={{ color: '#888' }}>{m.totalStarts}</td>
-                                  <td className="da-num">{m.completes}</td>
-                                  <td className="da-num da-highlight">{m.rate}%</td>
-                                  <td className="da-num">{m.userCount}</td>
-                                </tr>
-                              ))}
-                            </tbody>
-                          </table>
-                        </div>
-                      </div>
-                    ))}
-                  </>
-                )}
-              </div>
-            )}
-
-            {/* 탭 2: 미션별 분석 */}
-            {activeTab === 'mission' && missionStats && (
-              <div className="da-tab-content">
-                <div className="da-sub-title">미션별 시작/완료 수 및 완료율</div>
-                <div className="da-table-wrap">
-                  <table className="da-table">
-                    <thead>
-                      <tr>
-                        <th>미션</th>
-                        <th>시작</th>
-                        <th>완료</th>
-                        <th>완료율</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {missionStats.missionSummary.map(m => (
-                        <tr key={m.name}>
-                          <td>{m.name}</td>
-                          <td className="da-num">{m.starts}</td>
-                          <td className="da-num">{m.completes}</td>
-                          <td className="da-num da-highlight">{m.rate}%</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-
-                <div className="da-sub-title">미션별 평균 소요 시간</div>
-                <div className="da-cards-grid">
-                  {missionStats.missionSummary.map(m => (
-                    <div className="da-card-small" key={m.name}>
-                      <div className="da-card-label">{m.name}</div>
-                      <div className="da-card-value-sm">
-                        {missionStats.missionAvgDuration[m.name] != null
-                          ? formatMs(missionStats.missionAvgDuration[m.name])
-                          : '-'}
+                  {/* 참여 현황 */}
+                  {selectedItems.deviceStats && selectedMissionAnalysis?.stats && (
+                    <div className="da-result-section">
+                      <div className="da-result-section-title">▸ 참여 현황</div>
+                      <div className="da-result-section-content">
+                        세션 수: {selectedMissionAnalysis.stats.sessions}명 |
+                        PC: {selectedMissionAnalysis.stats.deviceSessions?.desktop || 0}명 |
+                        모바일: {selectedMissionAnalysis.stats.deviceSessions?.mobile || 0}명
                       </div>
                     </div>
-                  ))}
-                </div>
+                  )}
 
-                {missionStats.abComparison.length > 0 && (
-                  <>
-                    <div className="da-sub-title">A/B안 화면 진입 횟수</div>
-                    <div className="da-table-wrap">
-                      <table className="da-table">
-                        <thead>
-                          <tr>
-                            <th>미션</th>
-                            <th>A안</th>
-                            <th>B안</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {missionStats.abComparison.map(ab => (
-                            <tr key={ab.name}>
-                              <td>{ab.name}</td>
-                              <td className="da-num">{ab.viewsA}</td>
-                              <td className="da-num">{ab.viewsB}</td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    </div>
-
-                    <div className="da-sub-title">A/B안 버튼 클릭 횟수</div>
-                    <div className="da-table-wrap">
-                      <table className="da-table">
-                        <thead>
-                          <tr>
-                            <th>미션</th>
-                            <th>A안</th>
-                            <th>B안</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {missionStats.abComparison.map(ab => (
-                            <tr key={ab.name}>
-                              <td>{ab.name}</td>
-                              <td className="da-num">{ab.clicksA}</td>
-                              <td className="da-num">{ab.clicksB}</td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    </div>
-
-                    <div className="da-sub-title">A/B안 평균 체류시간</div>
-                    <div className="da-table-wrap">
-                      <table className="da-table">
-                        <thead>
-                          <tr>
-                            <th>미션</th>
-                            <th>A안 평균</th>
-                            <th>A안 건수</th>
-                            <th>B안 평균</th>
-                            <th>B안 건수</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {missionStats.abComparison.map(ab => (
-                            <tr key={ab.name}>
-                              <td>{ab.name}</td>
-                              <td className="da-num">{formatMs(ab.dwellAvgA)}</td>
-                              <td className="da-num">{ab.dwellCountA}</td>
-                              <td className="da-num">{formatMs(ab.dwellAvgB)}</td>
-                              <td className="da-num">{ab.dwellCountB}</td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    </div>
-                  </>
-                )}
-
-                {missionStats.funnelStats.length > 0 && (
-                  <>
-                    <div className="da-sub-title" style={{ marginTop: 24 }}>미션별 퍼널 / 이탈률 분석</div>
-                    {missionStats.funnelStats.map(f => (
-                      <div key={f.name} style={{ marginBottom: 20 }}>
-                        <div className="da-screen-label">
-                          {f.name} <span className="da-screen-total">전체 이탈률 {f.overallDropoff}%</span>
-                        </div>
-                        <div className="da-table-wrap">
-                          <table className="da-table">
-                            <thead>
-                              <tr>
-                                <th>단계</th>
-                                <th>사용자</th>
-                                <th>잔존율</th>
-                                <th>이탈률</th>
-                              </tr>
-                            </thead>
-                            <tbody>
-                              {f.steps.map((s, i) => (
-                                <tr key={i}>
-                                  <td>{s.label}</td>
-                                  <td className="da-num">{s.count}</td>
-                                  <td className="da-num" style={{ color: '#4CAF50' }}>{s.rate}%</td>
-                                  <td className="da-num" style={{ color: s.dropoff !== '-' && parseFloat(s.dropoff) > 0 ? '#ff6b6b' : '#888' }}>
-                                    {s.dropoff === '-' ? '-' : `${s.dropoff}%`}
-                                  </td>
-                                </tr>
-                              ))}
-                            </tbody>
-                          </table>
-                        </div>
-                        {/* 퍼널 바 시각화 */}
-                        <div className="da-funnel-bars">
-                          {f.steps.map((s, i) => (
-                            <div key={i} className="da-funnel-step">
-                              <div className="da-funnel-label">{s.label}</div>
-                              <div className="da-funnel-bar-bg">
-                                <div
-                                  className="da-funnel-bar-fill"
-                                  style={{ width: `${s.rate}%` }}
-                                />
-                              </div>
-                              <div className="da-funnel-pct">{s.rate}%</div>
+                  {/* 완료율 */}
+                  {selectedItems.completionRate && selectedMissionAnalysis?.stats && (
+                    <div className="da-result-section">
+                      <div className="da-result-section-title">▸ 미션 완료율</div>
+                      {currentMission.isABTest ? (
+                        <div className="da-result-ab-compare">
+                          <div className="da-result-ab-item">
+                            <div className="da-result-ab-label">A안 (6컷)</div>
+                            <div className="da-result-ab-value">{selectedMissionAnalysis.stats.aCompletionRate}%</div>
+                            <div className="da-result-ab-detail">
+                              ({selectedMissionAnalysis.stats.aCompletes}/{selectedMissionAnalysis.stats.aStarts} 완료)
                             </div>
-                          ))}
+                            <div className="da-progress-bar">
+                              <div className="da-progress-fill" style={{ width: `${selectedMissionAnalysis.stats.aCompletionRate}%` }} />
+                            </div>
+                          </div>
+                          <div className="da-result-ab-item">
+                            <div className="da-result-ab-label">B안 (3컷)</div>
+                            <div className="da-result-ab-value">{selectedMissionAnalysis.stats.bCompletionRate}%</div>
+                            <div className="da-result-ab-detail">
+                              ({selectedMissionAnalysis.stats.bCompletes}/{selectedMissionAnalysis.stats.bStarts} 완료)
+                            </div>
+                            <div className="da-progress-bar">
+                              <div className="da-progress-fill" style={{ width: `${selectedMissionAnalysis.stats.bCompletionRate}%` }} />
+                            </div>
+                          </div>
+                        </div>
+                      ) : currentMission.additionalMissionStart ? (
+                        <div className="da-result-ab-compare">
+                          <div className="da-result-ab-item">
+                            <div className="da-result-ab-label">기본 미션</div>
+                            <div className="da-result-ab-value">{selectedMissionAnalysis.stats.basicCompletionRate}%</div>
+                            <div className="da-result-ab-detail">
+                              ({selectedMissionAnalysis.stats.basicCompletes}/{selectedMissionAnalysis.stats.basicStarts})
+                            </div>
+                            <div className="da-progress-bar">
+                              <div className="da-progress-fill" style={{ width: `${selectedMissionAnalysis.stats.basicCompletionRate}%` }} />
+                            </div>
+                          </div>
+                          <div className="da-result-ab-item">
+                            <div className="da-result-ab-label">추가 미션</div>
+                            <div className="da-result-ab-value">{selectedMissionAnalysis.stats.additionalCompletionRate}%</div>
+                            <div className="da-result-ab-detail">
+                              ({selectedMissionAnalysis.stats.additionalCompletes}/{selectedMissionAnalysis.stats.additionalStarts})
+                            </div>
+                            <div className="da-progress-bar">
+                              <div className="da-progress-fill" style={{ width: `${selectedMissionAnalysis.stats.additionalCompletionRate}%` }} />
+                            </div>
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="da-result-section-content">
+                          <div className="da-progress-bar large">
+                            <div className="da-progress-fill" style={{ width: `${selectedMissionAnalysis.stats.completionRate}%` }} />
+                          </div>
+                          <div className="da-result-rate">
+                            {selectedMissionAnalysis.stats.completionRate}%
+                            ({selectedMissionAnalysis.stats.completes}/{selectedMissionAnalysis.stats.starts} 완료)
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                  {/* 소요 시간 */}
+                  {selectedItems.avgTime && selectedMissionAnalysis?.stats && (
+                    <div className="da-result-section">
+                      <div className="da-result-section-title">▸ 평균 소요 시간</div>
+                      {currentMission.isABTest && selectedMissionAnalysis.abComparison ? (
+                        <div className="da-result-ab-compare">
+                          <div className="da-result-ab-item">
+                            <div className="da-result-ab-label">A안</div>
+                            <div className="da-result-ab-value">{selectedMissionAnalysis.abComparison.a.avgTime || '-'}초</div>
+                          </div>
+                          <div className="da-result-ab-item">
+                            <div className="da-result-ab-label">B안</div>
+                            <div className="da-result-ab-value">{selectedMissionAnalysis.abComparison.b.avgTime || '-'}초</div>
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="da-result-section-content">
+                          <span className="da-result-time">{selectedMissionAnalysis.stats.avgTime || '-'}초</span>
+                          {selectedMissionAnalysis.stats.minTime && (
+                            <span className="da-result-time-detail">
+                              (최소: {selectedMissionAnalysis.stats.minTime}초 / 최대: {selectedMissionAnalysis.stats.maxTime}초)
+                            </span>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                  {/* 첫 시도 성공률 */}
+                  {selectedItems.firstTrySuccess && selectedMissionAnalysis?.firstTrySuccess && (
+                    <div className="da-result-section">
+                      <div className="da-result-section-title">▸ 첫 시도 성공률</div>
+                      <div className="da-result-section-content">
+                        <div className="da-progress-bar large">
+                          <div className="da-progress-fill" style={{ width: `${selectedMissionAnalysis.firstTrySuccess.rate}%` }} />
+                        </div>
+                        <div className="da-result-rate">
+                          {selectedMissionAnalysis.firstTrySuccess.rate}%
+                          ({selectedMissionAnalysis.firstTrySuccess.success}/{selectedMissionAnalysis.firstTrySuccess.total})
+                        </div>
+                        <div className="da-result-note">
+                          {currentMission.id === 'edit1-1' && '(재생 버튼 expected=true)'}
+                          {currentMission.id === 'edit2-1' && '(컷4 선택 expected=true)'}
                         </div>
                       </div>
-                    ))}
-                  </>
-                )}
-              </div>
-            )}
-
-            {/* 탭 3: 버튼 분석 */}
-            {activeTab === 'button' && buttonStats && (
-              <div className="da-tab-content">
-                <div className="da-sub-title">화면별 버튼 클릭 상세</div>
-                {buttonStats.screenButtonSummary.map(s => (
-                  <div key={s.screen} style={{ marginBottom: 16 }}>
-                    <div className="da-screen-label">
-                      {s.screen} <span className="da-screen-total">총 {s.totalClicks}회</span>
                     </div>
-                    <div className="da-table-wrap">
-                      <table className="da-table">
-                        <thead>
-                          <tr>
-                            <th>버튼</th>
-                            <th>클릭 수</th>
-                            <th>사용자 수</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {s.buttons.map(b => (
-                            <tr key={b.name}>
-                              <td>{b.name}</td>
-                              <td className="da-num">{b.count}</td>
-                              <td className="da-num">{b.userCount}</td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    </div>
-                  </div>
-                ))}
+                  )}
 
-                {buttonStats.abButtonComparison.length > 0 && (
-                  <>
-                    <div className="da-sub-title" style={{ marginTop: 24 }}>A/B안 버튼 클릭 비교</div>
-                    {buttonStats.abButtonComparison.map(ab => (
-                      <div key={ab.mission} style={{ marginBottom: 16 }}>
-                        <div className="da-screen-label">{ab.mission}</div>
-                        <div className="da-table-wrap">
-                          <table className="da-table">
-                            <thead>
-                              <tr>
-                                <th>버튼</th>
-                                <th>A안 클릭</th>
-                                <th>A안 사용자</th>
-                                <th>B안 클릭</th>
-                                <th>B안 사용자</th>
-                              </tr>
-                            </thead>
-                            <tbody>
-                              {ab.buttons.map(b => (
-                                <tr key={b.name}>
-                                  <td>{b.name}</td>
-                                  <td className="da-num">{b.countA}</td>
-                                  <td className="da-num">{b.usersA}</td>
-                                  <td className="da-num">{b.countB}</td>
-                                  <td className="da-num">{b.usersB}</td>
-                                </tr>
-                              ))}
-                            </tbody>
-                          </table>
+                  {/* 오답 패턴 */}
+                  {selectedItems.wrongPattern && selectedMissionAnalysis?.wrongPattern && selectedMissionAnalysis.wrongPattern.length > 0 && (
+                    <div className="da-result-section">
+                      <div className="da-result-section-title">▸ 오답 패턴 (잘못 선택한 컷)</div>
+                      <div className="da-result-section-content">
+                        {selectedMissionAnalysis.wrongPattern.map(({ cut, count }) => (
+                          <div key={cut} className="da-result-bar-item">
+                            <span className="da-result-bar-label">{cut}</span>
+                            <div className="da-result-bar-bg">
+                              <div
+                                className="da-result-bar-fill wrong"
+                                style={{ width: `${Math.min(count * 20, 100)}%` }}
+                              />
+                            </div>
+                            <span className="da-result-bar-count">{count}회</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* 버튼 클릭 분포 */}
+                  {selectedItems.buttonClicks && selectedMissionAnalysis?.buttonClicks && (
+                    <div className="da-result-section">
+                      <div className="da-result-section-title">▸ 버튼 클릭 분포</div>
+                      <div className="da-result-section-content">
+                        {selectedMissionAnalysis.buttonClicks.slice(0, 10).map(({ name, count }) => (
+                          <div key={name} className="da-result-bar-item">
+                            <span className="da-result-bar-label">{name}</span>
+                            <div className="da-result-bar-bg">
+                              <div
+                                className="da-result-bar-fill"
+                                style={{
+                                  width: `${Math.min((count / (selectedMissionAnalysis.buttonClicks[0]?.count || 1)) * 100, 100)}%`
+                                }}
+                              />
+                            </div>
+                            <span className="da-result-bar-count">{count}회</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* AI 사용률 (편집 6-1) */}
+                  {selectedItems.aiUsage && selectedMissionAnalysis?.aiUsage && (
+                    <div className="da-result-section">
+                      <div className="da-result-section-title">▸ AI 자막 사용 현황</div>
+                      <div className="da-result-section-content">
+                        <div className="da-result-stat-row">
+                          <span>AI자막추천 버튼 클릭:</span>
+                          <span className="da-result-stat-value">{selectedMissionAnalysis.aiUsage.aiButtonClicks}회</span>
+                        </div>
+                        <div className="da-result-stat-row">
+                          <span>AI 추천 자막 선택:</span>
+                          <span className="da-result-stat-value">{selectedMissionAnalysis.aiUsage.aiRecommendSelections}회</span>
                         </div>
                       </div>
-                    ))}
-                  </>
-                )}
-              </div>
+                    </div>
+                  )}
+
+                  {/* A/B 메모 비교 (기획 1-1) */}
+                  {selectedItems.memoAnalysis && selectedMissionAnalysis?.abComparison && (
+                    <div className="da-result-section">
+                      <div className="da-result-section-title">▸ 메모 작성 비교</div>
+                      <div className="da-result-ab-compare">
+                        <div className="da-result-ab-item">
+                          <div className="da-result-ab-label">A안 (6컷)</div>
+                          <div className="da-result-memo-stats">
+                            <div>작성 컷: {selectedMissionAnalysis.abComparison.a.memoStats.count}/{selectedMissionAnalysis.abComparison.a.memoStats.totalCuts || 6}</div>
+                            <div>평균 길이: {selectedMissionAnalysis.abComparison.a.memoStats.avgLength || 0}자</div>
+                            <div>총 길이: {selectedMissionAnalysis.abComparison.a.memoStats.totalLength}자</div>
+                          </div>
+                        </div>
+                        <div className="da-result-ab-item">
+                          <div className="da-result-ab-label">B안 (3컷)</div>
+                          <div className="da-result-memo-stats">
+                            <div>작성 컷: {selectedMissionAnalysis.abComparison.b.memoStats.count}/{selectedMissionAnalysis.abComparison.b.memoStats.totalCuts || 3}</div>
+                            <div>평균 길이: {selectedMissionAnalysis.abComparison.b.memoStats.avgLength || 0}자</div>
+                            <div>총 길이: {selectedMissionAnalysis.abComparison.b.memoStats.totalLength}자</div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* 컷별 메모 작성 현황 */}
+                  {selectedItems.abComparison && selectedMissionAnalysis?.abComparison && (
+                    <div className="da-result-section">
+                      <div className="da-result-section-title">▸ 컷별 메모 작성 현황</div>
+                      <div className="da-result-section-content">
+                        <div className="da-result-cut-status">
+                          <div className="da-result-cut-label">A안:</div>
+                          <div className="da-result-cut-items">
+                            {(selectedMissionAnalysis.abComparison.a.memoStats.details || []).map((d, i) => (
+                              <span key={i} className={`da-result-cut-item ${d.hasMemo ? 'filled' : ''}`}>
+                                컷{d.cutId}{d.hasMemo ? '✅' : '☐'}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                        <div className="da-result-cut-status">
+                          <div className="da-result-cut-label">B안:</div>
+                          <div className="da-result-cut-items">
+                            {(selectedMissionAnalysis.abComparison.b.memoStats.details || []).map((d, i) => (
+                              <span key={i} className={`da-result-cut-item ${d.hasMemo ? 'filled' : ''}`}>
+                                {d.cutLabel || `컷${d.cutId}`}{d.hasMemo ? '✅' : '☐'}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </>
             )}
           </>
         )}
