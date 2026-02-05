@@ -48,7 +48,16 @@ const MISSIONS = {
     screenPrefix: '편집1-1',
     missionStartTarget: '편집1-1_미션시작',
     missionCompleteTarget: '편집1-1_미션완료',
-    analysisItems: ['completionRate', 'avgTime', 'firstTrySuccess', 'buttonClicks', 'deviceStats'],
+    analysisItems: ['funnel', 'completionRate', 'avgTime', 'firstTrySuccess', 'buttonClicks', 'deviceStats'],
+    // 퍼널 단계 정의
+    funnelSteps: [
+      { id: 'screenEnter', name: '화면 진입', event: '화면 진입', screen: '편집1-1_화면' },
+      { id: 'missionStart', name: '미션 시작', event: '미션 시작', target: '편집1-1_미션시작' },
+      { id: 'videoAdd', name: '영상 추가', event: '버튼 클릭', target: '영상추가' },
+      { id: 'videoUpload', name: '업로드 완료', event: '버튼 클릭', target: '영상업로드완료' },
+      { id: 'play', name: '재생 클릭', event: '버튼 클릭', target: '재생' },
+      { id: 'missionComplete', name: '미션 완료', event: '미션 완료', target: '편집1-1_미션완료' },
+    ],
   },
   'edit2-1': {
     id: 'edit2-1',
@@ -57,7 +66,13 @@ const MISSIONS = {
     screenPrefix: '편집2-1',
     missionStartTarget: '편집2-1_미션시작',
     missionCompleteTarget: '편집2-1_미션완료',
-    analysisItems: ['completionRate', 'avgTime', 'firstTrySuccess', 'wrongPattern', 'buttonClicks', 'deviceStats'],
+    analysisItems: ['funnel', 'completionRate', 'avgTime', 'firstTrySuccess', 'wrongPattern', 'buttonClicks', 'deviceStats'],
+    funnelSteps: [
+      { id: 'screenEnter', name: '화면 진입', event: '화면 진입', screen: '편집2-1_화면' },
+      { id: 'missionStart', name: '미션 시작', event: '미션 시작', target: '편집2-1_미션시작' },
+      { id: 'cutSelect', name: '컷 선택', event: '버튼 클릭', targetPrefix: '컷' },
+      { id: 'missionComplete', name: '미션 완료', event: '미션 완료', target: '편집2-1_미션완료' },
+    ],
   },
   'edit6-1': {
     id: 'edit6-1',
@@ -68,7 +83,16 @@ const MISSIONS = {
     missionCompleteTarget: '편집6-1_기본미션완료',
     additionalMissionStart: '편집6-1_추가미션시작',
     additionalMissionComplete: '편집6-1_추가미션완료',
-    analysisItems: ['completionRate', 'avgTime', 'stageFlow', 'aiUsage', 'buttonClicks', 'deviceStats'],
+    analysisItems: ['funnel', 'completionRate', 'avgTime', 'stageFlow', 'aiUsage', 'buttonClicks', 'deviceStats'],
+    funnelSteps: [
+      { id: 'screenEnter', name: '화면 진입', event: '화면 진입', screen: '편집6-1_화면' },
+      { id: 'basicStart', name: '기본 미션 시작', event: '미션 시작', target: '편집6-1_기본미션시작' },
+      { id: 'videoAdd', name: '영상 추가', event: '버튼 클릭', target: '영상추가' },
+      { id: 'aiSubtitle', name: 'AI 자막 추천', event: '버튼 클릭', target: 'AI자막추천' },
+      { id: 'basicComplete', name: '기본 미션 완료', event: '미션 완료', target: '편집6-1_기본미션완료' },
+      { id: 'additionalStart', name: '추가 미션 시작', event: '미션 시작', target: '편집6-1_추가미션시작' },
+      { id: 'additionalComplete', name: '추가 미션 완료', event: '미션 완료', target: '편집6-1_추가미션완료' },
+    ],
   },
   'plan1-1': {
     id: 'plan1-1',
@@ -82,12 +106,21 @@ const MISSIONS = {
     aMissionComplete: '기획1-1_A미션완료',
     bMissionStart: '기획1-1_B미션시작',
     bMissionComplete: '기획1-1_B미션완료',
-    analysisItems: ['completionRate', 'avgTime', 'memoAnalysis', 'abComparison', 'buttonClicks', 'deviceStats'],
+    analysisItems: ['funnel', 'completionRate', 'avgTime', 'memoAnalysis', 'abComparison', 'buttonClicks', 'deviceStats'],
+    funnelSteps: [
+      { id: 'aScreenEnter', name: 'A안 화면 진입', event: '화면 진입', screen: '기획1-1A_화면' },
+      { id: 'aMissionStart', name: 'A안 미션 시작', event: '미션 시작', target: '기획1-1_A미션시작' },
+      { id: 'aMissionComplete', name: 'A안 미션 완료', event: '미션 완료', target: '기획1-1_A미션완료' },
+      { id: 'bScreenEnter', name: 'B안 화면 진입', event: '화면 진입', screen: '기획1-1B_화면' },
+      { id: 'bMissionStart', name: 'B안 미션 시작', event: '미션 시작', target: '기획1-1_B미션시작' },
+      { id: 'bMissionComplete', name: 'B안 미션 완료', event: '미션 완료', target: '기획1-1_B미션완료' },
+    ],
   },
 };
 
 // 분석 항목 정의
 const ANALYSIS_ITEMS = {
+  funnel: { id: 'funnel', name: '퍼널 분석', icon: '🔥' },
   completionRate: { id: 'completionRate', name: '완료율', icon: '📊' },
   avgTime: { id: 'avgTime', name: '소요시간', icon: '⏱️' },
   firstTrySuccess: { id: 'firstTrySuccess', name: '첫시도 성공률', icon: '🎯' },
@@ -424,6 +457,89 @@ function computeAIUsage(data, mission) {
   };
 }
 
+// 퍼널 분석 계산
+function computeFunnelAnalysis(data, mission) {
+  if (!mission.funnelSteps) return null;
+
+  const validRows = data.filter(r => r['사용자ID']);
+
+  // 각 단계별 고유 세션 수 계산
+  const funnelData = mission.funnelSteps.map((step, index) => {
+    let sessionSet = new Set();
+
+    validRows.forEach(r => {
+      const event = r['이벤트'];
+      const screen = r['화면'];
+      const target = r['대상'];
+      const session = r['사용자ID'];
+
+      // 이벤트 타입 매칭
+      if (event !== step.event) return;
+
+      // 화면 또는 대상 매칭
+      if (step.screen && screen !== step.screen) return;
+      if (step.target && target !== step.target) return;
+      if (step.targetPrefix && !target?.startsWith(step.targetPrefix)) return;
+
+      sessionSet.add(session);
+    });
+
+    return {
+      id: step.id,
+      name: step.name,
+      sessions: sessionSet.size,
+      sessionList: Array.from(sessionSet),
+    };
+  });
+
+  // 첫 단계 기준 전환율 계산
+  const firstStepSessions = funnelData[0]?.sessions || 0;
+
+  const result = funnelData.map((step, index) => {
+    const prevStep = index > 0 ? funnelData[index - 1] : null;
+    const prevSessions = prevStep?.sessions || firstStepSessions;
+
+    return {
+      ...step,
+      // 전체 대비 전환율 (첫 단계 기준)
+      overallRate: firstStepSessions > 0
+        ? ((step.sessions / firstStepSessions) * 100).toFixed(1)
+        : '0.0',
+      // 이전 단계 대비 전환율
+      stepRate: prevSessions > 0
+        ? ((step.sessions / prevSessions) * 100).toFixed(1)
+        : '0.0',
+      // 드롭오프 (이전 단계에서 이탈한 수)
+      dropoff: prevStep ? prevStep.sessions - step.sessions : 0,
+      dropoffRate: prevStep && prevStep.sessions > 0
+        ? (((prevStep.sessions - step.sessions) / prevStep.sessions) * 100).toFixed(1)
+        : '0.0',
+    };
+  });
+
+  // 가장 큰 드롭오프 지점 찾기
+  let maxDropoffIndex = -1;
+  let maxDropoffRate = 0;
+  result.forEach((step, index) => {
+    if (index > 0 && parseFloat(step.dropoffRate) > maxDropoffRate) {
+      maxDropoffRate = parseFloat(step.dropoffRate);
+      maxDropoffIndex = index;
+    }
+  });
+
+  return {
+    steps: result,
+    totalSteps: result.length,
+    firstStepSessions,
+    lastStepSessions: result[result.length - 1]?.sessions || 0,
+    overallConversion: firstStepSessions > 0
+      ? ((result[result.length - 1]?.sessions / firstStepSessions) * 100).toFixed(1)
+      : '0.0',
+    maxDropoffStep: maxDropoffIndex >= 0 ? result[maxDropoffIndex] : null,
+    maxDropoffPrevStep: maxDropoffIndex > 0 ? result[maxDropoffIndex - 1] : null,
+  };
+}
+
 // 전체 요약 통계
 function computeOverallStats(data) {
   const validRows = data.filter(r => r['사용자ID']);
@@ -532,6 +648,7 @@ function DataAnalysis({ onBack }) {
 
     return {
       stats,
+      funnel: computeFunnelAnalysis(csvData, mission),
       firstTrySuccess: computeFirstTrySuccess(csvData, mission),
       wrongPattern: computeWrongPattern(csvData, mission),
       buttonClicks: computeButtonClicks(csvData, mission),
@@ -676,6 +793,78 @@ function DataAnalysis({ onBack }) {
                   <div className="da-result-header">
                     {currentMission.isABTest ? '📝' : '🎬'} {currentMission.description}
                   </div>
+
+                  {/* 퍼널 분석 */}
+                  {selectedItems.funnel && selectedMissionAnalysis?.funnel && (
+                    <div className="da-result-section">
+                      <div className="da-result-section-title">▸ 사용자 흐름 (퍼널)</div>
+                      <div className="da-result-section-content">
+                        {/* 전체 전환율 요약 */}
+                        <div className="da-funnel-summary">
+                          <span className="da-funnel-summary-label">전체 전환율:</span>
+                          <span className="da-funnel-summary-value">
+                            {selectedMissionAnalysis.funnel.overallConversion}%
+                          </span>
+                          <span className="da-funnel-summary-detail">
+                            ({selectedMissionAnalysis.funnel.lastStepSessions}/{selectedMissionAnalysis.funnel.firstStepSessions}명 완료)
+                          </span>
+                        </div>
+
+                        {/* 퍼널 바 시각화 */}
+                        <div className="da-funnel-bars">
+                          {selectedMissionAnalysis.funnel.steps.map((step, index) => (
+                            <div key={step.id} className="da-funnel-step">
+                              <span className="da-funnel-label">{step.name}</span>
+                              <div className="da-funnel-bar-bg">
+                                <div
+                                  className="da-funnel-bar-fill"
+                                  style={{ width: `${step.overallRate}%` }}
+                                />
+                              </div>
+                              <span className="da-funnel-pct">
+                                {step.sessions}명
+                              </span>
+                            </div>
+                          ))}
+                        </div>
+
+                        {/* 단계별 드롭오프 */}
+                        <div className="da-funnel-dropoff">
+                          <div className="da-funnel-dropoff-title">단계별 이탈률</div>
+                          {selectedMissionAnalysis.funnel.steps.slice(1).map((step, index) => {
+                            const prevStep = selectedMissionAnalysis.funnel.steps[index];
+                            const isMaxDropoff = selectedMissionAnalysis.funnel.maxDropoffStep?.id === step.id;
+                            return (
+                              <div
+                                key={step.id}
+                                className={`da-funnel-dropoff-item ${isMaxDropoff ? 'warning' : ''}`}
+                              >
+                                <span className="da-funnel-dropoff-label">
+                                  {prevStep.name} → {step.name}
+                                </span>
+                                <span className={`da-funnel-dropoff-value ${parseFloat(step.dropoffRate) > 20 ? 'high' : ''}`}>
+                                  {step.dropoff > 0 ? `-${step.dropoff}명` : '0명'}
+                                  {step.dropoff > 0 && ` (${step.dropoffRate}%)`}
+                                </span>
+                              </div>
+                            );
+                          })}
+                        </div>
+
+                        {/* 병목 지점 알림 */}
+                        {selectedMissionAnalysis.funnel.maxDropoffStep && parseFloat(selectedMissionAnalysis.funnel.maxDropoffStep.dropoffRate) > 10 && (
+                          <div className="da-funnel-insight">
+                            <span className="da-funnel-insight-icon">⚠️</span>
+                            <span className="da-funnel-insight-text">
+                              <strong>{selectedMissionAnalysis.funnel.maxDropoffPrevStep?.name}</strong> →{' '}
+                              <strong>{selectedMissionAnalysis.funnel.maxDropoffStep?.name}</strong> 단계에서{' '}
+                              {selectedMissionAnalysis.funnel.maxDropoffStep?.dropoffRate}% 이탈 발생
+                            </span>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
 
                   {/* 참여 현황 */}
                   {selectedItems.deviceStats && selectedMissionAnalysis?.stats && (

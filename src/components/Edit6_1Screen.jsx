@@ -413,24 +413,26 @@ function Edit6_1Screen({ onComplete, onBack }) {
     alert('저장되었습니다.');
   };
 
-  // 완료
+  // 완료 - 이 버튼으로는 미션 완료 불가, AI 자막 추천으로만 완료 가능
   const handleComplete = () => {
     const uploadedCuts = cutData.filter(cut => cut.videoPreview).length;
     const state = {
       currentCut: currentCutIndex + 1,
       uploadedCuts,
       missionStage,
-      expected: missionStage > 0  // AI 자막 추천 후에 클릭해야 정상
+      expected: false  // 이 버튼으로는 미션 완료 불가
     };
     logButtonClick('편집6-1_화면', '바로편집시작', JSON.stringify(state));
-    // AI 자막 추천을 눌러야만 미션 완료 가능
+
+    // 미션 단계에 따른 안내 메시지
     if (missionStage === 0) {
-      alert('AI 자막 추천 버튼을 눌러 미션을 완료해주세요.');
-      return;
+      alert('AI 자막 추천 버튼을 눌러 기본 미션을 완료해주세요.');
+    } else if (missionStage === 1) {
+      alert('팝업에서 확인 버튼을 눌러주세요.');
+    } else if (missionStage === 2) {
+      alert('AI 자막 추천 버튼을 다시 눌러 추가 미션을 완료해주세요.');
     }
-    const completionTime = ((Date.now() - missionStartTime.current) / 1000).toFixed(1);
-    logMissionComplete('편집6-1_화면', '편집6-1_기본미션완료', `완료시간:${completionTime}초`);
-    setCompleted(true);
+    // 미션 완료는 AI 자막 추천 버튼에서만 처리됨
   };
 
   if (!currentCut) {

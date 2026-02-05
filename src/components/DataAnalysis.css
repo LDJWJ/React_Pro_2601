@@ -294,6 +294,105 @@
   text-align: right;
 }
 
+/* 퍼널 요약 */
+.da-funnel-summary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+  padding: 10px 12px;
+  background: #1a1a1a;
+  border-radius: 8px;
+}
+
+.da-funnel-summary-label {
+  font-size: 12px;
+  color: #888;
+}
+
+.da-funnel-summary-value {
+  font-size: 18px;
+  font-weight: 700;
+  color: #F8FF33;
+}
+
+.da-funnel-summary-detail {
+  font-size: 11px;
+  color: #666;
+}
+
+/* 퍼널 드롭오프 */
+.da-funnel-dropoff {
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px solid #333;
+}
+
+.da-funnel-dropoff-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: #888;
+  margin-bottom: 8px;
+}
+
+.da-funnel-dropoff-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 8px;
+  margin-bottom: 4px;
+  background: #1a1a1a;
+  border-radius: 6px;
+  border-left: 3px solid transparent;
+}
+
+.da-funnel-dropoff-item.warning {
+  border-left-color: #ff6b6b;
+  background: #2a1a1a;
+}
+
+.da-funnel-dropoff-label {
+  font-size: 11px;
+  color: #aaa;
+}
+
+.da-funnel-dropoff-value {
+  font-size: 11px;
+  color: #666;
+}
+
+.da-funnel-dropoff-value.high {
+  color: #ff6b6b;
+  font-weight: 600;
+}
+
+/* 퍼널 인사이트 */
+.da-funnel-insight {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin-top: 12px;
+  padding: 10px 12px;
+  background: linear-gradient(135deg, #2a2a1a 0%, #2a1a1a 100%);
+  border: 1px solid #444;
+  border-radius: 8px;
+}
+
+.da-funnel-insight-icon {
+  font-size: 14px;
+  flex-shrink: 0;
+}
+
+.da-funnel-insight-text {
+  font-size: 12px;
+  color: #ccc;
+  line-height: 1.4;
+}
+
+.da-funnel-insight-text strong {
+  color: #F8FF33;
+}
+
 .da-loading {
   text-align: center;
   padding: 40px 0;
