@@ -54,7 +54,7 @@ const MISSIONS = {
     screenPrefix: '편집1-1',
     missionStartTarget: '편집1-1_미션시작',
     missionCompleteTarget: '편집1-1_미션완료',
-    analysisItems: ['funnel', 'completionRate', 'avgTime', 'firstTrySuccess', 'heatmap', 'buttonClicks', 'deviceStats'],
+    analysisItems: ['funnel', 'completionRate', 'avgTime', 'timeAnalysis', 'firstTrySuccess', 'heatmap', 'buttonClicks', 'deviceStats'],
     // 퍼널 단계 정의
     funnelSteps: [
       { id: 'screenEnter', name: '화면 진입', event: '화면 진입', screen: '편집1-1_화면' },
@@ -72,7 +72,7 @@ const MISSIONS = {
     screenPrefix: '편집2-1',
     missionStartTarget: '편집2-1_미션시작',
     missionCompleteTarget: '편집2-1_미션완료',
-    analysisItems: ['funnel', 'completionRate', 'avgTime', 'firstTrySuccess', 'wrongPattern', 'heatmap', 'buttonClicks', 'deviceStats'],
+    analysisItems: ['funnel', 'completionRate', 'avgTime', 'timeAnalysis', 'firstTrySuccess', 'wrongPattern', 'heatmap', 'buttonClicks', 'deviceStats'],
     funnelSteps: [
       { id: 'screenEnter', name: '화면 진입', event: '화면 진입', screen: '편집2-1_화면' },
       { id: 'missionStart', name: '미션 시작', event: '미션 시작', target: '편집2-1_미션시작' },
@@ -129,6 +129,7 @@ const ANALYSIS_ITEMS = {
   funnel: { id: 'funnel', name: '퍼널 분석', icon: '🔥' },
   completionRate: { id: 'completionRate', name: '완료율', icon: '📊' },
   avgTime: { id: 'avgTime', name: '소요시간', icon: '⏱️' },
+  timeAnalysis: { id: 'timeAnalysis', name: '시간 분석', icon: '⏰' },
   firstTrySuccess: { id: 'firstTrySuccess', name: '첫시도 성공률', icon: '🎯' },
   wrongPattern: { id: 'wrongPattern', name: '오답 패턴', icon: '❌' },
   buttonClicks: { id: 'buttonClicks', name: '버튼 클릭', icon: '👆' },
@@ -466,6 +467,163 @@ function computeAIUsage(data, mission) {
     aiButtonClicks: aiClicks,
     aiRecommendSelections: aiRecommendClicks,
   };
+}
+
+// 시간 분석 계산
+function computeTimeAnalysis(data, mission) {
+  const validRows = data.filter(r => r['사용자ID'] && r['타임스탬프']);
+
+  // 타임스탬프 파싱 함수
+  const parseTimestamp = (ts) => {
+    if (!ts) return null;
+    // "2026. 2. 6 오전 1:37:26" 형식 파싱
+    const match = ts.match(/(\d+)\.\s*(\d+)\.\s*(\d+)\s*(오전|오후)\s*(\d+):(\d+):(\d+)/);
+    if (!match) return null;
+    let [, year, month, day, ampm, hour, min, sec] = match;
+    hour = parseInt(hour);
+    if (ampm === '오후' && hour !== 12) hour += 12;
+    if (ampm === '오전' && hour === 12) hour = 0;
+    return new Date(year, month - 1, day, hour, min, sec);
+  };
+
+  // 세션별 데이터 그룹화
+  const sessionData = {};
+  validRows.forEach(r => {
+    const session = r['사용자ID'];
+    if (!sessionData[session]) sessionData[session] = [];
+    sessionData[session].push({
+      ...r,
+      parsedTime: parseTimestamp(r['타임스탬프']),
+    });
+  });
+
+  // 세션별 시간순 정렬
+  Object.values(sessionData).forEach(events => {
+    events.sort((a, b) => (a.parsedTime || 0) - (b.parsedTime || 0));
+  });
+
+  const results = {
+    // 화면별 체류 시간
+    dwellTimes: [],
+    avgDwellTime: null,
+    // 첫 인터랙션까지 시간
+    firstInteractionTimes: [],
+    avgFirstInteraction: null,
+    // 동작 간 간격 (망설임 시간)
+    actionIntervals: [],
+    avgActionInterval: null,
+    // 미션 완료 시간 분포
+    completionTimeDistribution: [],
+  };
+
+  // 각 세션 분석
+  Object.entries(sessionData).forEach(([sessionId, events]) => {
+    // 해당 미션 화면 이벤트만 필터링
+    const missionEvents = events.filter(e =>
+      e['화면']?.includes(mission.screenPrefix)
+    );
+
+    if (missionEvents.length === 0) return;
+
+    // 1. 화면 진입 찾기
+    const screenEntry = missionEvents.find(e => e['이벤트'] === '화면 진입');
+    const screenExit = missionEvents.find(e => e['이벤트'] === '화면 이탈');
+
+    // 체류 시간 (화면 이탈 로그의 값에서 추출)
+    if (screenExit && screenExit['값']) {
+      const match = screenExit['값'].match(/([\d.]+)초/);
+      if (match) {
+        results.dwellTimes.push(parseFloat(match[1]));
+      }
+    }
+
+    // 2. 첫 인터랙션까지 시간
+    if (screenEntry && screenEntry.parsedTime) {
+      const firstAction = missionEvents.find(e =>
+        e['이벤트'] === '버튼 클릭' && e.parsedTime > screenEntry.parsedTime
+      );
+      if (firstAction && firstAction.parsedTime) {
+        const timeToFirst = (firstAction.parsedTime - screenEntry.parsedTime) / 1000;
+        if (timeToFirst > 0 && timeToFirst < 300) { // 5분 이내만
+          results.firstInteractionTimes.push(timeToFirst);
+        }
+      }
+    }
+
+    // 3. 동작 간 간격 (버튼 클릭 사이 시간)
+    const buttonClicks = missionEvents.filter(e =>
+      e['이벤트'] === '버튼 클릭' && e.parsedTime
+    );
+    for (let i = 1; i < buttonClicks.length; i++) {
+      const interval = (buttonClicks[i].parsedTime - buttonClicks[i - 1].parsedTime) / 1000;
+      if (interval > 0 && interval < 60) { // 1분 이내만 (비정상적 간격 제외)
+        results.actionIntervals.push({
+          from: buttonClicks[i - 1]['대상'],
+          to: buttonClicks[i]['대상'],
+          interval,
+        });
+      }
+    }
+
+    // 4. 미션 완료 시간
+    const missionComplete = missionEvents.find(e => e['이벤트'] === '미션 완료');
+    if (missionComplete && missionComplete['값']) {
+      const match = missionComplete['값'].match(/완료시간:([\d.]+)초/);
+      if (match) {
+        results.completionTimeDistribution.push(parseFloat(match[1]));
+      }
+    }
+  });
+
+  // 평균 계산
+  const calcAvg = (arr) => arr.length > 0
+    ? (arr.reduce((a, b) => a + b, 0) / arr.length).toFixed(1)
+    : null;
+
+  results.avgDwellTime = calcAvg(results.dwellTimes);
+  results.avgFirstInteraction = calcAvg(results.firstInteractionTimes);
+
+  // 동작 간격 평균
+  const intervals = results.actionIntervals.map(a => a.interval);
+  results.avgActionInterval = calcAvg(intervals);
+
+  // 시간 분포 구간화 (히스토그램용)
+  const createDistribution = (times, bucketSize = 5) => {
+    if (times.length === 0) return [];
+    const buckets = {};
+    times.forEach(t => {
+      const bucket = Math.floor(t / bucketSize) * bucketSize;
+      const label = `${bucket}-${bucket + bucketSize}초`;
+      buckets[label] = (buckets[label] || 0) + 1;
+    });
+    return Object.entries(buckets)
+      .map(([label, count]) => ({ label, count }))
+      .sort((a, b) => parseInt(a.label) - parseInt(b.label));
+  };
+
+  results.dwellTimeDistribution = createDistribution(results.dwellTimes, 5);
+  results.completionTimeHist = createDistribution(results.completionTimeDistribution, 5);
+
+  // 망설임 구간 분석 (어떤 동작 후에 오래 머물렀나)
+  const hesitationByAction = {};
+  results.actionIntervals.forEach(({ from, interval }) => {
+    if (!hesitationByAction[from]) {
+      hesitationByAction[from] = { total: 0, count: 0 };
+    }
+    hesitationByAction[from].total += interval;
+    hesitationByAction[from].count += 1;
+  });
+
+  results.hesitationByAction = Object.entries(hesitationByAction)
+    .map(([action, data]) => ({
+      action,
+      avgTime: (data.total / data.count).toFixed(1),
+      count: data.count,
+    }))
+    .sort((a, b) => parseFloat(b.avgTime) - parseFloat(a.avgTime))
+    .slice(0, 5); // 상위 5개
+
+  return results;
 }
 
 // 히트맵 데이터 계산

@@ -32,19 +32,25 @@ function Edit6_1Screen({ onComplete, onBack }) {
   const videoRef = useRef(null);
   const missionStartTime = useRef(null);
   const missionStartLogged = useRef(false);
+  const missionCompletingRef = useRef(false);  // 중복 완료 방지용 ref
 
   useEffect(() => {
     const enterTime = Date.now();
     missionStartTime.current = enterTime;
-    // 화면 진입 로그를 먼저 전송
-    logScreenView('편집6-1_화면');
-    // 미션 시작 로그는 화면 진입 로그 후에 전송 (지연 시간 증가)
-    if (!missionStartLogged.current) {
-      missionStartLogged.current = true;
-      setTimeout(() => {
-        logMissionStart('편집6-1_화면', '편집6-1_기본미션시작');
-      }, 300);
-    }
+
+    // 화면 진입 로그를 먼저 전송 (완료 대기)
+    const initLogs = async () => {
+      await logScreenView('편집6-1_화면');
+      // 미션 시작 로그는 화면 진입 로그 후에 전송
+      if (!missionStartLogged.current) {
+        missionStartLogged.current = true;
+        setTimeout(() => {
+          logMissionStart('편집6-1_화면', '편집6-1_기본미션시작');
+        }, 500);
+      }
+    };
+    initLogs();
+
     setCutData(defaultCuts.map(cut => ({
       ...cut,
       videoFile: null,
@@ -315,7 +321,9 @@ function Edit6_1Screen({ onComplete, onBack }) {
     } finally {
       setIsLoadingAI(false);
       // 첫 번째 미션: AI 자막 추천 버튼을 누르면 2초 후 1차 미션 완료 팝업 표시
-      if (missionStage === 0) {
+      // missionCompletingRef로 동기적 중복 방지 (setState는 비동기라 빠른 연속 클릭 시 중복 발생 가능)
+      if (missionStage === 0 && !missionCompletingRef.current) {
+        missionCompletingRef.current = true;  // 동기적으로 즉시 설정
         setIsCompleting(true);
         setTimeout(() => {
           const completionTime = ((Date.now() - missionStartTime.current) / 1000).toFixed(1);
@@ -324,11 +332,13 @@ function Edit6_1Screen({ onComplete, onBack }) {
           missionStartTime.current = Date.now(); // 추가 미션 시작 시간 초기화
           setMissionStage(1);
           setShowPopup(true);
-          setIsCompleting(false); // 팝업 표시 후 다시 활성화
+          setIsCompleting(false);
+          missionCompletingRef.current = false;  // 팝업 후 초기화
         }, 2000);
       }
       // 두 번째 미션: 재추천 대기 상태에서 AI 자막 추천을 다시 누르면 2초 후 완료
-      if (missionStage === 2) {
+      if (missionStage === 2 && !missionCompletingRef.current) {
+        missionCompletingRef.current = true;  // 동기적으로 즉시 설정
         setIsCompleting(true);
         setTimeout(() => {
           const completionTime = ((Date.now() - missionStartTime.current) / 1000).toFixed(1);

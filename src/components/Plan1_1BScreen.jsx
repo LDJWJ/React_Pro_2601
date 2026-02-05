@@ -16,21 +16,27 @@ function Plan1_1BScreen({ onComplete, onBack }) {
   const scrollRef = useRef(null);
   const missionStartTime = useRef(null);
   const missionStartLogged = useRef(false);
+  const savingRef = useRef(false);  // 중복 저장 방지용 ref
 
   const cuts = defaultCuts;
 
   useEffect(() => {
     const enterTime = Date.now();
     missionStartTime.current = enterTime;
-    // 화면 진입 로그를 먼저 전송
-    logScreenView('기획1-1B_화면');
-    // 미션 시작 로그는 화면 진입 로그 후에 전송 (지연 시간 증가)
-    if (!missionStartLogged.current) {
-      missionStartLogged.current = true;
-      setTimeout(() => {
-        logMissionStart('기획1-1B_화면', '기획1-1_B미션시작');
-      }, 300);
-    }
+
+    // 화면 진입 로그를 먼저 전송 (완료 대기)
+    const initLogs = async () => {
+      await logScreenView('기획1-1B_화면');
+      // 미션 시작 로그는 화면 진입 로그 후에 전송
+      if (!missionStartLogged.current) {
+        missionStartLogged.current = true;
+        setTimeout(() => {
+          logMissionStart('기획1-1B_화면', '기획1-1_B미션시작');
+        }, 500);
+      }
+    };
+    initLogs();
+
     return () => {
       const dwellTime = Date.now() - enterTime;
       logScreenExit('기획1-1B_화면', dwellTime);
@@ -80,8 +86,9 @@ function Plan1_1BScreen({ onComplete, onBack }) {
   };
 
   const handleSave = () => {
-    // 중복 클릭 방지
-    if (isSaving) return;
+    // 중복 클릭 방지 (ref로 동기적 체크)
+    if (isSaving || savingRef.current) return;
+    savingRef.current = true;  // 동기적으로 즉시 설정
     setIsSaving(true);
 
     // 메모 개수 및 길이 계산
