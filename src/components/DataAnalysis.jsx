@@ -89,7 +89,7 @@ const MISSIONS = {
     missionCompleteTarget: '편집6-1_기본미션완료',
     additionalMissionStart: '편집6-1_추가미션시작',
     additionalMissionComplete: '편집6-1_추가미션완료',
-    analysisItems: ['funnel', 'completionRate', 'avgTime', 'stageFlow', 'aiUsage', 'heatmap', 'buttonClicks', 'deviceStats'],
+    analysisItems: ['funnel', 'completionRate', 'avgTime', 'timeAnalysis', 'stageFlow', 'aiUsage', 'heatmap', 'buttonClicks', 'deviceStats'],
     funnelSteps: [
       { id: 'screenEnter', name: '화면 진입', event: '화면 진입', screen: '편집6-1_화면' },
       { id: 'basicStart', name: '기본 미션 시작', event: '미션 시작', target: '편집6-1_기본미션시작' },
@@ -112,7 +112,7 @@ const MISSIONS = {
     aMissionComplete: '기획1-1_A미션완료',
     bMissionStart: '기획1-1_B미션시작',
     bMissionComplete: '기획1-1_B미션완료',
-    analysisItems: ['funnel', 'completionRate', 'avgTime', 'memoAnalysis', 'abComparison', 'heatmap', 'buttonClicks', 'deviceStats'],
+    analysisItems: ['funnel', 'completionRate', 'avgTime', 'timeAnalysis', 'memoAnalysis', 'abComparison', 'heatmap', 'buttonClicks', 'deviceStats'],
     funnelSteps: [
       { id: 'aScreenEnter', name: 'A안 화면 진입', event: '화면 진입', screen: '기획1-1A_화면' },
       { id: 'aMissionStart', name: 'A안 미션 시작', event: '미션 시작', target: '기획1-1_A미션시작' },
@@ -1104,6 +1104,7 @@ function DataAnalysis({ onBack }) {
       wrongPattern: computeWrongPattern(csvData, mission),
       buttonClicks: computeButtonClicks(csvData, mission),
       heatmap: computeHeatmapData(csvData, mission),
+      timeAnalysis: computeTimeAnalysis(csvData, mission),
       abComparison: computeABComparison(csvData, mission),
       aiUsage: computeAIUsage(csvData, mission),
     };
@@ -1419,6 +1420,76 @@ function DataAnalysis({ onBack }) {
                           )}
                         </div>
                       )}
+                    </div>
+                  )}
+
+                  {/* 시간 분석 */}
+                  {selectedItems.timeAnalysis && selectedMissionAnalysis?.timeAnalysis && (
+                    <div className="da-result-section">
+                      <div className="da-result-section-title">▸ 시간 분석</div>
+                      <div className="da-result-section-content">
+                        {/* 주요 시간 지표 */}
+                        <div className="da-time-metrics">
+                          <div className="da-time-metric-item">
+                            <span className="da-time-metric-label">평균 체류시간</span>
+                            <span className="da-time-metric-value">
+                              {selectedMissionAnalysis.timeAnalysis.avgDwellTime || '-'}초
+                            </span>
+                          </div>
+                          <div className="da-time-metric-item">
+                            <span className="da-time-metric-label">첫 인터랙션</span>
+                            <span className="da-time-metric-value">
+                              {selectedMissionAnalysis.timeAnalysis.avgFirstInteraction || '-'}초
+                            </span>
+                          </div>
+                          <div className="da-time-metric-item">
+                            <span className="da-time-metric-label">동작 간 간격</span>
+                            <span className="da-time-metric-value">
+                              {selectedMissionAnalysis.timeAnalysis.avgActionInterval || '-'}초
+                            </span>
+                          </div>
+                        </div>
+
+                        {/* 망설임 구간 (어떤 동작 후에 오래 머물렀나) */}
+                        {selectedMissionAnalysis.timeAnalysis.hesitationByAction?.length > 0 && (
+                          <div className="da-hesitation-section">
+                            <div className="da-hesitation-title">🤔 망설임 구간 (동작 후 평균 대기시간)</div>
+                            {selectedMissionAnalysis.timeAnalysis.hesitationByAction.map(({ action, avgTime, count }) => (
+                              <div key={action} className="da-hesitation-item">
+                                <span className="da-hesitation-action">{action}</span>
+                                <div className="da-hesitation-bar-bg">
+                                  <div
+                                    className="da-hesitation-bar-fill"
+                                    style={{ width: `${Math.min(parseFloat(avgTime) * 10, 100)}%` }}
+                                  />
+                                </div>
+                                <span className="da-hesitation-time">{avgTime}초</span>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+
+                        {/* 완료 시간 분포 */}
+                        {selectedMissionAnalysis.timeAnalysis.completionTimeHist?.length > 0 && (
+                          <div className="da-time-distribution">
+                            <div className="da-time-dist-title">📊 완료 시간 분포</div>
+                            {selectedMissionAnalysis.timeAnalysis.completionTimeHist.map(({ label, count }) => (
+                              <div key={label} className="da-time-dist-item">
+                                <span className="da-time-dist-label">{label}</span>
+                                <div className="da-time-dist-bar-bg">
+                                  <div
+                                    className="da-time-dist-bar-fill"
+                                    style={{
+                                      width: `${Math.min(count * 25, 100)}%`
+                                    }}
+                                  />
+                                </div>
+                                <span className="da-time-dist-count">{count}명</span>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
                     </div>
                   )}
 

@@ -1010,3 +1010,148 @@
   border-radius: 10px;
   margin-left: auto;
 }
+
+/* 시간 분석 스타일 */
+.da-time-metrics {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.da-time-metric-item {
+  flex: 1;
+  background: #1a1a1a;
+  border-radius: 8px;
+  padding: 12px 8px;
+  text-align: center;
+}
+
+.da-time-metric-label {
+  display: block;
+  font-size: 10px;
+  color: #888;
+  margin-bottom: 4px;
+}
+
+.da-time-metric-value {
+  display: block;
+  font-size: 18px;
+  font-weight: 700;
+  color: #F8FF33;
+}
+
+/* 망설임 구간 */
+.da-hesitation-section {
+  margin-bottom: 16px;
+  padding: 12px;
+  background: #1a1a1a;
+  border-radius: 8px;
+}
+
+.da-hesitation-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: #aaa;
+  margin-bottom: 10px;
+}
+
+.da-hesitation-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.da-hesitation-item:last-child {
+  margin-bottom: 0;
+}
+
+.da-hesitation-action {
+  width: 80px;
+  font-size: 11px;
+  color: #aaa;
+  flex-shrink: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.da-hesitation-bar-bg {
+  flex: 1;
+  height: 10px;
+  background: #333;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.da-hesitation-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #ff9800, #ff5722);
+  border-radius: 4px;
+  transition: width 0.3s ease;
+}
+
+.da-hesitation-time {
+  width: 40px;
+  font-size: 11px;
+  color: #ff9800;
+  font-weight: 600;
+  text-align: right;
+  flex-shrink: 0;
+}
+
+/* 시간 분포 */
+.da-time-distribution {
+  padding: 12px;
+  background: #1a1a1a;
+  border-radius: 8px;
+}
+
+.da-time-dist-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: #aaa;
+  margin-bottom: 10px;
+}
+
+.da-time-dist-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.da-time-dist-item:last-child {
+  margin-bottom: 0;
+}
+
+.da-time-dist-label {
+  width: 60px;
+  font-size: 11px;
+  color: #888;
+  flex-shrink: 0;
+}
+
+.da-time-dist-bar-bg {
+  flex: 1;
+  height: 12px;
+  background: #333;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.da-time-dist-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #4CAF50, #8BC34A);
+  border-radius: 4px;
+  transition: width 0.3s ease;
+}
+
+.da-time-dist-count {
+  width: 36px;
+  font-size: 11px;
+  color: #4CAF50;
+  font-weight: 600;
+  text-align: right;
+  flex-shrink: 0;
+}
