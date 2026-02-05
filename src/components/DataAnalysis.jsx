@@ -507,17 +507,17 @@ function computeHeatmapData(data, mission) {
     'plan1-1': {
       type: 'cuts',
       aButtons: [
-        { id: 'cut1', label: '컷1' },
-        { id: 'cut2', label: '컷2' },
-        { id: 'cut3', label: '컷3' },
-        { id: 'cut4', label: '컷4' },
-        { id: 'cut5', label: '컷5' },
-        { id: 'cut6', label: '컷6' },
+        { id: 'cut1', label: '컷1', title: '디테일 포인트' },
+        { id: 'cut2', label: '컷2', title: '사용 장면 컷' },
+        { id: 'cut3', label: '컷3', title: '제품 소개 컷' },
+        { id: 'cut4', label: '컷4', title: '비포/애프터' },
+        { id: 'cut5', label: '컷5', title: '후기/리뷰 컷' },
+        { id: 'cut6', label: '컷6', title: '마무리 장면' },
       ],
       bButtons: [
-        { id: 'cut1', label: '1' },
-        { id: 'cut2', label: '2-5' },
-        { id: 'cut3', label: '6' },
+        { id: 'cut1', label: '1', title: '인트로(첫 장면)' },
+        { id: 'cut2', label: '2-5', title: '본문(중간 장면)' },
+        { id: 'cut3', label: '6', title: '마무리 장면' },
       ],
     },
   };
@@ -609,7 +609,7 @@ function HeatmapVisualization({ data, mission }) {
     );
   }
 
-  // 기획 1-1 컷 그리드 스타일
+  // 기획 1-1 컷 리스트 스타일 (세로 1열)
   if (layout.type === 'cuts') {
     return (
       <div className="da-heatmap-container">
@@ -618,7 +618,7 @@ function HeatmapVisualization({ data, mission }) {
           <div className="da-heatmap-screen-header">
             <span className="da-heatmap-screen-title">📍 A안 (6컷) 클릭 히트맵</span>
           </div>
-          <div className="da-heatmap-cuts-grid cols-6">
+          <div className="da-heatmap-cuts-list">
             {layout.aButtons.map(btn => {
               const count = clickCounts[`a_${btn.id}`] || 0;
               const heatLevel = getHeatLevel(count);
@@ -629,7 +629,8 @@ function HeatmapVisualization({ data, mission }) {
                   title={`${btn.label}: ${count}회 클릭`}
                 >
                   <span className="cut-label">{btn.label}</span>
-                  {count > 0 && <span className="click-count">{count}</span>}
+                  <span className="cut-title">{btn.title}</span>
+                  <span className="click-count">{count}회</span>
                 </div>
               );
             })}
@@ -652,7 +653,7 @@ function HeatmapVisualization({ data, mission }) {
           <div className="da-heatmap-screen-header">
             <span className="da-heatmap-screen-title">📍 B안 (3컷) 클릭 히트맵</span>
           </div>
-          <div className="da-heatmap-cuts-grid cols-3">
+          <div className="da-heatmap-cuts-list">
             {layout.bButtons.map(btn => {
               const count = clickCounts[`b_${btn.id}`] || 0;
               const heatLevel = getHeatLevel(count);
@@ -663,7 +664,8 @@ function HeatmapVisualization({ data, mission }) {
                   title={`${btn.label}: ${count}회 클릭`}
                 >
                   <span className="cut-label">{btn.label}</span>
-                  {count > 0 && <span className="click-count">{count}</span>}
+                  <span className="cut-title">{btn.title}</span>
+                  <span className="click-count">{count}회</span>
                 </div>
               );
             })}
