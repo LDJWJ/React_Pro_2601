@@ -763,3 +763,255 @@
   color: #F8FF33;
   background: #2a2a1a;
 }
+
+/* 히트맵 스타일 */
+.da-heatmap-container {
+  background: #1a1a1a;
+  border-radius: 12px;
+  padding: 16px;
+  margin-top: 8px;
+}
+
+.da-heatmap-screen {
+  position: relative;
+  background: #0d0d0d;
+  border: 2px solid #333;
+  border-radius: 16px;
+  padding: 12px;
+  min-height: 280px;
+  overflow: hidden;
+}
+
+.da-heatmap-screen-header {
+  background: #222;
+  border-radius: 8px;
+  padding: 8px 12px;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.da-heatmap-screen-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: #888;
+}
+
+.da-heatmap-preview-area {
+  background: #1a1a1a;
+  border-radius: 8px;
+  height: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 12px;
+  border: 1px dashed #333;
+}
+
+.da-heatmap-preview-text {
+  font-size: 11px;
+  color: #555;
+}
+
+.da-heatmap-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.da-heatmap-btn-row {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+}
+
+.da-heatmap-btn {
+  position: relative;
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #fff;
+  text-align: center;
+  min-width: 60px;
+  transition: transform 0.2s;
+  cursor: default;
+}
+
+.da-heatmap-btn:hover {
+  transform: scale(1.05);
+}
+
+.da-heatmap-btn-count {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  background: #fff;
+  color: #000;
+  font-size: 9px;
+  font-weight: 700;
+  padding: 2px 5px;
+  border-radius: 10px;
+  min-width: 16px;
+  text-align: center;
+}
+
+/* 히트맵 색상 등급 (클릭 빈도) */
+.da-heatmap-btn.heat-0 {
+  background: #2a2a2a;
+  border: 1px solid #444;
+  color: #666;
+}
+
+.da-heatmap-btn.heat-1 {
+  background: linear-gradient(135deg, #1a3a1a, #2a4a2a);
+  border: 1px solid #3a5a3a;
+}
+
+.da-heatmap-btn.heat-2 {
+  background: linear-gradient(135deg, #3a5a1a, #5a7a2a);
+  border: 1px solid #6a8a3a;
+}
+
+.da-heatmap-btn.heat-3 {
+  background: linear-gradient(135deg, #6a6a1a, #8a8a2a);
+  border: 1px solid #9a9a3a;
+}
+
+.da-heatmap-btn.heat-4 {
+  background: linear-gradient(135deg, #8a5a1a, #aa7a2a);
+  border: 1px solid #ba8a3a;
+}
+
+.da-heatmap-btn.heat-5 {
+  background: linear-gradient(135deg, #aa3a1a, #cc4a2a);
+  border: 1px solid #dd5a3a;
+}
+
+/* 히트맵 범례 */
+.da-heatmap-legend {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid #333;
+}
+
+.da-heatmap-legend-label {
+  font-size: 10px;
+  color: #666;
+}
+
+.da-heatmap-legend-bar {
+  display: flex;
+  gap: 2px;
+}
+
+.da-heatmap-legend-item {
+  width: 24px;
+  height: 12px;
+  border-radius: 2px;
+}
+
+.da-heatmap-legend-item.l0 { background: #2a2a2a; }
+.da-heatmap-legend-item.l1 { background: #2a4a2a; }
+.da-heatmap-legend-item.l2 { background: #5a7a2a; }
+.da-heatmap-legend-item.l3 { background: #8a8a2a; }
+.da-heatmap-legend-item.l4 { background: #aa7a2a; }
+.da-heatmap-legend-item.l5 { background: #cc4a2a; }
+
+/* 타임라인 스타일 (편집 2-1) */
+.da-heatmap-timeline {
+  display: flex;
+  gap: 4px;
+  padding: 8px;
+  background: #222;
+  border-radius: 8px;
+  margin-bottom: 12px;
+}
+
+.da-heatmap-timeline-item {
+  flex: 1;
+  aspect-ratio: 1;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: 700;
+  color: #fff;
+  position: relative;
+  cursor: default;
+  transition: transform 0.2s;
+}
+
+.da-heatmap-timeline-item:hover {
+  transform: scale(1.1);
+  z-index: 1;
+}
+
+.da-heatmap-timeline-item .count {
+  position: absolute;
+  bottom: -4px;
+  right: -4px;
+  background: #fff;
+  color: #000;
+  font-size: 8px;
+  font-weight: 700;
+  padding: 1px 4px;
+  border-radius: 8px;
+}
+
+/* 기획 1-1 컷 그리드 */
+.da-heatmap-cuts-grid {
+  display: grid;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+.da-heatmap-cuts-grid.cols-3 {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.da-heatmap-cuts-grid.cols-6 {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.da-heatmap-cut-item {
+  aspect-ratio: 16/9;
+  border-radius: 6px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: 600;
+  color: #fff;
+  position: relative;
+  cursor: default;
+  transition: transform 0.2s;
+}
+
+.da-heatmap-cut-item:hover {
+  transform: scale(1.05);
+}
+
+.da-heatmap-cut-item .cut-label {
+  font-size: 9px;
+  opacity: 0.8;
+}
+
+.da-heatmap-cut-item .click-count {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  background: #fff;
+  color: #000;
+  font-size: 8px;
+  font-weight: 700;
+  padding: 1px 4px;
+  border-radius: 8px;
+}

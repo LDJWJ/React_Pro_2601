@@ -3,6 +3,34 @@ const SCRIPT_URL = import.meta.env.DEV
   ? '/api/tracking'
   : '/.netlify/functions/tracking';
 
+// 로그 큐 시스템 - 순서 보장
+const logQueue = [];
+let isProcessingQueue = false;
+
+const processLogQueue = async () => {
+  if (isProcessingQueue || logQueue.length === 0) return;
+
+  isProcessingQueue = true;
+
+  while (logQueue.length > 0) {
+    const { payload, resolve } = logQueue.shift();
+    try {
+      await fetch(SCRIPT_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+      // 각 로그 사이에 약간의 딜레이 추가 (서버 순서 보장)
+      await new Promise(r => setTimeout(r, 50));
+    } catch (error) {
+      console.error('[Tracking] Failed to send log:', error);
+    }
+    if (resolve) resolve();
+  }
+
+  isProcessingQueue = false;
+};
+
 // 화면 이름 한글 매핑
 const SCREEN_LABELS = {
   login: '로그인',
@@ -119,40 +147,36 @@ const getDeviceType = () => {
   return 'desktop';
 };
 
-// 로그 전송 함수
+// 로그 전송 함수 (큐 기반 - 순서 보장)
 // 시트 컬럼: 타임스탬프 | 사용자ID | 화면 | 이벤트 | 대상 | 값 | 행동 | 브라우저 | 세션ID | 체류시간(ms)
-export const sendLog = async (logData) => {
+export const sendLog = (logData, waitForCompletion = false) => {
   if (!SCRIPT_URL) {
     console.log('[Tracking] URL not configured:', logData);
-    return;
+    return Promise.resolve();
   }
 
-  try {
-    const screenKr = SCREEN_LABELS[logData.screen] || logData.screen;
-    const eventKr = EVENT_LABELS[logData.event] || logData.event;
-    const targetKr = TARGET_LABELS[logData.target] || logData.target || '';
-    const action = generateAction(logData.screen, logData.event, logData.target);
+  const screenKr = SCREEN_LABELS[logData.screen] || logData.screen;
+  const eventKr = EVENT_LABELS[logData.event] || logData.event;
+  const targetKr = TARGET_LABELS[logData.target] || logData.target || '';
+  const action = generateAction(logData.screen, logData.event, logData.target);
 
-    const payload = {
-      userId: getSessionId(),
-      screen: screenKr,
-      event: eventKr,
-      target: targetKr,
-      value: logData.value || '',
-      action: action,
-      browser: navigator.userAgent,
-      device: getDeviceType(),
-    };
+  const payload = {
+    userId: getSessionId(),
+    screen: screenKr,
+    event: eventKr,
+    target: targetKr,
+    value: logData.value || '',
+    action: action,
+    browser: navigator.userAgent,
+    device: getDeviceType(),
+  };
 
-    // Netlify Function으로 전송 (CORS 문제 없음)
-    await fetch(SCRIPT_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload),
-    });
-  } catch (error) {
-    console.error('[Tracking] Failed to send log:', error);
-  }
+  // 큐에 추가
+  return new Promise((resolve) => {
+    logQueue.push({ payload, resolve: waitForCompletion ? resolve : null });
+    if (!waitForCompletion) resolve();
+    processLogQueue();
+  });
 };
 
 // 화면 진입 로그

@@ -28,13 +28,14 @@ function Plan1_1AScreen({ onComplete, onBack }) {
   useEffect(() => {
     const enterTime = Date.now();
     missionStartTime.current = enterTime;
+    // 화면 진입 로그를 먼저 전송
     logScreenView('기획1-1A_화면');
-    // 미션 시작 로그를 약간 지연시켜 안정성 확보
+    // 미션 시작 로그는 화면 진입 로그 후에 전송 (지연 시간 증가)
     if (!missionStartLogged.current) {
       missionStartLogged.current = true;
       setTimeout(() => {
         logMissionStart('기획1-1A_화면', '기획1-1_A미션시작');
-      }, 100);
+      }, 300);
     }
     return () => {
       const dwellTime = Date.now() - enterTime;

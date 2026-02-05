@@ -36,13 +36,14 @@ function Edit6_1Screen({ onComplete, onBack }) {
   useEffect(() => {
     const enterTime = Date.now();
     missionStartTime.current = enterTime;
+    // 화면 진입 로그를 먼저 전송
     logScreenView('편집6-1_화면');
-    // 미션 시작 로그 안정성 확보
+    // 미션 시작 로그는 화면 진입 로그 후에 전송 (지연 시간 증가)
     if (!missionStartLogged.current) {
       missionStartLogged.current = true;
       setTimeout(() => {
         logMissionStart('편집6-1_화면', '편집6-1_기본미션시작');
-      }, 100);
+      }, 300);
     }
     setCutData(defaultCuts.map(cut => ({
       ...cut,

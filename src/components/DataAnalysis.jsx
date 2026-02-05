@@ -14,7 +14,13 @@ function parseCSV(text) {
     for (let i = 0; i < line.length; i++) {
       const ch = line[i];
       if (ch === '"') {
-        inQuotes = !inQuotes;
+        // CSV 표준: "" 는 "로 변환 (이스케이프된 따옴표)
+        if (inQuotes && line[i + 1] === '"') {
+          current += '"';
+          i++; // 다음 따옴표 건너뛰기
+        } else {
+          inQuotes = !inQuotes;
+        }
       } else if (ch === ',' && !inQuotes) {
         fields.push(current.trim());
         current = '';
@@ -48,7 +54,7 @@ const MISSIONS = {
     screenPrefix: '편집1-1',
     missionStartTarget: '편집1-1_미션시작',
     missionCompleteTarget: '편집1-1_미션완료',
-    analysisItems: ['funnel', 'completionRate', 'avgTime', 'firstTrySuccess', 'buttonClicks', 'deviceStats'],
+    analysisItems: ['funnel', 'completionRate', 'avgTime', 'firstTrySuccess', 'heatmap', 'buttonClicks', 'deviceStats'],
     // 퍼널 단계 정의
     funnelSteps: [
       { id: 'screenEnter', name: '화면 진입', event: '화면 진입', screen: '편집1-1_화면' },
@@ -66,7 +72,7 @@ const MISSIONS = {
     screenPrefix: '편집2-1',
     missionStartTarget: '편집2-1_미션시작',
     missionCompleteTarget: '편집2-1_미션완료',
-    analysisItems: ['funnel', 'completionRate', 'avgTime', 'firstTrySuccess', 'wrongPattern', 'buttonClicks', 'deviceStats'],
+    analysisItems: ['funnel', 'completionRate', 'avgTime', 'firstTrySuccess', 'wrongPattern', 'heatmap', 'buttonClicks', 'deviceStats'],
     funnelSteps: [
       { id: 'screenEnter', name: '화면 진입', event: '화면 진입', screen: '편집2-1_화면' },
       { id: 'missionStart', name: '미션 시작', event: '미션 시작', target: '편집2-1_미션시작' },
@@ -83,7 +89,7 @@ const MISSIONS = {
     missionCompleteTarget: '편집6-1_기본미션완료',
     additionalMissionStart: '편집6-1_추가미션시작',
     additionalMissionComplete: '편집6-1_추가미션완료',
-    analysisItems: ['funnel', 'completionRate', 'avgTime', 'stageFlow', 'aiUsage', 'buttonClicks', 'deviceStats'],
+    analysisItems: ['funnel', 'completionRate', 'avgTime', 'stageFlow', 'aiUsage', 'heatmap', 'buttonClicks', 'deviceStats'],
     funnelSteps: [
       { id: 'screenEnter', name: '화면 진입', event: '화면 진입', screen: '편집6-1_화면' },
       { id: 'basicStart', name: '기본 미션 시작', event: '미션 시작', target: '편집6-1_기본미션시작' },
@@ -106,7 +112,7 @@ const MISSIONS = {
     aMissionComplete: '기획1-1_A미션완료',
     bMissionStart: '기획1-1_B미션시작',
     bMissionComplete: '기획1-1_B미션완료',
-    analysisItems: ['funnel', 'completionRate', 'avgTime', 'memoAnalysis', 'abComparison', 'buttonClicks', 'deviceStats'],
+    analysisItems: ['funnel', 'completionRate', 'avgTime', 'memoAnalysis', 'abComparison', 'heatmap', 'buttonClicks', 'deviceStats'],
     funnelSteps: [
       { id: 'aScreenEnter', name: 'A안 화면 진입', event: '화면 진입', screen: '기획1-1A_화면' },
       { id: 'aMissionStart', name: 'A안 미션 시작', event: '미션 시작', target: '기획1-1_A미션시작' },
@@ -126,6 +132,7 @@ const ANALYSIS_ITEMS = {
   firstTrySuccess: { id: 'firstTrySuccess', name: '첫시도 성공률', icon: '🎯' },
   wrongPattern: { id: 'wrongPattern', name: '오답 패턴', icon: '❌' },
   buttonClicks: { id: 'buttonClicks', name: '버튼 클릭', icon: '👆' },
+  heatmap: { id: 'heatmap', name: '히트맵', icon: '🔥' },
   deviceStats: { id: 'deviceStats', name: '디바이스별', icon: '📱' },
   stageFlow: { id: 'stageFlow', name: '단계별 흐름', icon: '🔄' },
   aiUsage: { id: 'aiUsage', name: 'AI 사용률', icon: '🤖' },
@@ -337,6 +344,9 @@ function computeWrongPattern(data, mission) {
 }
 
 // 버튼 클릭 분포 계산
+// 분석에 불필요한 필수 단계 버튼은 제외
+const EXCLUDED_BUTTONS = ['다음', '팝업확인', '완료'];
+
 function computeButtonClicks(data, mission) {
   const validRows = data.filter(r => r['사용자ID']);
   const screenName = `${mission.screenPrefix}_화면`;
@@ -347,7 +357,8 @@ function computeButtonClicks(data, mission) {
     if (!r['화면']?.includes(mission.screenPrefix) || r['이벤트'] !== '버튼 클릭') return;
 
     const target = r['대상'];
-    if (target) {
+    // 필수 단계 버튼은 제외
+    if (target && !EXCLUDED_BUTTONS.includes(target)) {
       buttonClicks[target] = (buttonClicks[target] || 0) + 1;
     }
   });
@@ -457,6 +468,280 @@ function computeAIUsage(data, mission) {
   };
 }
 
+// 히트맵 데이터 계산
+function computeHeatmapData(data, mission) {
+  const validRows = data.filter(r => r['사용자ID']);
+
+  // 미션별 버튼 위치 정의
+  const buttonLayouts = {
+    'edit1-1': {
+      type: 'standard',
+      buttons: [
+        { id: '영상추가', label: '영상 추가', row: 0 },
+        { id: '재생', label: '재생', row: 1 },
+        { id: '일시정지', label: '일시정지', row: 1 },
+      ],
+    },
+    'edit2-1': {
+      type: 'timeline',
+      buttons: [
+        { id: '컷1', label: '1' },
+        { id: '컷2', label: '2' },
+        { id: '컷3', label: '3' },
+        { id: '컷4', label: '4' },
+        { id: '컷5', label: '5' },
+        { id: '컷6', label: '6' },
+      ],
+    },
+    'edit6-1': {
+      type: 'standard',
+      buttons: [
+        { id: '영상추가', label: '영상 추가', row: 0 },
+        { id: 'AI자막추천', label: 'AI 자막 추천', row: 1 },
+        { id: 'AI추천1', label: 'AI 추천 1', row: 2 },
+        { id: 'AI추천2', label: 'AI 추천 2', row: 2 },
+        { id: 'AI추천3', label: 'AI 추천 3', row: 2 },
+        { id: '완료', label: '완료', row: 3 },
+      ],
+    },
+    'plan1-1': {
+      type: 'cuts',
+      aButtons: [
+        { id: 'cut1', label: '컷1' },
+        { id: 'cut2', label: '컷2' },
+        { id: 'cut3', label: '컷3' },
+        { id: 'cut4', label: '컷4' },
+        { id: 'cut5', label: '컷5' },
+        { id: 'cut6', label: '컷6' },
+      ],
+      bButtons: [
+        { id: 'cut1', label: '1' },
+        { id: 'cut2', label: '2-5' },
+        { id: 'cut3', label: '6' },
+      ],
+    },
+  };
+
+  const layout = buttonLayouts[mission.id];
+  if (!layout) return null;
+
+  // 버튼 클릭 수 집계
+  const clickCounts = {};
+
+  validRows.forEach(r => {
+    if (r['이벤트'] !== '버튼 클릭') return;
+    if (!r['화면']?.includes(mission.screenPrefix)) return;
+
+    const target = r['대상'];
+    if (!target) return;
+
+    // 기획 1-1의 경우 cut_select에서 cutId 추출
+    if (mission.id === 'plan1-1' && target === 'cut_select') {
+      try {
+        const value = JSON.parse(r['값'] || '{}');
+        const cutKey = `cut${value.cutId}`;
+        const screenType = r['화면']?.includes('A') ? 'a' : 'b';
+        const key = `${screenType}_${cutKey}`;
+        clickCounts[key] = (clickCounts[key] || 0) + 1;
+      } catch (e) {}
+    } else {
+      clickCounts[target] = (clickCounts[target] || 0) + 1;
+    }
+  });
+
+  // 최대 클릭 수 계산 (히트 레벨 계산용)
+  const maxClicks = Math.max(...Object.values(clickCounts), 1);
+
+  // 히트 레벨 계산 (0-5)
+  const getHeatLevel = (count) => {
+    if (!count || count === 0) return 0;
+    const ratio = count / maxClicks;
+    if (ratio >= 0.8) return 5;
+    if (ratio >= 0.6) return 4;
+    if (ratio >= 0.4) return 3;
+    if (ratio >= 0.2) return 2;
+    return 1;
+  };
+
+  return {
+    layout,
+    clickCounts,
+    maxClicks,
+    getHeatLevel,
+  };
+}
+
+// 히트맵 컴포넌트
+function HeatmapVisualization({ data, mission }) {
+  if (!data) return null;
+  const { layout, clickCounts, getHeatLevel } = data;
+
+  // 편집 2-1 타임라인 스타일
+  if (layout.type === 'timeline') {
+    return (
+      <div className="da-heatmap-container">
+        <div className="da-heatmap-screen">
+          <div className="da-heatmap-screen-header">
+            <span className="da-heatmap-screen-title">📍 {mission.name} 버튼 클릭 히트맵</span>
+          </div>
+          <div className="da-heatmap-preview-area">
+            <span className="da-heatmap-preview-text">영상 미리보기 영역</span>
+          </div>
+          <div className="da-heatmap-timeline">
+            {layout.buttons.map(btn => {
+              const count = clickCounts[btn.id] || 0;
+              const heatLevel = getHeatLevel(count);
+              return (
+                <div
+                  key={btn.id}
+                  className={`da-heatmap-timeline-item heat-${heatLevel}`}
+                  title={`${btn.id}: ${count}회 클릭`}
+                >
+                  {btn.label}
+                  {count > 0 && <span className="count">{count}</span>}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+        <HeatmapLegend />
+      </div>
+    );
+  }
+
+  // 기획 1-1 컷 그리드 스타일
+  if (layout.type === 'cuts') {
+    return (
+      <div className="da-heatmap-container">
+        {/* A안 */}
+        <div className="da-heatmap-screen" style={{ marginBottom: 12 }}>
+          <div className="da-heatmap-screen-header">
+            <span className="da-heatmap-screen-title">📍 A안 (6컷) 클릭 히트맵</span>
+          </div>
+          <div className="da-heatmap-cuts-grid cols-6">
+            {layout.aButtons.map(btn => {
+              const count = clickCounts[`a_${btn.id}`] || 0;
+              const heatLevel = getHeatLevel(count);
+              return (
+                <div
+                  key={btn.id}
+                  className={`da-heatmap-cut-item heat-${heatLevel}`}
+                  title={`${btn.label}: ${count}회 클릭`}
+                >
+                  <span className="cut-label">{btn.label}</span>
+                  {count > 0 && <span className="click-count">{count}</span>}
+                </div>
+              );
+            })}
+          </div>
+          <div className="da-heatmap-btn-row">
+            <div
+              className={`da-heatmap-btn heat-${getHeatLevel(clickCounts['저장하기'] || 0)}`}
+              title={`저장하기: ${clickCounts['저장하기'] || 0}회 클릭`}
+            >
+              저장하기
+              {(clickCounts['저장하기'] || 0) > 0 && (
+                <span className="da-heatmap-btn-count">{clickCounts['저장하기']}</span>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* B안 */}
+        <div className="da-heatmap-screen">
+          <div className="da-heatmap-screen-header">
+            <span className="da-heatmap-screen-title">📍 B안 (3컷) 클릭 히트맵</span>
+          </div>
+          <div className="da-heatmap-cuts-grid cols-3">
+            {layout.bButtons.map(btn => {
+              const count = clickCounts[`b_${btn.id}`] || 0;
+              const heatLevel = getHeatLevel(count);
+              return (
+                <div
+                  key={btn.id}
+                  className={`da-heatmap-cut-item heat-${heatLevel}`}
+                  title={`${btn.label}: ${count}회 클릭`}
+                >
+                  <span className="cut-label">{btn.label}</span>
+                  {count > 0 && <span className="click-count">{count}</span>}
+                </div>
+              );
+            })}
+          </div>
+          <div className="da-heatmap-btn-row">
+            <div
+              className={`da-heatmap-btn heat-${getHeatLevel(clickCounts['저장하기'] || 0)}`}
+            >
+              저장하기
+            </div>
+          </div>
+        </div>
+        <HeatmapLegend />
+      </div>
+    );
+  }
+
+  // 일반 버튼 레이아웃 (편집 1-1, 편집 6-1)
+  const rowGroups = {};
+  layout.buttons.forEach(btn => {
+    const row = btn.row || 0;
+    if (!rowGroups[row]) rowGroups[row] = [];
+    rowGroups[row].push(btn);
+  });
+
+  return (
+    <div className="da-heatmap-container">
+      <div className="da-heatmap-screen">
+        <div className="da-heatmap-screen-header">
+          <span className="da-heatmap-screen-title">📍 {mission.name} 버튼 클릭 히트맵</span>
+        </div>
+        <div className="da-heatmap-preview-area">
+          <span className="da-heatmap-preview-text">영상 미리보기 영역</span>
+        </div>
+        <div className="da-heatmap-buttons">
+          {Object.keys(rowGroups).sort().map(row => (
+            <div key={row} className="da-heatmap-btn-row">
+              {rowGroups[row].map(btn => {
+                const count = clickCounts[btn.id] || 0;
+                const heatLevel = getHeatLevel(count);
+                return (
+                  <div
+                    key={btn.id}
+                    className={`da-heatmap-btn heat-${heatLevel}`}
+                    title={`${btn.label}: ${count}회 클릭`}
+                  >
+                    {btn.label}
+                    {count > 0 && <span className="da-heatmap-btn-count">{count}</span>}
+                  </div>
+                );
+              })}
+            </div>
+          ))}
+        </div>
+      </div>
+      <HeatmapLegend />
+    </div>
+  );
+}
+
+// 히트맵 범례 컴포넌트
+function HeatmapLegend() {
+  return (
+    <div className="da-heatmap-legend">
+      <span className="da-heatmap-legend-label">적음</span>
+      <div className="da-heatmap-legend-bar">
+        <div className="da-heatmap-legend-item l0" />
+        <div className="da-heatmap-legend-item l1" />
+        <div className="da-heatmap-legend-item l2" />
+        <div className="da-heatmap-legend-item l3" />
+        <div className="da-heatmap-legend-item l4" />
+        <div className="da-heatmap-legend-item l5" />
+      </div>
+      <span className="da-heatmap-legend-label">많음</span>
+    </div>
+  );
+}
+
 // 퍼널 분석 계산
 function computeFunnelAnalysis(data, mission) {
   if (!mission.funnelSteps) return null;
@@ -468,16 +753,22 @@ function computeFunnelAnalysis(data, mission) {
     let sessionSet = new Set();
 
     validRows.forEach(r => {
-      const event = r['이벤트'];
-      const screen = r['화면'];
-      const target = r['대상'];
+      const event = r['이벤트']?.trim();
+      const screen = r['화면']?.trim();
+      const target = r['대상']?.trim();
       const session = r['사용자ID'];
 
       // 이벤트 타입 매칭
       if (event !== step.event) return;
 
-      // 화면 또는 대상 매칭
-      if (step.screen && screen !== step.screen) return;
+      // 화면 매칭 - 정확한 일치 또는 prefix 포함 확인
+      if (step.screen) {
+        const screenPrefix = step.screen.replace('_화면', '');
+        const screenMatches = screen === step.screen || screen?.includes(screenPrefix);
+        if (!screenMatches) return;
+      }
+
+      // 대상 매칭
       if (step.target && target !== step.target) return;
       if (step.targetPrefix && !target?.startsWith(step.targetPrefix)) return;
 
@@ -652,6 +943,7 @@ function DataAnalysis({ onBack }) {
       firstTrySuccess: computeFirstTrySuccess(csvData, mission),
       wrongPattern: computeWrongPattern(csvData, mission),
       buttonClicks: computeButtonClicks(csvData, mission),
+      heatmap: computeHeatmapData(csvData, mission),
       abComparison: computeABComparison(csvData, mission),
       aiUsage: computeAIUsage(csvData, mission),
     };
@@ -1031,6 +1323,17 @@ function DataAnalysis({ onBack }) {
                           </div>
                         ))}
                       </div>
+                    </div>
+                  )}
+
+                  {/* 히트맵 */}
+                  {selectedItems.heatmap && selectedMissionAnalysis?.heatmap && (
+                    <div className="da-result-section">
+                      <div className="da-result-section-title">▸ 버튼 클릭 히트맵</div>
+                      <HeatmapVisualization
+                        data={selectedMissionAnalysis.heatmap}
+                        mission={currentMission}
+                      />
                     </div>
                   )}
 
