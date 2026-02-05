@@ -1,8 +1,7 @@
-// Google Apps Script 웹 앱 URL (Tracking_Sheet 용)
-// 개발 환경에서는 Vite 프록시를 사용하여 COEP 문제 회피
+// Netlify Function을 통해 Google Apps Script로 전달
 const SCRIPT_URL = import.meta.env.DEV
   ? '/api/tracking'
-  : (import.meta.env.VITE_TRACKING_SCRIPT_URL || '');
+  : '/.netlify/functions/tracking';
 
 // 화면 이름 한글 매핑
 const SCREEN_LABELS = {
@@ -145,9 +144,12 @@ export const sendLog = async (logData) => {
       device: getDeviceType(),
     };
 
-    // sendBeacon 사용 (모바일에서도 안정적으로 동작)
-    const blob = new Blob([JSON.stringify(payload)], { type: 'application/json' });
-    navigator.sendBeacon(SCRIPT_URL, blob);
+    // Netlify Function으로 전송 (CORS 문제 없음)
+    await fetch(SCRIPT_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
   } catch (error) {
     console.error('[Tracking] Failed to send log:', error);
   }
