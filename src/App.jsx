@@ -19,9 +19,58 @@ import Plan1_1AScreen from './components/Plan1_1AScreen';
 import Plan1_1BScreen from './components/Plan1_1BScreen';
 import { startInteractionLogging, setInteractionScreen } from './utils/interactionLogger';
 
+// URL 해시와 화면 매핑
+const SCREEN_ROUTES = {
+  'edit1-1': '편집1-1',
+  'edit1-1-screen': '편집1-1_화면',
+  'edit2-1': '편집2-1',
+  'edit2-1-screen': '편집2-1_화면',
+  'edit6-1': '편집6-1',
+  'edit6-1-screen': '편집6-1_화면',
+  'plan1-1a': '기획1-1A',
+  'plan1-1a-screen': '기획1-1A_화면',
+  'plan1-1b': '기획1-1B',
+  'plan1-1b-screen': '기획1-1B_화면',
+  'main': 'missionMain',
+  'login': 'login',
+};
+
+// 화면에서 URL 해시로 역매핑
+const ROUTE_FROM_SCREEN = Object.fromEntries(
+  Object.entries(SCREEN_ROUTES).map(([k, v]) => [v, k])
+);
+
 function App() {
   const [currentScreen, setCurrentScreen] = useState('login');
   const [user, setUser] = useState(null);
+
+  // URL 해시에서 초기 화면 설정
+  useEffect(() => {
+    const hash = window.location.hash.slice(2); // '#/' 제거
+    if (hash && SCREEN_ROUTES[hash]) {
+      setCurrentScreen(SCREEN_ROUTES[hash]);
+    }
+  }, []);
+
+  // 화면 변경 시 URL 해시 업데이트
+  useEffect(() => {
+    const route = ROUTE_FROM_SCREEN[currentScreen];
+    if (route) {
+      window.history.replaceState(null, '', `#/${route}`);
+    }
+  }, [currentScreen]);
+
+  // 브라우저 뒤로가기/앞으로가기 처리
+  useEffect(() => {
+    const handleHashChange = () => {
+      const hash = window.location.hash.slice(2);
+      if (hash && SCREEN_ROUTES[hash]) {
+        setCurrentScreen(SCREEN_ROUTES[hash]);
+      }
+    };
+    window.addEventListener('hashchange', handleHashChange);
+    return () => window.removeEventListener('hashchange', handleHashChange);
+  }, []);
 
   // 인터랙션 로깅 시작
   useEffect(() => {
