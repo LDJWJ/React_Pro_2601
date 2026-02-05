@@ -112,6 +112,14 @@ const getSessionId = () => {
   return sessionId;
 };
 
+// 디바이스 타입 감지
+const getDeviceType = () => {
+  const ua = navigator.userAgent;
+  if (/tablet|ipad|playbook|silk/i.test(ua)) return 'tablet';
+  if (/mobile|iphone|ipod|android|blackberry|opera mini|iemobile/i.test(ua)) return 'mobile';
+  return 'desktop';
+};
+
 // 로그 전송 함수
 // 시트 컬럼: 타임스탬프 | 사용자ID | 화면 | 이벤트 | 대상 | 값 | 행동 | 브라우저 | 세션ID | 체류시간(ms)
 export const sendLog = async (logData) => {
@@ -134,8 +142,7 @@ export const sendLog = async (logData) => {
       value: logData.value || '',
       action: action,
       browser: navigator.userAgent,
-      sessionId: getSessionId(),
-      dwellTime: logData.dwellTime || '',
+      device: getDeviceType(),
     };
 
     const fetchOptions = {
