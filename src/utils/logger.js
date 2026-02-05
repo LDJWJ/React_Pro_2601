@@ -145,20 +145,9 @@ export const sendLog = async (logData) => {
       device: getDeviceType(),
     };
 
-    const fetchOptions = {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(payload),
-    };
-
-    // 프로덕션에서는 no-cors 모드 사용 (Google Apps Script 직접 호출)
-    if (!import.meta.env.DEV) {
-      fetchOptions.mode = 'no-cors';
-    }
-
-    await fetch(SCRIPT_URL, fetchOptions);
+    // sendBeacon 사용 (모바일에서도 안정적으로 동작)
+    const blob = new Blob([JSON.stringify(payload)], { type: 'application/json' });
+    navigator.sendBeacon(SCRIPT_URL, blob);
   } catch (error) {
     console.error('[Tracking] Failed to send log:', error);
   }
