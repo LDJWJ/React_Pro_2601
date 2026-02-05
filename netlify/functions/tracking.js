@@ -9,7 +9,7 @@ export default async (req) => {
 
   try {
     const body = await req.json();
-    const SCRIPT_URL = process.env.VITE_TRACKING_SCRIPT_URL;
+    const SCRIPT_URL = process.env.TRACKING_SCRIPT_URL || process.env.VITE_TRACKING_SCRIPT_URL;
 
     if (!SCRIPT_URL) {
       return new Response(JSON.stringify({ error: 'SCRIPT_URL not configured' }), {
