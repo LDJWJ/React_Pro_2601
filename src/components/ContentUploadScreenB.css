@@ -693,9 +693,9 @@
 }
 
 .cub-complete-next {
-  font-size: 14px !important;
-  font-weight: 400 !important;
-  color: rgba(255, 255, 255, 0.7);
+  font-size: 24px !important;
+  font-weight: 700 !important;
+  color: #fff;
   margin-top: 12px !important;
 }
 

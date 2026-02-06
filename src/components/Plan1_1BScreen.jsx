@@ -267,16 +267,18 @@ function Plan1_1BScreen({ onComplete, onBack }) {
             <span className={`story-step-text ${activeStep === 2 ? 'active' : 'inactive'}`}>작성한 메모는 영상 설명으로 사용돼요.</span>
           </div>
 
-          <div className="story-bottom-buttons">
-            <button
-              className={`story-save-btn story-save-btn-b ${!isSaveEnabled ? 'disabled' : ''}`}
-              onClick={handleSave}
-              disabled={!isSaveEnabled}
-            >
-              저장하기
-            </button>
-          </div>
         </div>
+      </div>
+
+      {/* 저장 버튼 - 화면 하단 고정 */}
+      <div className="story-fixed-bottom">
+        <button
+          className={`story-save-btn ${!isSaveEnabled ? 'disabled' : ''}`}
+          onClick={handleSave}
+          disabled={!isSaveEnabled}
+        >
+          저장하기
+        </button>
       </div>
     </div>
   );
