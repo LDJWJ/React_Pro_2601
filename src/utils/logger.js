@@ -219,14 +219,14 @@ export const logMissionStart = (screenName, missionTarget) => {
   });
 };
 
-// 미션 완료 로그
+// 미션 완료 로그 (waitForCompletion: true로 전송 완료 보장)
 export const logMissionComplete = (screenName, missionTarget, value = '') => {
-  sendLog({
+  return sendLog({
     screen: screenName,
     event: 'mission_complete',
     target: missionTarget,
     value: value,
-  });
+  }, true);
 };
 
 // 로그인 이벤트 로그
