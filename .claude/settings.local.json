@@ -30,7 +30,8 @@
       "Bash(node /mnt/d/Github/React_Pro_2601/node_modules/.bin/netlify:*)",
       "Bash(node -e \"\nconst { execSync } = require\\(''child_process''\\);\ntry {\n  const r = execSync\\(''node /mnt/d/Github/React_Pro_2601/node_modules/netlify-cli/bin/run.js --version'', { timeout: 10000 }\\);\n  console.log\\(''OK:'', r.toString\\(\\)\\);\n} catch\\(e\\) {\n  console.log\\(''ERROR:'', e.message\\);\n  if \\(e.stderr\\) console.log\\(''STDERR:'', e.stderr.toString\\(\\)\\);\n}\n\")",
       "Bash(node -e:*)",
-      "Bash(npx eslint:*)"
+      "Bash(npx eslint:*)",
+      "Bash(node --check:*)"
     ]
   }
 }
