@@ -692,6 +692,13 @@
   margin: 0;
 }
 
+.cub-complete-next {
+  font-size: 14px !important;
+  font-weight: 400 !important;
+  color: rgba(255, 255, 255, 0.7);
+  margin-top: 12px !important;
+}
+
 .cub-complete-footer {
   width: 100%;
   display: flex;

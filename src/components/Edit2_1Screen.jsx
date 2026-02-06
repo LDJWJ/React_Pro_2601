@@ -412,11 +412,7 @@ function Edit2_1Screen({ onComplete, onBack }) {
           <div className="cub-complete-message">
             <div className="cub-complete-check">✓</div>
             <p>미션을 완료했습니다.</p>
-          </div>
-          <div className="cub-complete-footer">
-            <button className="cub-complete-btn" onClick={onComplete}>
-              완료
-            </button>
+            <p className="cub-complete-next">이어서 다음 미션을 수행해 주세요.</p>
           </div>
         </div>
       </div>

@@ -26,12 +26,12 @@ function Plan1_1BScreen({ onComplete, onBack }) {
 
     // 화면 진입 로그를 먼저 전송 (완료 대기)
     const initLogs = async () => {
-      await logScreenView('기획1-1B_화면');
+      await logScreenView('기획1-2_화면');
       // 미션 시작 로그는 화면 진입 로그 후에 전송
       if (!missionStartLogged.current) {
         missionStartLogged.current = true;
         setTimeout(() => {
-          logMissionStart('기획1-1B_화면', '기획1-1_B미션시작');
+          logMissionStart('기획1-2_화면', '기획1-2_미션시작');
         }, 500);
       }
     };
@@ -39,7 +39,7 @@ function Plan1_1BScreen({ onComplete, onBack }) {
 
     return () => {
       const dwellTime = Date.now() - enterTime;
-      logScreenExit('기획1-1B_화면', dwellTime);
+      logScreenExit('기획1-2_화면', dwellTime);
     };
   }, []);
 
@@ -56,7 +56,7 @@ function Plan1_1BScreen({ onComplete, onBack }) {
       hasMemo: !!memos[cut.id]?.trim(),
       memoLength: memos[cut.id]?.length || 0
     };
-    logButtonClick('기획1-1B_화면', 'cut_select', JSON.stringify(state));
+    logButtonClick('기획1-2_화면', 'cut_select', JSON.stringify(state));
   };
 
   // 모든 컷에 메모가 작성되면 step2 활성화
@@ -81,7 +81,7 @@ function Plan1_1BScreen({ onComplete, onBack }) {
         memoLength: value.length,
         memoText: value.substring(0, 50) + (value.length > 50 ? '...' : '')
       };
-      logButtonClick('기획1-1B_화면', '메모입력완료', JSON.stringify(state));
+      logButtonClick('기획1-2_화면', '메모입력완료', JSON.stringify(state));
     }
   };
 
@@ -107,12 +107,12 @@ function Plan1_1BScreen({ onComplete, onBack }) {
       avgMemoLength: memoCount > 0 ? (totalMemoLength / memoCount).toFixed(1) : 0,
       memoDetails
     };
-    logButtonClick('기획1-1B_화면', '저장하기', JSON.stringify(state));
+    logButtonClick('기획1-2_화면', '저장하기', JSON.stringify(state));
 
     // 2초 후 미션 완료
     setTimeout(() => {
       const completionTime = ((Date.now() - missionStartTime.current) / 1000).toFixed(1);
-      logMissionComplete('기획1-1B_화면', '기획1-1_B미션완료', `완료시간:${completionTime}초,메모수:${memoCount},총길이:${totalMemoLength}`);
+      logMissionComplete('기획1-2_화면', '기획1-2_미션완료', `완료시간:${completionTime}초,메모수:${memoCount},총길이:${totalMemoLength}`);
       setCompleted(true);
     }, 2000);
   };
@@ -134,7 +134,7 @@ function Plan1_1BScreen({ onComplete, onBack }) {
       memoDetails,
       completed: false
     };
-    logButtonClick('기획1-1B_화면', '미션포기', JSON.stringify(state));
+    logButtonClick('기획1-2_화면', '미션포기', JSON.stringify(state));
     onBack();
   };
 
@@ -149,11 +149,7 @@ function Plan1_1BScreen({ onComplete, onBack }) {
           <div className="story-complete-message">
             <div className="story-complete-check">✓</div>
             <p>미션을 완료했습니다.</p>
-          </div>
-          <div className="story-complete-footer">
-            <button className="story-save-btn" onClick={onComplete}>
-              완료
-            </button>
+            <p className="story-complete-next">이어서 다음 미션을 수행해 주세요.</p>
           </div>
         </div>
       </div>

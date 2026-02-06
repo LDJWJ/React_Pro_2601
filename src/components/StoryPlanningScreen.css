@@ -14,7 +14,7 @@
 .story-header-bar {
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 25px;
   padding: 16px 20px;
   background-color: #1a1a1a;
   flex-shrink: 0;
@@ -52,7 +52,7 @@
 /* 콘텐츠 영역 */
 .story-content-section {
   background-color: #1a1a1a;
-  padding-bottom: calc(20px + env(safe-area-inset-bottom));
+  padding-bottom: calc(80px + env(safe-area-inset-bottom));
 }
 
 /* 프로그레스 바 */
@@ -358,7 +358,7 @@
 .sp-cut-header {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-start;
   gap: 6px;
   margin-bottom: 4px;
 }
@@ -409,6 +409,37 @@
   color: #888;
 }
 
+.sp-cut-number-with-icon {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #888;
+  margin-right: 8px;
+}
+
+.sp-cut-number-with-icon svg {
+  color: #888;
+  flex-shrink: 0;
+}
+
+.sp-film-icon {
+  width: 16px;
+  height: 16px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+.sp-cut-item-active .sp-cut-number-with-icon,
+.sp-cut-item-active .sp-cut-number-with-icon svg {
+  color: #F8FF33;
+}
+
+.sp-cut-item-active .sp-cut-title {
+  color: #F8FF33;
+}
+
 .sp-cut-title {
   font-size: 14px;
   font-weight: 600;
@@ -447,6 +478,11 @@
   line-height: 1.4;
 }
 
+.sp-cut-description.filled {
+  color: #FAFF66;
+  font-weight: 400;
+}
+
 .sp-cut-memo-input {
   display: none;
   width: 100%;
@@ -468,12 +504,12 @@
   display: block;
 }
 
-/* 메모 완료 시 텍스트 표시 (카드 내부용 - 미사용) */
+/* 메모 완료 시 텍스트 표시 (비선택 컷) */
 .sp-cut-memo-display {
-  margin: 6px 0 0;
+  margin: 8px 0 0;
   font-size: 13px;
   font-weight: 600;
-  color: #999;
+  color: #F8FF33;
   line-height: 1.4;
 }
 
@@ -526,8 +562,22 @@
   flex-shrink: 0;
 }
 
+/* 하단 버튼 - 화면 하단 고정 */
+.story-fixed-bottom {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: center;
+  padding: 16px 20px;
+  padding-bottom: calc(20px + env(safe-area-inset-bottom));
+  background: linear-gradient(to top, #1a1a1a 80%, transparent 100%);
+  flex-shrink: 0;
+}
+
 .story-save-btn {
-  width: 90%;
+  width: 353px;
   padding: 14px 0;
   border: none;
   border-radius: 8px;
@@ -639,6 +689,13 @@
   font-size: 20px;
   font-weight: 700;
   margin: 0;
+}
+
+.story-complete-next {
+  font-size: 14px !important;
+  font-weight: 400 !important;
+  color: rgba(255, 255, 255, 0.7);
+  margin-top: 12px !important;
 }
 
 .story-complete-footer {

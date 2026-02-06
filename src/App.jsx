@@ -28,10 +28,10 @@ const SCREEN_ROUTES = {
   'edit2-1-screen': '편집2-1_화면',
   'edit6-1': '편집6-1',
   'edit6-1-screen': '편집6-1_화면',
-  'plan1-1a': '기획1-1A',
-  'plan1-1a-screen': '기획1-1A_화면',
-  'plan1-1b': '기획1-1B',
-  'plan1-1b-screen': '기획1-1B_화면',
+  'plan1-1': '기획1-1',
+  'plan1-1-screen': '기획1-1_화면',
+  'plan1-2': '기획1-2',
+  'plan1-2-screen': '기획1-2_화면',
   'main': 'missionMain',
   'login': 'login',
 };
@@ -111,7 +111,9 @@ function App() {
     } else if (missionId === 9) {
       setCurrentScreen('편집1-1');
     } else if (missionId === 10) {
-      setCurrentScreen('기획1-1A');
+      setCurrentScreen('기획1-1');
+    } else if (missionId === 12) {
+      setCurrentScreen('기획1-2');
     } else if (missionId === 11) {
       setCurrentScreen('dataVisualizer');
     }
@@ -340,41 +342,41 @@ function App() {
           />
         );
 
-      case '기획1-1A':
+      case '기획1-1':
         return (
           <MissionStep
-            stepTitle="기획 기능 사용성 개선 A안"
+            stepTitle="기획 1-1: 아이디어 메모 (6컷 개별)"
             description={`[미션]영상 아이디어를 메모하려고 합니다. 아이디어 노트를 활용해, 메모가 작성이 완료되면 저장하기를 선택해 주세요.\n하나 이상은 메모 작성이 필요합니다.`}
             buttonText="다음"
-            screenName="기획1-1A"
-            onNext={() => setCurrentScreen('기획1-1A_화면')}
+            screenName="기획1-1"
+            onNext={() => setCurrentScreen('기획1-1_화면')}
           />
         );
 
-      case '기획1-1A_화면':
+      case '기획1-1_화면':
         return (
           <Plan1_1AScreen
-            onComplete={() => setCurrentScreen('기획1-1B')}
-            onBack={() => setCurrentScreen('기획1-1A')}
+            onComplete={() => setCurrentScreen('missionMain')}
+            onBack={() => setCurrentScreen('기획1-1')}
           />
         );
 
-      case '기획1-1B':
+      case '기획1-2':
         return (
           <MissionStep
-            stepTitle="기획 기능 사용성 개선 B안"
+            stepTitle="기획 1-2: 아이디어 메모 (3컷 그룹)"
             description={`[미션]영상 아이디어를 메모하려고 합니다. 아이디어 노트를 활용해, 메모가 작성이 완료되면 저장하기를 선택해 주세요.\n하나 이상은 메모 작성이 필요합니다.`}
             buttonText="다음"
-            screenName="기획1-1B"
-            onNext={() => setCurrentScreen('기획1-1B_화면')}
+            screenName="기획1-2"
+            onNext={() => setCurrentScreen('기획1-2_화면')}
           />
         );
 
-      case '기획1-1B_화면':
+      case '기획1-2_화면':
         return (
           <Plan1_1BScreen
             onComplete={() => setCurrentScreen('missionMain')}
-            onBack={() => setCurrentScreen('기획1-1B')}
+            onBack={() => setCurrentScreen('기획1-2')}
           />
         );
 

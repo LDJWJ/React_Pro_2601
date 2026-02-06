@@ -2,22 +2,28 @@ import { useState, useEffect, useRef } from 'react';
 import './StoryPlanningScreen.css';
 import { logScreenView, logButtonClick, logMissionComplete, logMissionStart, logScreenExit } from '../utils/logger';
 
-const VIDEO_URL = '/videos/sample-2.mp4';
+// 필름 아이콘 컴포넌트 (이미지 기반)
+const FilmIcon = ({ active }) => (
+  <img
+    src={active ? "/images/play_note/Icons_v2.png" : "/images/play_note/icon_v1.png"}
+    alt="필름 아이콘"
+    className="sp-film-icon"
+  />
+);
 
 const defaultCuts = [
-  { id: 1, title: "디테일 포인트", description: "패키지 전체가 보이도록 제품을 한 컷으로 보여주세요.", time: "2초", startTime: 0 },
-  { id: 2, title: "사용 장면 컷", description: "제품이 손이나 얼굴에 닿는 순간만 보여줘도 좋아요.", time: "2초", startTime: 2 },
-  { id: 3, title: "디테일 포인트", description: "이 제품의 특징이 잘 보이는 부분을 담아요.", time: "2초", startTime: 4 },
-  { id: 4, title: "효과 전달 컷", description: "사용 후 어떤 느낌을 전달하고 싶은지 정리해보세요.", time: "2초", startTime: 6 },
-  { id: 5, title: "마무리 장면", description: "제품과 함께 자연스럽게 마무리해 주세요.", time: "2초", startTime: 8 },
-  { id: 6, title: "엔딩 장면", description: "영상의 마지막을 장식하는 인상적인 엔딩을 담아요.", time: "2초", startTime: 10 },
+  { id: 1, title: "인트로(첫 장면)", description: "패키지 전체가 보이도록 제품을 한 컷으로 보여주세요.", time: "2초", image: "/images/play_note/cut_1.png" },
+  { id: 2, title: "테이블 풀샷", description: "테이블 위의 한 장면 디저트와 음료, 노트북 위의 손까지 — 카페에서의 자연스러운 순간을 담아주세요.", time: "2초", image: "/images/play_note/cut_2.png" },
+  { id: 3, title: "공간 무드", description: "공간의 무드 어둡고 낮은 톤의 좌석 공간을 와이드로 잡아, 카페만의 분위기를 보여주세요.", time: "2초", image: "/images/play_note/cut_3.png" },
+  { id: 4, title: "인테리어 디테일", description: "디테일 한 컷 벽면 오브제, 소품 등 인테리어 디테일을 클로즈업해 공간의 감성을 전달하세요.", time: "2초", image: "/images/play_note/cut_4.png" },
+  { id: 5, title: "공간 시그니처", description: "공간의 시그니처 유리 바닥, 돌, 계단 등 이 카페만의 독특한 건축 요소를 포착하세요.", time: "2초", image: "/images/play_note/cut_5.png" },
+  { id: 6, title: "마무리 장면", description: "여운을 남길 수 있는 장면이에요.\n분위기를 한 번 더 강조하면 좋아요.", time: "2초", image: "/images/play_note/cut_6.png" },
 ];
 
 function Plan1_1AScreen({ onComplete, onBack }) {
   const [memos, setMemos] = useState({});
-  const [activeCutId, setActiveCutId] = useState(null);
+  const [activeCutId, setActiveCutId] = useState(1);
   const [completed, setCompleted] = useState(false);
-  const [cutThumbnails, setCutThumbnails] = useState({});
   const [isSaving, setIsSaving] = useState(false);
   const scrollRef = useRef(null);
   const missionStartTime = useRef(null);
@@ -32,13 +38,13 @@ function Plan1_1AScreen({ onComplete, onBack }) {
 
     // 화면 진입 로그를 먼저 전송 (완료 대기)
     const initLogs = async () => {
-      await logScreenView('기획1-1A_화면');
+      await logScreenView('기획1-1_화면');
       // 미션 시작 로그는 화면 진입 로그 후에 전송
       if (!missionStartLogged.current) {
         missionStartLogged.current = true;
         // 충분한 지연 후 미션 시작 로그
         setTimeout(() => {
-          logMissionStart('기획1-1A_화면', '기획1-1_A미션시작');
+          logMissionStart('기획1-1_화면', '기획1-1_미션시작');
         }, 500);
       }
     };
@@ -46,51 +52,7 @@ function Plan1_1AScreen({ onComplete, onBack }) {
 
     return () => {
       const dwellTime = Date.now() - enterTime;
-      logScreenExit('기획1-1A_화면', dwellTime);
-    };
-  }, []);
-
-  // 영상에서 각 컷 시간대의 프레임을 썸네일로 추출
-  useEffect(() => {
-    const video = document.createElement('video');
-    video.muted = true;
-    video.preload = 'auto';
-    video.src = VIDEO_URL;
-
-    let cancelled = false;
-
-    const extractFrames = async () => {
-      await new Promise((resolve, reject) => {
-        video.onloadeddata = resolve;
-        video.onerror = reject;
-      });
-
-      const canvas = document.createElement('canvas');
-      canvas.width = 112;
-      canvas.height = 112;
-      const ctx = canvas.getContext('2d');
-      const thumbnails = {};
-
-      for (const cut of cuts) {
-        if (cancelled) break;
-        video.currentTime = cut.startTime || 0;
-        await new Promise((resolve) => {
-          video.onseeked = resolve;
-        });
-        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-        thumbnails[cut.id] = canvas.toDataURL('image/jpeg', 0.7);
-      }
-
-      if (!cancelled) {
-        setCutThumbnails(thumbnails);
-      }
-    };
-
-    extractFrames().catch(() => {});
-
-    return () => {
-      cancelled = true;
-      video.src = '';
+      logScreenExit('기획1-1_화면', dwellTime);
     };
   }, []);
 
@@ -106,7 +68,7 @@ function Plan1_1AScreen({ onComplete, onBack }) {
       hasMemo: !!memos[cut.id]?.trim(),
       memoLength: memos[cut.id]?.length || 0
     };
-    logButtonClick('기획1-1A_화면', 'cut_select', JSON.stringify(state));
+    logButtonClick('기획1-1_화면', 'cut_select', JSON.stringify(state));
   };
 
   const handleMemoChange = (cutId, value) => {
@@ -126,7 +88,7 @@ function Plan1_1AScreen({ onComplete, onBack }) {
         memoLength: value.length,
         memoText: value.substring(0, 50) + (value.length > 50 ? '...' : '')
       };
-      logButtonClick('기획1-1A_화면', '메모입력완료', JSON.stringify(state));
+      logButtonClick('기획1-1_화면', '메모입력완료', JSON.stringify(state));
     }
   };
 
@@ -151,12 +113,12 @@ function Plan1_1AScreen({ onComplete, onBack }) {
       avgMemoLength: memoCount > 0 ? (totalMemoLength / memoCount).toFixed(1) : 0,
       memoDetails
     };
-    logButtonClick('기획1-1A_화면', '저장하기', JSON.stringify(state));
+    logButtonClick('기획1-1_화면', '저장하기', JSON.stringify(state));
 
     // 2초 후 미션 완료
     setTimeout(() => {
       const completionTime = ((Date.now() - missionStartTime.current) / 1000).toFixed(1);
-      logMissionComplete('기획1-1A_화면', '기획1-1_A미션완료', `완료시간:${completionTime}초,메모수:${memoCount},총길이:${totalMemoLength}`);
+      logMissionComplete('기획1-1_화면', '기획1-1_미션완료', `완료시간:${completionTime}초,메모수:${memoCount},총길이:${totalMemoLength}`);
       setCompleted(true);
     }, 2000);
   };
@@ -177,7 +139,7 @@ function Plan1_1AScreen({ onComplete, onBack }) {
       memoDetails,
       completed: false
     };
-    logButtonClick('기획1-1A_화면', '미션포기', JSON.stringify(state));
+    logButtonClick('기획1-1_화면', '미션포기', JSON.stringify(state));
     onBack();
   };
 
@@ -193,11 +155,7 @@ function Plan1_1AScreen({ onComplete, onBack }) {
           <div className="story-complete-message">
             <div className="story-complete-check">✓</div>
             <p>미션을 완료했습니다.</p>
-          </div>
-          <div className="story-complete-footer">
-            <button className="story-save-btn" onClick={onComplete}>
-              완료
-            </button>
+            <p className="story-complete-next">이어서 다음 미션을 수행해 주세요.</p>
           </div>
         </div>
       </div>
@@ -210,24 +168,14 @@ function Plan1_1AScreen({ onComplete, onBack }) {
         <button className="story-back-button" onClick={handleBack}>
           ‹
         </button>
-        <span className="story-header-title">아이디어 노트 A안</span>
+        <span className="story-header-title">체험단용 뷰티 브이로그</span>
       </div>
 
       <div className="story-scroll-content" ref={scrollRef}>
         <div className="story-content-section">
-          <div className="story-progress-bar">
-            {progressWidths.map((width, index) => (
-              <div
-                key={index}
-                className={`sp-progress-segment ${index < activeCount ? 'active' : ''}`}
-                style={{ flex: width }}
-              />
-            ))}
-          </div>
-
           <div className="story-header">
-            <h2 className="story-title">아이디어 노트</h2>
-            <p className="story-description">각 컷에 넣을 장면을 미리 생각해보고 적어보세요.</p>
+            <h2 className="story-title">훅 노트</h2>
+            <p className="story-description">가이드대로 촬영을 진행해도 괜찮아요.<br/>더 담고 싶은 아이디어가 있다면 메모로 남겨보세요.</p>
           </div>
 
           <div className="sp-cut-list-container">
@@ -244,11 +192,7 @@ function Plan1_1AScreen({ onComplete, onBack }) {
                 onClick={() => handleCutSelect(cut)}
               >
                 <div className="sp-cut-thumbnail">
-                  {cutThumbnails[cut.id] ? (
-                    <img src={cutThumbnails[cut.id]} alt={`컷 ${index + 1}`} />
-                  ) : (
-                    <div className="sp-cut-thumbnail-empty" />
-                  )}
+                  <img src={cut.image} alt={`컷 ${index + 1}`} />
                   {activeCutId !== cut.id && (
                     <div className="sp-cut-thumbnail-dim">
                       <span className="sp-cut-thumbnail-time">{cut.time}</span>
@@ -264,14 +208,16 @@ function Plan1_1AScreen({ onComplete, onBack }) {
                 </div>
                 <div className="sp-cut-content">
                   <div className="sp-cut-header">
-                    <span className="sp-cut-number-inline">{index + 1}</span>
+                    <span className="sp-cut-number-with-icon">
+                      <FilmIcon active={activeCutId === cut.id} />
+                      <span>{index + 1}</span>
+                    </span>
                     <span className="sp-cut-title">{cut.title}</span>
                   </div>
                   {cut.description && (
-                    <p className="sp-cut-description">{cut.description}</p>
-                  )}
-                  {activeCutId !== cut.id && memos[cut.id]?.trim() && (
-                    <p className="sp-cut-memo-display">{memos[cut.id]}</p>
+                    <p className={`sp-cut-description ${memos[cut.id]?.trim() ? 'filled' : ''}`}>{cut.description.split('\n').map((line, i) => (
+                      <span key={i}>{line}{i < cut.description.split('\n').length - 1 && <br/>}</span>
+                    ))}</p>
                   )}
                 </div>
                 <input
@@ -286,17 +232,18 @@ function Plan1_1AScreen({ onComplete, onBack }) {
               </div>
             ))}
           </div>
-
-          <div className="story-bottom-buttons">
-            <button
-              className={`story-save-btn ${!isSaveEnabled ? 'disabled' : ''}`}
-              onClick={handleSave}
-              disabled={!isSaveEnabled}
-            >
-              저장하기
-            </button>
-          </div>
         </div>
+      </div>
+
+      {/* 저장 버튼 - 화면 하단 고정 */}
+      <div className="story-fixed-bottom">
+        <button
+          className={`story-save-btn ${!isSaveEnabled ? 'disabled' : ''}`}
+          onClick={handleSave}
+          disabled={!isSaveEnabled}
+        >
+          저장하기
+        </button>
       </div>
     </div>
   );
