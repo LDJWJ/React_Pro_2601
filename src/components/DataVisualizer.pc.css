@@ -1,9 +1,15 @@
 /* DataVisualizer.pc.css - PC 뷰 전용 스타일 */
 
+/* PC 프리뷰 컨테이너 - 전체 너비 */
+.dv-preview-container.pc {
+  width: 100%;
+  margin-top: 20px;
+}
+
 /* PC 프리뷰 프레임 - 반응형 확대 */
 .dv-preview-container.pc .dv-preview-frame {
-  width: 100%;
-  max-width: none;
+  width: 100% !important;
+  max-width: 100% !important;
   border: 1px solid #e2e8f0;
   border-radius: 16px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);

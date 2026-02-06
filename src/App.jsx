@@ -397,6 +397,15 @@ function App() {
     }
   };
 
+  // DataVisualizer는 전체 화면 사용
+  if (currentScreen === 'dataVisualizer') {
+    return (
+      <DataVisualizer
+        onBack={() => setCurrentScreen('missionMain')}
+      />
+    );
+  }
+
   return (
     <div className="mobile-app-container">
       <div className="mobile-app-frame">

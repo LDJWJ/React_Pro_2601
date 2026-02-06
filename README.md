@@ -5,7 +5,7 @@
 > A/B 테스트 및 미션 기반 사용자 행동 분석 기능 포함
 
 **프로젝트 기간**: 2026-01-19 ~ 현재
-**현재 버전**: v2.4.2 (2026-02-06)
+**현재 버전**: v2.5.0 (2026-02-06)
 **GitHub**: https://github.com/LDJWJ/React_Pro_2601
 
 ---
@@ -35,6 +35,8 @@
 | React | 19.2.0 | UI 컴포넌트 |
 | Vite | 7.2.4 | 빌드 도구 |
 | CSS Modules | - | 컴포넌트 스타일링 |
+| Recharts | - | 차트 시각화 |
+| Lucide React | - | 아이콘 라이브러리 |
 
 ### Backend & Infrastructure
 | 기술 | 용도 |
@@ -89,6 +91,19 @@
 지표: 퍼널, 완료율, 소요시간, 히트맵, A/B 비교
 ```
 
+### 2.6 데이터 시각화 (신규)
+```
+컴포넌트: DataVisualizer.jsx
+기능: 미션별 UX 분석 시각화 대시보드
+특징:
+  - CSV 불러오기 / 샘플 데이터 선택
+  - 모바일/PC 뷰 모드 전환
+  - 5개 탭 (종합, 편집1-1, 편집2-1, 편집6-1, 기획1-1)
+  - Recharts 기반 차트 (퍼널, 바, 파이, 라인)
+  - 반응형 PC 확대 지원
+CSS 분리: 공통 + 모바일 전용 + PC 전용
+```
+
 ---
 
 ## 3. 프로젝트 구조
@@ -141,6 +156,12 @@ React_Pro_2601/
 │   │   ├── DataAnalysis.jsx           # 분석 대시보드 (72.3KB)
 │   │   ├── DataAnalysis.css           # 분석 스타일
 │   │   │
+│   │   │── # ===== 데이터 시각화 (신규) =====
+│   │   ├── DataVisualizer.jsx         # 시각화 대시보드
+│   │   ├── DataVisualizer.css         # 공통 스타일
+│   │   ├── DataVisualizer.mobile.css  # 모바일 전용 스타일
+│   │   ├── DataVisualizer.pc.css      # PC 전용 스타일 (반응형)
+│   │   │
 │   │   │── # ===== 레거시 컴포넌트 =====
 │   │   ├── TemplateDetailA.jsx        # 템플릿 상세 A안
 │   │   ├── TemplateDetailB.jsx        # 템플릿 상세 B안
@@ -164,7 +185,9 @@ React_Pro_2601/
 ├── 📁 ref_file/                       # 참조 데이터
 │   ├── Tracking_Sheet_260206.csv      # 트래킹 데이터 1
 │   ├── Tracking_Sheet_260206_02.csv   # 트래킹 데이터 2
-│   └── Tracking_Sheet_260206_03.csv   # 트래킹 데이터 3
+│   ├── Tracking_Sheet_260206_03.csv   # 트래킹 데이터 3
+│   ├── Tracking_Sheet_260206_04.csv   # 트래킹 데이터 4 (시각화용)
+│   └── UXDashboard.jsx                # 참조 컴포넌트
 │
 ├── netlify.toml                       # Netlify 설정
 ├── vite.config.js                     # Vite 설정
@@ -618,6 +641,62 @@ Site settings → Environment variables에서 설정:
 
 ---
 
+### v2.5.0 (2026-02-06)
+**데이터 시각화 대시보드 신규 추가**
+
+#### 새로운 기능
+UXDashboard.jsx를 참고하여 새로운 데이터 시각화 컴포넌트 개발
+
+#### 주요 특징
+
+**1. 데이터 소스 선택**
+- CSV 파일 불러오기
+- 샘플 데이터 사용 (Tracking_Sheet_260206_04.csv 기반)
+
+**2. 뷰 모드 전환**
+- 모바일 뷰 (기본): 375px 프레임, 2행 탭 배치
+- PC 뷰: 전체 화면 반응형 확대
+
+**3. 5개 탭 구성**
+| 탭 | 아이콘 | 내용 |
+|---|---|---|
+| 종합 | TrendingUp | 전체 미션 퍼널, 디바이스별 완료율, 시간대별 참여 |
+| 편집 1-1 | Play | 영상 업로드 후 재생 분석 (퍼널, 완료시간, 첫시도 성공률) |
+| 편집 2-1 | Grid | 컷 선택 분석 (히트맵, 시도횟수 분포) |
+| 편집 6-1 | Sparkles | AI 자막 추천 분석 (2단계 퍼널, AI 선택 분포) |
+| 기획 1-1 | FileText | A/B 비교 분석 (완료율, 메모작성률) |
+
+**4. CSS 파일 분리**
+```
+DataVisualizer.css         # 공통 스타일
+DataVisualizer.mobile.css  # 모바일 전용 (2행 탭, 좁은 레이아웃)
+DataVisualizer.pc.css      # PC 전용 (반응형 확대)
+```
+
+**5. PC 반응형 확대**
+- 768px ~ 1024px: 2열 KPI, 1열 차트
+- 1024px ~ 1440px: 4열 KPI, 2열 차트
+- 1440px ~ 1920px: 확대된 폰트와 여백
+- 1920px+: 최대 확대 (KPI 36px)
+
+#### 신규 의존성
+```bash
+npm install recharts lucide-react
+```
+
+#### 변경 내역
+| 파일 | 내용 |
+|------|------|
+| `DataVisualizer.jsx` | **신규** - 메인 컴포넌트 |
+| `DataVisualizer.css` | **신규** - 공통 스타일 |
+| `DataVisualizer.mobile.css` | **신규** - 모바일 전용 |
+| `DataVisualizer.pc.css` | **신규** - PC 전용 (반응형) |
+| `App.jsx` | DataVisualizer 라우팅 추가, 전체화면 렌더링 |
+| `MissionMain.jsx` | 데이터 시각화 메뉴 추가 (ID: 11) |
+| `package.json` | recharts, lucide-react 의존성 추가 |
+
+---
+
 ### v2.4.2 (2026-02-06 02:12~02:24)
 **로그 순서 및 중복 완료 버그 수정**
 
@@ -1009,6 +1088,7 @@ src/
 
 | 버전 | 날짜 | 시간 | 주요 내용 | 파일 수 |
 |------|------|------|----------|--------|
+| **v2.5.0** | 2026-02-06 | - | 데이터 시각화 대시보드 | 6 |
 | **v2.4.2** | 2026-02-06 | 02:12~02:24 | 로그 버그 수정 | 5 |
 | **v2.4.1** | 2026-02-06 | 01:59~02:06 | 히트맵 기능 | 3 |
 | **v2.4.0** | 2026-02-06 | 01:06~01:43 | 데이터 분석 | 2 |
@@ -1037,4 +1117,4 @@ Private - All Rights Reserved
 
 ---
 
-*마지막 업데이트: 2026-02-06 02:30*
+*마지막 업데이트: 2026-02-06*

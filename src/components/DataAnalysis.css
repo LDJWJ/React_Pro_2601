@@ -3,12 +3,12 @@
   height: 852px;
   max-width: 393px;
   max-height: 852px;
-  background-color: #1a1a1a;
+  background-color: #f8fafc;
   overflow: hidden;
   display: flex;
   flex-direction: column;
   margin: 0 auto;
-  color: #fff;
+  color: #1f2937;
 }
 
 .da-header {
@@ -17,12 +17,14 @@
   gap: 4px;
   padding: 16px 20px;
   flex-shrink: 0;
+  background: #fff;
+  border-bottom: 1px solid #e5e7eb;
 }
 
 .da-back-btn {
   background: none;
   border: none;
-  color: #fff;
+  color: #374151;
   font-size: 28px;
   cursor: pointer;
   padding: 0;
@@ -32,7 +34,7 @@
 .da-title {
   font-size: 16px;
   font-weight: 600;
-  color: #fff;
+  color: #1f2937;
 }
 
 .da-content {
@@ -56,22 +58,22 @@
   margin: 0 0 6px;
   font-size: 18px;
   font-weight: 700;
-  color: #F8FF33;
+  color: #3b82f6;
 }
 
 .da-section-desc {
   margin: 0 0 14px;
   font-size: 13px;
-  color: #999;
+  color: #6b7280;
   line-height: 1.4;
 }
 
 .da-upload-btn {
   display: inline-block;
   padding: 10px 20px;
-  background: #333;
-  color: #F8FF33;
-  border: 1px solid #555;
+  background: #3b82f6;
+  color: #fff;
+  border: none;
   border-radius: 8px;
   font-size: 14px;
   font-weight: 600;
@@ -80,14 +82,14 @@
 }
 
 .da-upload-btn:hover {
-  background: #444;
+  background: #2563eb;
 }
 
 .da-file-name {
   display: inline-block;
   margin-left: 12px;
   font-size: 13px;
-  color: #aaa;
+  color: #6b7280;
 }
 
 /* 탭 */
@@ -95,7 +97,7 @@
   display: flex;
   gap: 0;
   margin-bottom: 16px;
-  border-bottom: 1px solid #333;
+  border-bottom: 1px solid #e5e7eb;
 }
 
 .da-tab {
@@ -104,7 +106,7 @@
   background: none;
   border: none;
   border-bottom: 2px solid transparent;
-  color: #888;
+  color: #9ca3af;
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
@@ -112,12 +114,12 @@
 }
 
 .da-tab.active {
-  color: #F8FF33;
-  border-bottom-color: #F8FF33;
+  color: #3b82f6;
+  border-bottom-color: #3b82f6;
 }
 
 .da-tab:hover:not(.active) {
-  color: #ccc;
+  color: #6b7280;
 }
 
 /* 탭 컨텐츠 */
@@ -134,22 +136,24 @@
 
 .da-card {
   flex: 1;
-  background: #222;
+  background: #fff;
   border-radius: 12px;
   padding: 16px;
   text-align: center;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  border: 1px solid #e5e7eb;
 }
 
 .da-card-label {
   font-size: 12px;
-  color: #999;
+  color: #6b7280;
   margin-bottom: 6px;
 }
 
 .da-card-value {
   font-size: 28px;
   font-weight: 700;
-  color: #F8FF33;
+  color: #3b82f6;
 }
 
 /* 카드 그리드 (2열) */
@@ -161,23 +165,25 @@
 }
 
 .da-card-small {
-  background: #222;
+  background: #fff;
   border-radius: 12px;
   padding: 12px;
   text-align: center;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  border: 1px solid #e5e7eb;
 }
 
 .da-card-value-sm {
   font-size: 20px;
   font-weight: 700;
-  color: #F8FF33;
+  color: #3b82f6;
 }
 
 /* 소제목 */
 .da-sub-title {
   font-size: 14px;
   font-weight: 600;
-  color: #ccc;
+  color: #374151;
   margin-bottom: 10px;
 }
 
@@ -186,7 +192,9 @@
   overflow-x: auto;
   margin-bottom: 20px;
   border-radius: 12px;
-  background: #222;
+  background: #fff;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  border: 1px solid #e5e7eb;
 }
 
 .da-table {
@@ -198,16 +206,17 @@
 .da-table th {
   text-align: left;
   padding: 10px 10px;
-  color: #999;
+  color: #6b7280;
   font-weight: 600;
-  border-bottom: 1px solid #333;
+  border-bottom: 1px solid #e5e7eb;
   white-space: nowrap;
+  background: #f9fafb;
 }
 
 .da-table td {
   padding: 9px 10px;
-  border-bottom: 1px solid #2a2a2a;
-  color: #ddd;
+  border-bottom: 1px solid #f3f4f6;
+  color: #374151;
 }
 
 .da-table tbody tr:last-child td {
@@ -220,7 +229,7 @@
 }
 
 .da-highlight {
-  color: #F8FF33;
+  color: #3b82f6;
   font-weight: 700;
 }
 
@@ -228,7 +237,7 @@
 .da-empty {
   text-align: center;
   padding: 60px 0;
-  color: #666;
+  color: #9ca3af;
   font-size: 14px;
 }
 
@@ -236,14 +245,14 @@
 .da-screen-label {
   font-size: 13px;
   font-weight: 700;
-  color: #F8FF33;
+  color: #3b82f6;
   margin-bottom: 6px;
   padding-left: 2px;
 }
 
 .da-screen-total {
   font-weight: 400;
-  color: #888;
+  color: #9ca3af;
   font-size: 12px;
   margin-left: 6px;
 }
@@ -264,7 +273,7 @@
 
 .da-funnel-label {
   font-size: 11px;
-  color: #aaa;
+  color: #6b7280;
   width: 62px;
   flex-shrink: 0;
   text-align: right;
@@ -273,14 +282,14 @@
 .da-funnel-bar-bg {
   flex: 1;
   height: 14px;
-  background: #333;
+  background: #e5e7eb;
   border-radius: 4px;
   overflow: hidden;
 }
 
 .da-funnel-bar-fill {
   height: 100%;
-  background: linear-gradient(90deg, #F8FF33, #a8b000);
+  background: linear-gradient(90deg, #3b82f6, #60a5fa);
   border-radius: 4px;
   transition: width 0.3s ease;
   min-width: 2px;
@@ -288,7 +297,7 @@
 
 .da-funnel-pct {
   font-size: 11px;
-  color: #ccc;
+  color: #374151;
   width: 40px;
   flex-shrink: 0;
   text-align: right;
@@ -301,37 +310,38 @@
   gap: 8px;
   margin-bottom: 12px;
   padding: 10px 12px;
-  background: #1a1a1a;
+  background: #f0f9ff;
   border-radius: 8px;
+  border: 1px solid #bae6fd;
 }
 
 .da-funnel-summary-label {
   font-size: 12px;
-  color: #888;
+  color: #6b7280;
 }
 
 .da-funnel-summary-value {
   font-size: 18px;
   font-weight: 700;
-  color: #F8FF33;
+  color: #3b82f6;
 }
 
 .da-funnel-summary-detail {
   font-size: 11px;
-  color: #666;
+  color: #9ca3af;
 }
 
 /* 퍼널 드롭오프 */
 .da-funnel-dropoff {
   margin-top: 14px;
   padding-top: 12px;
-  border-top: 1px solid #333;
+  border-top: 1px solid #e5e7eb;
 }
 
 .da-funnel-dropoff-title {
   font-size: 12px;
   font-weight: 600;
-  color: #888;
+  color: #6b7280;
   margin-bottom: 8px;
 }
 
@@ -341,28 +351,28 @@
   align-items: center;
   padding: 6px 8px;
   margin-bottom: 4px;
-  background: #1a1a1a;
+  background: #f9fafb;
   border-radius: 6px;
   border-left: 3px solid transparent;
 }
 
 .da-funnel-dropoff-item.warning {
-  border-left-color: #ff6b6b;
-  background: #2a1a1a;
+  border-left-color: #ef4444;
+  background: #fef2f2;
 }
 
 .da-funnel-dropoff-label {
   font-size: 11px;
-  color: #aaa;
+  color: #6b7280;
 }
 
 .da-funnel-dropoff-value {
   font-size: 11px;
-  color: #666;
+  color: #9ca3af;
 }
 
 .da-funnel-dropoff-value.high {
-  color: #ff6b6b;
+  color: #ef4444;
   font-weight: 600;
 }
 
@@ -373,8 +383,8 @@
   gap: 8px;
   margin-top: 12px;
   padding: 10px 12px;
-  background: linear-gradient(135deg, #2a2a1a 0%, #2a1a1a 100%);
-  border: 1px solid #444;
+  background: linear-gradient(135deg, #fef3c7 0%, #fef2f2 100%);
+  border: 1px solid #fcd34d;
   border-radius: 8px;
 }
 
@@ -385,25 +395,25 @@
 
 .da-funnel-insight-text {
   font-size: 12px;
-  color: #ccc;
+  color: #374151;
   line-height: 1.4;
 }
 
 .da-funnel-insight-text strong {
-  color: #F8FF33;
+  color: #b45309;
 }
 
 .da-loading {
   text-align: center;
   padding: 40px 0;
-  color: #888;
+  color: #6b7280;
   font-size: 14px;
 }
 
 .da-error {
   text-align: center;
   padding: 20px;
-  color: #ff6b6b;
+  color: #ef4444;
   font-size: 14px;
 }
 
@@ -416,21 +426,23 @@
 }
 
 .da-mission-card {
-  background: #222;
-  border: 2px solid #333;
+  background: #fff;
+  border: 2px solid #e5e7eb;
   border-radius: 12px;
   padding: 12px;
   cursor: pointer;
   transition: all 0.2s;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
 }
 
 .da-mission-card:hover {
-  border-color: #555;
+  border-color: #93c5fd;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
 }
 
 .da-mission-card.selected {
-  border-color: #F8FF33;
-  background: #2a2a1a;
+  border-color: #3b82f6;
+  background: #eff6ff;
 }
 
 .da-mission-card-header {
@@ -443,17 +455,17 @@
 .da-mission-card-name {
   font-size: 14px;
   font-weight: 700;
-  color: #fff;
+  color: #1f2937;
 }
 
 .da-mission-card-check {
-  color: #F8FF33;
+  color: #3b82f6;
   font-size: 14px;
 }
 
 .da-mission-card-desc {
   font-size: 11px;
-  color: #888;
+  color: #6b7280;
   margin-bottom: 8px;
   line-height: 1.3;
 }
@@ -469,7 +481,7 @@
   align-items: center;
   gap: 2px;
   font-size: 11px;
-  color: #aaa;
+  color: #6b7280;
 }
 
 .da-mission-card-stat-icon {
@@ -478,21 +490,21 @@
 
 .da-mission-card-rate {
   font-size: 12px;
-  color: #F8FF33;
+  color: #3b82f6;
   font-weight: 600;
   margin-bottom: 4px;
 }
 
 .da-mission-card-bar {
   height: 4px;
-  background: #333;
+  background: #e5e7eb;
   border-radius: 2px;
   overflow: hidden;
 }
 
 .da-mission-card-bar-fill {
   height: 100%;
-  background: linear-gradient(90deg, #F8FF33, #a8b000);
+  background: linear-gradient(90deg, #3b82f6, #60a5fa);
   border-radius: 2px;
   transition: width 0.3s ease;
 }
@@ -510,23 +522,23 @@
   align-items: center;
   gap: 6px;
   padding: 8px 12px;
-  background: #222;
-  border: 1px solid #333;
+  background: #fff;
+  border: 1px solid #e5e7eb;
   border-radius: 8px;
-  color: #888;
+  color: #6b7280;
   font-size: 13px;
   cursor: pointer;
   transition: all 0.2s;
 }
 
 .da-analysis-item:hover {
-  border-color: #555;
+  border-color: #93c5fd;
 }
 
 .da-analysis-item.selected {
-  border-color: #F8FF33;
-  color: #fff;
-  background: #2a2a1a;
+  border-color: #3b82f6;
+  color: #1f2937;
+  background: #eff6ff;
 }
 
 .da-analysis-item-check {
@@ -539,19 +551,21 @@
 
 /* 분석 결과 */
 .da-results {
-  background: #222;
+  background: #fff;
   border-radius: 12px;
   padding: 16px;
   margin-bottom: 20px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  border: 1px solid #e5e7eb;
 }
 
 .da-result-header {
   font-size: 14px;
   font-weight: 600;
-  color: #fff;
+  color: #1f2937;
   margin-bottom: 16px;
   padding-bottom: 12px;
-  border-bottom: 1px solid #333;
+  border-bottom: 1px solid #e5e7eb;
 }
 
 .da-result-section {
@@ -565,20 +579,20 @@
 .da-result-section-title {
   font-size: 13px;
   font-weight: 600;
-  color: #F8FF33;
+  color: #3b82f6;
   margin-bottom: 8px;
 }
 
 .da-result-section-content {
   font-size: 13px;
-  color: #ccc;
+  color: #374151;
   line-height: 1.5;
 }
 
 /* 프로그레스 바 */
 .da-progress-bar {
   height: 8px;
-  background: #333;
+  background: #e5e7eb;
   border-radius: 4px;
   overflow: hidden;
   margin-bottom: 6px;
@@ -591,7 +605,7 @@
 
 .da-progress-fill {
   height: 100%;
-  background: linear-gradient(90deg, #F8FF33, #a8b000);
+  background: linear-gradient(90deg, #3b82f6, #60a5fa);
   border-radius: 4px;
   transition: width 0.3s ease;
   min-width: 2px;
@@ -600,24 +614,24 @@
 .da-result-rate {
   font-size: 14px;
   font-weight: 700;
-  color: #F8FF33;
+  color: #3b82f6;
 }
 
 .da-result-note {
   font-size: 11px;
-  color: #666;
+  color: #9ca3af;
   margin-top: 4px;
 }
 
 .da-result-time {
   font-size: 20px;
   font-weight: 700;
-  color: #F8FF33;
+  color: #3b82f6;
 }
 
 .da-result-time-detail {
   font-size: 12px;
-  color: #888;
+  color: #6b7280;
   margin-left: 8px;
 }
 
@@ -629,33 +643,34 @@
 
 .da-result-ab-item {
   flex: 1;
-  background: #1a1a1a;
+  background: #f9fafb;
   border-radius: 8px;
   padding: 12px;
+  border: 1px solid #e5e7eb;
 }
 
 .da-result-ab-label {
   font-size: 12px;
-  color: #888;
+  color: #6b7280;
   margin-bottom: 4px;
 }
 
 .da-result-ab-value {
   font-size: 18px;
   font-weight: 700;
-  color: #F8FF33;
+  color: #3b82f6;
   margin-bottom: 4px;
 }
 
 .da-result-ab-detail {
   font-size: 11px;
-  color: #666;
+  color: #9ca3af;
   margin-bottom: 8px;
 }
 
 .da-result-memo-stats {
   font-size: 12px;
-  color: #aaa;
+  color: #6b7280;
   line-height: 1.6;
 }
 
@@ -674,7 +689,7 @@
 .da-result-bar-label {
   width: 80px;
   font-size: 12px;
-  color: #aaa;
+  color: #6b7280;
   flex-shrink: 0;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -684,26 +699,26 @@
 .da-result-bar-bg {
   flex: 1;
   height: 12px;
-  background: #333;
+  background: #e5e7eb;
   border-radius: 4px;
   overflow: hidden;
 }
 
 .da-result-bar-fill {
   height: 100%;
-  background: linear-gradient(90deg, #F8FF33, #a8b000);
+  background: linear-gradient(90deg, #3b82f6, #60a5fa);
   border-radius: 4px;
   transition: width 0.3s ease;
 }
 
 .da-result-bar-fill.wrong {
-  background: linear-gradient(90deg, #ff6b6b, #ff4444);
+  background: linear-gradient(90deg, #ef4444, #f87171);
 }
 
 .da-result-bar-count {
   width: 40px;
   font-size: 12px;
-  color: #888;
+  color: #6b7280;
   text-align: right;
   flex-shrink: 0;
 }
@@ -714,7 +729,7 @@
   justify-content: space-between;
   align-items: center;
   padding: 6px 0;
-  border-bottom: 1px solid #2a2a2a;
+  border-bottom: 1px solid #f3f4f6;
 }
 
 .da-result-stat-row:last-child {
@@ -723,7 +738,7 @@
 
 .da-result-stat-value {
   font-weight: 600;
-  color: #F8FF33;
+  color: #3b82f6;
 }
 
 /* 컷별 메모 현황 */
@@ -740,7 +755,7 @@
 
 .da-result-cut-label {
   font-size: 12px;
-  color: #888;
+  color: #6b7280;
   width: 32px;
   flex-shrink: 0;
 }
@@ -753,29 +768,32 @@
 
 .da-result-cut-item {
   font-size: 11px;
-  color: #666;
+  color: #9ca3af;
   padding: 2px 6px;
-  background: #1a1a1a;
+  background: #f9fafb;
   border-radius: 4px;
+  border: 1px solid #e5e7eb;
 }
 
 .da-result-cut-item.filled {
-  color: #F8FF33;
-  background: #2a2a1a;
+  color: #3b82f6;
+  background: #eff6ff;
+  border-color: #bfdbfe;
 }
 
 /* 히트맵 스타일 */
 .da-heatmap-container {
-  background: #1a1a1a;
+  background: #f9fafb;
   border-radius: 12px;
   padding: 16px;
   margin-top: 8px;
+  border: 1px solid #e5e7eb;
 }
 
 .da-heatmap-screen {
   position: relative;
-  background: #0d0d0d;
-  border: 2px solid #333;
+  background: #fff;
+  border: 2px solid #e5e7eb;
   border-radius: 16px;
   padding: 12px;
   min-height: 280px;
@@ -783,7 +801,7 @@
 }
 
 .da-heatmap-screen-header {
-  background: #222;
+  background: #f3f4f6;
   border-radius: 8px;
   padding: 8px 12px;
   margin-bottom: 12px;
@@ -795,23 +813,23 @@
 .da-heatmap-screen-title {
   font-size: 12px;
   font-weight: 600;
-  color: #888;
+  color: #6b7280;
 }
 
 .da-heatmap-preview-area {
-  background: #1a1a1a;
+  background: #f9fafb;
   border-radius: 8px;
   height: 100px;
   display: flex;
   align-items: center;
   justify-content: center;
   margin-bottom: 12px;
-  border: 1px dashed #333;
+  border: 1px dashed #d1d5db;
 }
 
 .da-heatmap-preview-text {
   font-size: 11px;
-  color: #555;
+  color: #9ca3af;
 }
 
 .da-heatmap-buttons {
@@ -847,8 +865,8 @@
   position: absolute;
   top: -6px;
   right: -6px;
-  background: #fff;
-  color: #000;
+  background: #1f2937;
+  color: #fff;
   font-size: 9px;
   font-weight: 700;
   padding: 2px 5px;
@@ -859,34 +877,39 @@
 
 /* 히트맵 색상 등급 (클릭 빈도) */
 .da-heatmap-btn.heat-0 {
-  background: #2a2a2a;
-  border: 1px solid #444;
-  color: #666;
+  background: #e5e7eb;
+  border: 1px solid #d1d5db;
+  color: #9ca3af;
 }
 
 .da-heatmap-btn.heat-1 {
-  background: linear-gradient(135deg, #1a3a1a, #2a4a2a);
-  border: 1px solid #3a5a3a;
+  background: linear-gradient(135deg, #dcfce7, #bbf7d0);
+  border: 1px solid #86efac;
+  color: #166534;
 }
 
 .da-heatmap-btn.heat-2 {
-  background: linear-gradient(135deg, #3a5a1a, #5a7a2a);
-  border: 1px solid #6a8a3a;
+  background: linear-gradient(135deg, #bbf7d0, #86efac);
+  border: 1px solid #4ade80;
+  color: #166534;
 }
 
 .da-heatmap-btn.heat-3 {
-  background: linear-gradient(135deg, #6a6a1a, #8a8a2a);
-  border: 1px solid #9a9a3a;
+  background: linear-gradient(135deg, #fef08a, #fde047);
+  border: 1px solid #facc15;
+  color: #854d0e;
 }
 
 .da-heatmap-btn.heat-4 {
-  background: linear-gradient(135deg, #8a5a1a, #aa7a2a);
-  border: 1px solid #ba8a3a;
+  background: linear-gradient(135deg, #fed7aa, #fdba74);
+  border: 1px solid #fb923c;
+  color: #9a3412;
 }
 
 .da-heatmap-btn.heat-5 {
-  background: linear-gradient(135deg, #aa3a1a, #cc4a2a);
-  border: 1px solid #dd5a3a;
+  background: linear-gradient(135deg, #fecaca, #f87171);
+  border: 1px solid #ef4444;
+  color: #991b1b;
 }
 
 /* 히트맵 범례 */
@@ -897,12 +920,12 @@
   gap: 4px;
   margin-top: 12px;
   padding-top: 12px;
-  border-top: 1px solid #333;
+  border-top: 1px solid #e5e7eb;
 }
 
 .da-heatmap-legend-label {
   font-size: 10px;
-  color: #666;
+  color: #9ca3af;
 }
 
 .da-heatmap-legend-bar {
@@ -916,19 +939,19 @@
   border-radius: 2px;
 }
 
-.da-heatmap-legend-item.l0 { background: #2a2a2a; }
-.da-heatmap-legend-item.l1 { background: #2a4a2a; }
-.da-heatmap-legend-item.l2 { background: #5a7a2a; }
-.da-heatmap-legend-item.l3 { background: #8a8a2a; }
-.da-heatmap-legend-item.l4 { background: #aa7a2a; }
-.da-heatmap-legend-item.l5 { background: #cc4a2a; }
+.da-heatmap-legend-item.l0 { background: #e5e7eb; }
+.da-heatmap-legend-item.l1 { background: #bbf7d0; }
+.da-heatmap-legend-item.l2 { background: #86efac; }
+.da-heatmap-legend-item.l3 { background: #fde047; }
+.da-heatmap-legend-item.l4 { background: #fdba74; }
+.da-heatmap-legend-item.l5 { background: #f87171; }
 
 /* 타임라인 스타일 (편집 2-1) */
 .da-heatmap-timeline {
   display: flex;
   gap: 4px;
   padding: 8px;
-  background: #222;
+  background: #f3f4f6;
   border-radius: 8px;
   margin-bottom: 12px;
 }
@@ -957,8 +980,8 @@
   position: absolute;
   bottom: -4px;
   right: -4px;
-  background: #fff;
-  color: #000;
+  background: #1f2937;
+  color: #fff;
   font-size: 8px;
   font-weight: 700;
   padding: 1px 4px;
@@ -1002,8 +1025,8 @@
 }
 
 .da-heatmap-cut-item .click-count {
-  background: #fff;
-  color: #000;
+  background: rgba(255,255,255,0.9);
+  color: #1f2937;
   font-size: 10px;
   font-weight: 700;
   padding: 2px 8px;
@@ -1020,16 +1043,17 @@
 
 .da-time-metric-item {
   flex: 1;
-  background: #1a1a1a;
+  background: #f9fafb;
   border-radius: 8px;
   padding: 12px 8px;
   text-align: center;
+  border: 1px solid #e5e7eb;
 }
 
 .da-time-metric-label {
   display: block;
   font-size: 10px;
-  color: #888;
+  color: #6b7280;
   margin-bottom: 4px;
 }
 
@@ -1037,21 +1061,22 @@
   display: block;
   font-size: 18px;
   font-weight: 700;
-  color: #F8FF33;
+  color: #3b82f6;
 }
 
 /* 망설임 구간 */
 .da-hesitation-section {
   margin-bottom: 16px;
   padding: 12px;
-  background: #1a1a1a;
+  background: #fff7ed;
   border-radius: 8px;
+  border: 1px solid #fed7aa;
 }
 
 .da-hesitation-title {
   font-size: 12px;
   font-weight: 600;
-  color: #aaa;
+  color: #9a3412;
   margin-bottom: 10px;
 }
 
@@ -1069,7 +1094,7 @@
 .da-hesitation-action {
   width: 80px;
   font-size: 11px;
-  color: #aaa;
+  color: #9a3412;
   flex-shrink: 0;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -1079,14 +1104,14 @@
 .da-hesitation-bar-bg {
   flex: 1;
   height: 10px;
-  background: #333;
+  background: #fde68a;
   border-radius: 4px;
   overflow: hidden;
 }
 
 .da-hesitation-bar-fill {
   height: 100%;
-  background: linear-gradient(90deg, #ff9800, #ff5722);
+  background: linear-gradient(90deg, #f97316, #ea580c);
   border-radius: 4px;
   transition: width 0.3s ease;
 }
@@ -1094,7 +1119,7 @@
 .da-hesitation-time {
   width: 40px;
   font-size: 11px;
-  color: #ff9800;
+  color: #ea580c;
   font-weight: 600;
   text-align: right;
   flex-shrink: 0;
@@ -1103,14 +1128,15 @@
 /* 시간 분포 */
 .da-time-distribution {
   padding: 12px;
-  background: #1a1a1a;
+  background: #f0fdf4;
   border-radius: 8px;
+  border: 1px solid #bbf7d0;
 }
 
 .da-time-dist-title {
   font-size: 12px;
   font-weight: 600;
-  color: #aaa;
+  color: #166534;
   margin-bottom: 10px;
 }
 
@@ -1128,21 +1154,21 @@
 .da-time-dist-label {
   width: 60px;
   font-size: 11px;
-  color: #888;
+  color: #6b7280;
   flex-shrink: 0;
 }
 
 .da-time-dist-bar-bg {
   flex: 1;
   height: 12px;
-  background: #333;
+  background: #dcfce7;
   border-radius: 4px;
   overflow: hidden;
 }
 
 .da-time-dist-bar-fill {
   height: 100%;
-  background: linear-gradient(90deg, #4CAF50, #8BC34A);
+  background: linear-gradient(90deg, #22c55e, #4ade80);
   border-radius: 4px;
   transition: width 0.3s ease;
 }
@@ -1150,7 +1176,7 @@
 .da-time-dist-count {
   width: 36px;
   font-size: 11px;
-  color: #4CAF50;
+  color: #16a34a;
   font-weight: 600;
   text-align: right;
   flex-shrink: 0;
