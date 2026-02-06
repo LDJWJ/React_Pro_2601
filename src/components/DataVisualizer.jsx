@@ -6,7 +6,8 @@ import {
 } from 'recharts';
 import {
   Monitor, Smartphone, Clock, CheckCircle, XCircle, Users,
-  TrendingUp, Target, Zap, FileText, Upload, Database
+  TrendingUp, Target, Zap, FileText, Upload, Database,
+  Play, Grid, Sparkles
 } from 'lucide-react';
 import './DataVisualizer.css';
 
