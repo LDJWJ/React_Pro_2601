@@ -31,6 +31,8 @@ const SCREEN_ROUTES = {
   'plan1-2-screen': '기획1-2_화면',
   'main': 'missionMain',
   'login': 'login',
+  'basic-analysis': 'basicDataAnalysis',
+  'extended-analysis': 'extendedDataAnalysis',
 };
 
 // 화면에서 URL 해시로 역매핑
