@@ -327,7 +327,7 @@ function App() {
         return (
           <MissionStep
             stepTitle="추천 자막 중 하나 선택하기"
-            description={`[기본 미션]\n이 장면에 어울리는 자막을 AI 추천 기능을 이용해 추가해보세요.\n\n[추가 미션]\n마음에 드는 자막이 없다면, 다른 추천 자막을 확인해보세요.`}
+            description={`[기본 미션]\n이 장면에 어울리는 자막을 AI 추천 기능을 이용해 추가해보세요.\n\n[추가 미션]\n마음에 드는 자막이 없다면, AI 추천을 이용해서 다른 추천 자막을 확인해 보세요.`}
             buttonText="다음"
             screenName="편집6-1_미션설명"
             onNext={() => setCurrentScreen('편집6-1_화면')}
@@ -345,8 +345,8 @@ function App() {
       case '기획1-1':
         return (
           <MissionStep
-            stepTitle="기획 1-1: 아이디어 메모 (6컷 개별)"
-            description={`[미션]영상 아이디어를 메모하려고 합니다.\n아이디어 노트를 활용해, 메모가 작성이 완료되면 저장하기를 선택해 주세요.\n하나 이상은 메모 작성이 필요합니다.`}
+            stepTitle={`기획 1-1: 아이디어 메모 \n(6컷 개별)`}
+            description={`[미션]영상 아이디어를 메모하려고 합니다.\n아이디어 노트를 활용해, 메모 작성이 \n완료되면 저장하기를 선택해 주세요.\n하나 이상은 메모 작성이 필요합니다.`}
             buttonText="다음"
             screenName="기획1-1"
             onNext={() => setCurrentScreen('기획1-1_화면')}
@@ -364,8 +364,8 @@ function App() {
       case '기획1-2':
         return (
           <MissionStep
-            stepTitle="기획 1-2: 아이디어 메모 (3컷 그룹)"
-            description={`[미션]영상 아이디어를 메모하려고 합니다.\n아이디어 노트를 활용해, 메모가 작성이 완료되면 저장하기를 선택해 주세요.\n하나 이상은 메모 작성이 필요합니다.`}
+            stepTitle={`기획 1-2: 아이디어 메모 \n(3컷 그룹)`}
+            description={`[미션]영상 아이디어를 메모하려고 합니다.\n아이디어 노트를 활용해, 메모 작성이 \n완료되면 저장하기를 선택해 주세요.\n하나 이상은 메모 작성이 필요합니다.`}
             buttonText="다음"
             screenName="기획1-2"
             onNext={() => setCurrentScreen('기획1-2_화면')}

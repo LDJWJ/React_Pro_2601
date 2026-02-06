@@ -201,13 +201,6 @@ function Plan1_1AScreen({ onComplete, onBack }) {
                       <span className="sp-cut-thumbnail-time">{cut.time}</span>
                     </div>
                   )}
-                  {memos[cut.id]?.trim() && (
-                    <div className="sp-cut-thumbnail-check">
-                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                        <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z" fill="#FFD600"/>
-                      </svg>
-                    </div>
-                  )}
                 </div>
                 <div className="sp-cut-content">
                   <div className="sp-cut-header">

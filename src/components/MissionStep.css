@@ -27,6 +27,7 @@
   font-weight: 700;
   color: #1a1a1a;
   margin-bottom: 16px;
+  white-space: pre-line;
 }
 
 .mission-step-description {

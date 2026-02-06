@@ -321,34 +321,7 @@ function Edit6_1Screen({ onComplete, onBack }) {
       }
     } finally {
       setIsLoadingAI(false);
-      // 첫 번째 미션: AI 자막 추천 버튼을 누르면 2초 후 1차 미션 완료 팝업 표시
-      // missionCompletingRef로 동기적 중복 방지 (setState는 비동기라 빠른 연속 클릭 시 중복 발생 가능)
-      if (missionStage === 0 && !missionCompletingRef.current) {
-        missionCompletingRef.current = true;  // 동기적으로 즉시 설정
-        setIsCompleting(true);
-        // 미션 완료 시간은 버튼 클릭 시점에 계산 (2초 대기 시간 제외)
-        const completionTime = ((Date.now() - missionStartTime.current) / 1000).toFixed(1);
-        logMissionComplete('편집6-1_화면', '편집6-1_기본미션완료', `완료시간:${completionTime}초`);
-        setTimeout(() => {
-          logMissionStart('편집6-1_화면', '편집6-1_추가미션시작');
-          missionStartTime.current = Date.now(); // 추가 미션 시작 시간 초기화
-          setMissionStage(1);
-          setShowPopup(true);
-          setIsCompleting(false);
-          missionCompletingRef.current = false;  // 팝업 후 초기화
-        }, 2000);
-      }
-      // 두 번째 미션: 재추천 대기 상태에서 AI 자막 추천을 다시 누르면 2초 후 완료
-      if (missionStage === 2 && !missionCompletingRef.current) {
-        missionCompletingRef.current = true;  // 동기적으로 즉시 설정
-        setIsCompleting(true);
-        // 미션 완료 시간은 버튼 클릭 시점에 계산 (2초 대기 시간 제외)
-        const completionTime = ((Date.now() - missionStartTime.current) / 1000).toFixed(1);
-        logMissionComplete('편집6-1_화면', '편집6-1_추가미션완료', `완료시간:${completionTime}초`);
-        setTimeout(() => {
-          setCompleted(true);
-        }, 2000);
-      }
+      // 미션 완료는 AI 추천 자막 선택 시 처리됨 (handleSelectAiSuggestion)
     }
   };
 
@@ -366,15 +339,49 @@ function Edit6_1Screen({ onComplete, onBack }) {
     setCutData(prev => prev.map((cut, i) =>
       i === currentCutIndex ? { ...cut, subtitle: suggestion } : cut
     ));
+
+    // 첫 번째 미션: AI 추천 자막 중 하나를 선택하면 2초 후 1차 미션 완료 팝업 표시
+    // missionCompletingRef로 동기적 중복 방지 (setState는 비동기라 빠른 연속 클릭 시 중복 발생 가능)
+    if (missionStage === 0 && !missionCompletingRef.current) {
+      missionCompletingRef.current = true;  // 동기적으로 즉시 설정
+      setIsCompleting(true);
+      // 미션 완료 시간은 선택 시점에 계산 (2초 대기 시간 제외)
+      const completionTime = ((Date.now() - missionStartTime.current) / 1000).toFixed(1);
+      logMissionComplete('편집6-1_화면', '편집6-1_기본미션완료', `완료시간:${completionTime}초`);
+      setTimeout(() => {
+        // 추가 미션 시작은 팝업 확인 버튼을 누를 때로 이동
+        setMissionStage(1);
+        setShowPopup(true);
+        setIsCompleting(false);
+        missionCompletingRef.current = false;  // 팝업 후 초기화
+      }, 2000);
+    }
+
+    // 두 번째 미션: 재추천된 자막 중 하나를 선택하면 2초 후 완료
+    if (missionStage === 2 && !missionCompletingRef.current) {
+      missionCompletingRef.current = true;  // 동기적으로 즉시 설정
+      setIsCompleting(true);
+      // 미션 완료 시간은 선택 시점에 계산 (2초 대기 시간 제외)
+      const completionTime = ((Date.now() - missionStartTime.current) / 1000).toFixed(1);
+      logMissionComplete('편집6-1_화면', '편집6-1_추가미션완료', `완료시간:${completionTime}초`);
+      setTimeout(() => {
+        setCompleted(true);
+      }, 2000);
+    }
   };
 
-  // 팝업 확인 버튼
+  // 팝업 확인 버튼 - 추가 미션 시작 시점
   const handlePopupConfirm = () => {
     const state = {
       currentCut: currentCutIndex + 1,
       missionStage: 1
     };
     logButtonClick('편집6-1_화면', '팝업확인', JSON.stringify(state));
+
+    // 추가 미션 시작: 팝업 확인 버튼을 누른 시점부터 시작
+    logMissionStart('편집6-1_화면', '편집6-1_추가미션시작');
+    missionStartTime.current = Date.now(); // 추가 미션 시작 시간 초기화
+
     setShowPopup(false);
     setMissionStage(2);
   };
