@@ -595,3 +595,33 @@
   font-size: 13px !important;
   color: #475569 !important;
 }
+
+/* 범례 행 */
+.dv-legend-row {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  margin-top: 12px;
+  font-size: 13px;
+  color: #64748b;
+}
+
+.dv-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.dv-legend-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 3px;
+}
+
+.dv-legend-dot.success {
+  background: #22c55e;
+}
+
+.dv-legend-dot.error {
+  background: #ef4444;
+}

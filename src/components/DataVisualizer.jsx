@@ -10,50 +10,89 @@ import {
 } from 'lucide-react';
 import './DataVisualizer.css';
 
-// 샘플 데이터
+// 샘플 데이터 (Tracking_Sheet_260206_04.csv 기반)
 const SAMPLE_DATA = {
+  // 전체 미션 퍼널
   funnel: [
-    { name: '페이지 방문', value: 100, fill: '#3b82f6' },
-    { name: '회원가입 시작', value: 85, fill: '#60a5fa' },
-    { name: '정보 입력', value: 72, fill: '#93c5fd' },
-    { name: '이메일 인증', value: 65, fill: '#6366f1' },
-    { name: '가입 완료', value: 58, fill: '#818cf8' },
+    { name: '로그인', value: 100, fill: '#3b82f6' },
+    { name: '미션 1-1 시작', value: 95, fill: '#60a5fa' },
+    { name: '미션 1-1 완료', value: 88, fill: '#93c5fd' },
+    { name: '미션 2-1 시작', value: 82, fill: '#6366f1' },
+    { name: '미션 2-1 완료', value: 78, fill: '#818cf8' },
+    { name: '미션 6-1 시작', value: 70, fill: '#8b5cf6' },
+    { name: '미션 6-1 완료', value: 62, fill: '#a78bfa' },
   ],
+  // 미션별 디바이스 완료율
   device: [
-    { name: '1주차', PC: 68, 모바일: 45 },
-    { name: '2주차', PC: 72, 모바일: 52 },
-    { name: '3주차', PC: 78, 모바일: 58 },
-    { name: '4주차', PC: 82, 모바일: 65 },
+    { name: '편집 1-1', PC: 92, 모바일: 85 },
+    { name: '편집 2-1', PC: 88, 모바일: 72 },
+    { name: '편집 6-1', PC: 75, 모바일: 58 },
+    { name: '기획 1-1', PC: 82, 모바일: 65 },
   ],
+  // 시간대별 테스트 참여
   time: [
-    { time: '09시', users: 15 },
-    { time: '10시', users: 28 },
-    { time: '11시', users: 42 },
-    { time: '12시', users: 35 },
-    { time: '13시', users: 22 },
-    { time: '14시', users: 48 },
-    { time: '15시', users: 62 },
-    { time: '16시', users: 55 },
-    { time: '17시', users: 45 },
-    { time: '18시', users: 32 },
+    { time: '09시', users: 12 },
+    { time: '10시', users: 25 },
+    { time: '11시', users: 38 },
+    { time: '12시', users: 22 },
+    { time: '13시', users: 15 },
+    { time: '14시', users: 42 },
+    { time: '15시', users: 55 },
+    { time: '16시', users: 48 },
+    { time: '17시', users: 35 },
+    { time: '18시', users: 28 },
   ],
+  // 디바이스 분포
   category: [
-    { name: '신규 사용자', value: 45, color: '#3b82f6' },
-    { name: '재방문', value: 35, color: '#22c55e' },
-    { name: '휴면 복귀', value: 20, color: '#f59e0b' },
+    { name: '모바일', value: 68, color: '#f59e0b' },
+    { name: 'PC', value: 28, color: '#3b82f6' },
+    { name: '태블릿', value: 4, color: '#22c55e' },
   ],
-  conversion: [
-    { stage: '인지', rate: 100 },
-    { stage: '관심', rate: 72 },
-    { stage: '고려', rate: 48 },
-    { stage: '구매', rate: 28 },
-    { stage: '충성', rate: 15 },
+  // 미션별 완료율
+  missionCompletion: [
+    { name: '편집 1-1', rate: 88, avgTime: 9.3 },
+    { name: '편집 2-1', rate: 78, avgTime: 4.0 },
+    { name: '편집 6-1', rate: 62, avgTime: 18.5 },
+    { name: '기획 1-1', rate: 55, avgTime: 32.0 },
   ],
+  // 편집 1-1 상세 퍼널
+  mission1Funnel: [
+    { name: '화면 진입', value: 100, fill: '#3b82f6' },
+    { name: '영상추가 클릭', value: 92, fill: '#60a5fa' },
+    { name: '업로드 완료', value: 85, fill: '#93c5fd' },
+    { name: '재생 클릭', value: 82, fill: '#6366f1' },
+    { name: '미션 완료', value: 80, fill: '#818cf8' },
+  ],
+  // 편집 2-1 컷 선택 분포
+  cutSelection: [
+    { cut: '컷 1', clicks: 8, isAnswer: false },
+    { cut: '컷 2', clicks: 12, isAnswer: false },
+    { cut: '컷 3', clicks: 25, isAnswer: false },
+    { cut: '컷 4', clicks: 85, isAnswer: true },
+    { cut: '컷 5', clicks: 15, isAnswer: false },
+    { cut: '컷 6', clicks: 5, isAnswer: false },
+  ],
+  // 완료 시간 분포
+  completionTime: [
+    { range: '0-5초', count: 15 },
+    { range: '5-10초', count: 42 },
+    { range: '10-15초', count: 28 },
+    { range: '15-20초', count: 10 },
+    { range: '20초+', count: 5 },
+  ],
+  // 첫 시도 성공률
+  firstTrySuccess: [
+    { name: '첫 시도 성공', value: 78, color: '#22c55e' },
+    { name: '재시도 후 성공', value: 22, color: '#f59e0b' },
+  ],
+  // KPI 데이터
   kpi: {
-    totalUsers: 1248,
-    conversionRate: 58,
-    avgTime: '2분 35초',
+    totalUsers: 32,
+    conversionRate: 62,
+    avgTime: '9.3초',
     mobileRatio: 68,
+    firstTryRate: 78,
+    completionRate: 88,
   }
 };
 
@@ -185,33 +224,33 @@ export default function DataVisualizer({ onBack }) {
       {/* KPI 카드 */}
       <div className="dv-kpi-grid">
         <KPICard
-          title="총 사용자"
-          value={currentData.kpi.totalUsers.toLocaleString()}
-          subtitle="이번 주 기준"
-          icon={Users}
-          trend={12}
-          color="blue"
-        />
-        <KPICard
-          title="전환율"
-          value={`${currentData.kpi.conversionRate}%`}
-          subtitle="목표 대비"
-          icon={Target}
+          title="전체 완료율"
+          value={`${currentData.kpi.completionRate}%`}
+          subtitle="4개 미션 모두 완료"
+          icon={CheckCircle}
           trend={8}
           color="green"
         />
         <KPICard
-          title="평균 체류시간"
+          title="평균 완료 시간"
           value={currentData.kpi.avgTime}
-          subtitle="전체 페이지"
+          subtitle="미션 1-1 기준"
           icon={Clock}
-          trend={-5}
+          trend={-12}
+          color="blue"
+        />
+        <KPICard
+          title="첫 시도 성공률"
+          value={`${currentData.kpi.firstTryRate}%`}
+          subtitle="정답 행동 비율"
+          icon={Target}
+          trend={5}
           color="purple"
         />
         <KPICard
           title="모바일 비율"
           value={`${currentData.kpi.mobileRatio}%`}
-          subtitle="전체 트래픽"
+          subtitle="전체 사용자 중"
           icon={Smartphone}
           color="orange"
         />
@@ -219,12 +258,12 @@ export default function DataVisualizer({ onBack }) {
 
       {/* 메인 차트 */}
       <div className="dv-charts-grid">
-        <ChartCard title="사용자 퍼널 분석" subtitle="단계별 전환율 추적">
+        <ChartCard title="전체 미션 퍼널" subtitle="단계별 이탈률 확인">
           <ResponsiveContainer width="100%" height={280}>
             <BarChart data={currentData.funnel} layout="vertical">
               <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
               <XAxis type="number" domain={[0, 100]} tickFormatter={(v) => `${v}%`} />
-              <YAxis type="category" dataKey="name" width={100} tick={{ fontSize: 12 }} />
+              <YAxis type="category" dataKey="name" width={100} tick={{ fontSize: 11 }} />
               <Tooltip formatter={(v) => `${v}%`} />
               <Bar dataKey="value" radius={[0, 4, 4, 0]}>
                 {currentData.funnel.map((entry, index) => (
@@ -235,11 +274,11 @@ export default function DataVisualizer({ onBack }) {
           </ResponsiveContainer>
         </ChartCard>
 
-        <ChartCard title="디바이스별 성과 비교" subtitle="PC vs 모바일 전환율">
+        <ChartCard title="디바이스별 완료율" subtitle="PC vs 모바일 성과 비교">
           <ResponsiveContainer width="100%" height={280}>
             <BarChart data={currentData.device}>
               <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-              <XAxis dataKey="name" tick={{ fontSize: 12 }} />
+              <XAxis dataKey="name" tick={{ fontSize: 11 }} />
               <YAxis tickFormatter={(v) => `${v}%`} />
               <Tooltip formatter={(v) => `${v}%`} />
               <Legend />
@@ -251,11 +290,11 @@ export default function DataVisualizer({ onBack }) {
       </div>
 
       {/* 시간대별 차트 */}
-      <ChartCard title="시간대별 사용자 활동" subtitle="피크 타임 분석">
+      <ChartCard title="시간대별 테스트 참여" subtitle="가장 활발한 시간대 파악">
         <ResponsiveContainer width="100%" height={200}>
           <ComposedChart data={currentData.time}>
             <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-            <XAxis dataKey="time" tick={{ fontSize: 12 }} />
+            <XAxis dataKey="time" tick={{ fontSize: 11 }} />
             <YAxis />
             <Tooltip />
             <Area type="monotone" dataKey="users" fill="#dbeafe" stroke="#3b82f6" />
@@ -270,7 +309,7 @@ export default function DataVisualizer({ onBack }) {
   const renderUsers = () => (
     <div className="dv-section">
       <div className="dv-charts-grid">
-        <ChartCard title="사용자 유형 분포" subtitle="신규/재방문/휴면 비율">
+        <ChartCard title="디바이스 분포" subtitle="모바일/PC/태블릿 비율">
           <div className="dv-pie-container">
             <ResponsiveContainer width="100%" height={250}>
               <PieChart>
@@ -293,18 +332,49 @@ export default function DataVisualizer({ onBack }) {
           </div>
         </ChartCard>
 
-        <ChartCard title="전환 단계별 분석" subtitle="마케팅 퍼널 성과">
-          <ResponsiveContainer width="100%" height={250}>
-            <BarChart data={currentData.conversion} layout="vertical">
-              <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-              <XAxis type="number" domain={[0, 100]} tickFormatter={(v) => `${v}%`} />
-              <YAxis type="category" dataKey="stage" width={60} tick={{ fontSize: 12 }} />
-              <Tooltip formatter={(v) => `${v}%`} />
-              <Bar dataKey="rate" fill="#6366f1" radius={[0, 4, 4, 0]} />
-            </BarChart>
-          </ResponsiveContainer>
+        <ChartCard title="첫 시도 성공률" subtitle="재생 버튼 직관성 평가">
+          <div className="dv-pie-container">
+            <ResponsiveContainer width="100%" height={250}>
+              <PieChart>
+                <Pie
+                  data={currentData.firstTrySuccess}
+                  cx="50%"
+                  cy="50%"
+                  innerRadius={50}
+                  outerRadius={90}
+                  dataKey="value"
+                  label={({ name, value }) => `${name}: ${value}%`}
+                >
+                  {currentData.firstTrySuccess.map((entry, index) => (
+                    <Cell key={index} fill={entry.color} />
+                  ))}
+                </Pie>
+                <Tooltip />
+              </PieChart>
+            </ResponsiveContainer>
+          </div>
         </ChartCard>
       </div>
+
+      <ChartCard title="컷 선택 히트맵 (편집 2-1)" subtitle="어떤 컷을 4번으로 착각하는지">
+        <ResponsiveContainer width="100%" height={200}>
+          <BarChart data={currentData.cutSelection}>
+            <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+            <XAxis dataKey="cut" tick={{ fontSize: 11 }} />
+            <YAxis tickFormatter={(v) => `${v}%`} />
+            <Tooltip formatter={(v) => `${v}%`} />
+            <Bar dataKey="clicks" radius={[4, 4, 0, 0]}>
+              {currentData.cutSelection.map((entry, index) => (
+                <Cell key={index} fill={entry.isAnswer ? '#22c55e' : '#ef4444'} />
+              ))}
+            </Bar>
+          </BarChart>
+        </ResponsiveContainer>
+        <div className="dv-legend-row">
+          <span className="dv-legend-item"><span className="dv-legend-dot success"></span> 정답 (컷4)</span>
+          <span className="dv-legend-item"><span className="dv-legend-dot error"></span> 오답</span>
+        </div>
+      </ChartCard>
 
       {/* 인사이트 카드 */}
       <div className="dv-insight-card">
@@ -314,9 +384,9 @@ export default function DataVisualizer({ onBack }) {
         <div className="dv-insight-content">
           <h4 className="dv-insight-title">주요 인사이트</h4>
           <ul className="dv-insight-list">
-            <li>신규 사용자 유입이 전월 대비 12% 증가했습니다.</li>
-            <li>모바일 사용자의 전환율이 PC보다 15% 낮습니다. 모바일 UX 개선이 필요합니다.</li>
-            <li>오후 3시(15시)에 사용자 활동이 가장 활발합니다.</li>
+            <li>모바일 사용자가 68%로 대다수를 차지합니다.</li>
+            <li>컷3을 4번으로 착각하는 비율이 25%로 높음 → 컷 번호 표시 UI 개선 필요</li>
+            <li>첫 시도 성공률 78% → 재생 버튼 발견성 양호</li>
           </ul>
         </div>
       </div>
@@ -330,51 +400,65 @@ export default function DataVisualizer({ onBack }) {
         <div className="dv-metric-card">
           <div className="dv-metric-header">
             <CheckCircle className="dv-metric-icon success" size={24} />
-            <span className="dv-metric-label">목표 달성</span>
+            <span className="dv-metric-label">편집 1-1</span>
           </div>
-          <div className="dv-metric-value">85%</div>
+          <div className="dv-metric-value">88%</div>
           <div className="dv-metric-bar">
-            <div className="dv-metric-bar-fill success" style={{ width: '85%' }} />
+            <div className="dv-metric-bar-fill success" style={{ width: '88%' }} />
           </div>
-          <div className="dv-metric-desc">월간 목표 대비 달성률</div>
+          <div className="dv-metric-desc">평균 9.3초 완료</div>
         </div>
 
         <div className="dv-metric-card">
           <div className="dv-metric-header">
             <TrendingUp className="dv-metric-icon growth" size={24} />
-            <span className="dv-metric-label">성장률</span>
+            <span className="dv-metric-label">편집 2-1</span>
           </div>
-          <div className="dv-metric-value">+23%</div>
+          <div className="dv-metric-value">78%</div>
           <div className="dv-metric-bar">
-            <div className="dv-metric-bar-fill growth" style={{ width: '73%' }} />
+            <div className="dv-metric-bar-fill growth" style={{ width: '78%' }} />
           </div>
-          <div className="dv-metric-desc">전월 대비 성장률</div>
+          <div className="dv-metric-desc">평균 4.0초 완료</div>
         </div>
 
         <div className="dv-metric-card">
           <div className="dv-metric-header">
-            <XCircle className="dv-metric-icon warning" size={24} />
-            <span className="dv-metric-label">이탈률</span>
+            <Target className="dv-metric-icon warning" size={24} />
+            <span className="dv-metric-label">편집 6-1</span>
           </div>
-          <div className="dv-metric-value">32%</div>
+          <div className="dv-metric-value">62%</div>
           <div className="dv-metric-bar">
-            <div className="dv-metric-bar-fill warning" style={{ width: '32%' }} />
+            <div className="dv-metric-bar-fill warning" style={{ width: '62%' }} />
           </div>
-          <div className="dv-metric-desc">첫 페이지 이탈률</div>
+          <div className="dv-metric-desc">평균 18.5초 완료</div>
         </div>
       </div>
 
-      <ChartCard title="주간 성과 추이" subtitle="최근 4주간 디바이스별 전환율">
-        <ResponsiveContainer width="100%" height={300}>
-          <LineChart data={currentData.device}>
+      <ChartCard title="편집 1-1 단계별 퍼널" subtitle="어느 단계에서 이탈하는지">
+        <ResponsiveContainer width="100%" height={220}>
+          <BarChart data={currentData.mission1Funnel} layout="vertical">
             <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-            <XAxis dataKey="name" tick={{ fontSize: 12 }} />
-            <YAxis tickFormatter={(v) => `${v}%`} />
+            <XAxis type="number" domain={[0, 100]} tickFormatter={(v) => `${v}%`} />
+            <YAxis type="category" dataKey="name" width={90} tick={{ fontSize: 11 }} />
             <Tooltip formatter={(v) => `${v}%`} />
-            <Legend />
-            <Line type="monotone" dataKey="PC" stroke="#3b82f6" strokeWidth={3} dot={{ fill: '#3b82f6', r: 5 }} />
-            <Line type="monotone" dataKey="모바일" stroke="#f59e0b" strokeWidth={3} dot={{ fill: '#f59e0b', r: 5 }} />
-          </LineChart>
+            <Bar dataKey="value" radius={[0, 4, 4, 0]}>
+              {currentData.mission1Funnel.map((entry, index) => (
+                <Cell key={index} fill={entry.fill} />
+              ))}
+            </Bar>
+          </BarChart>
+        </ResponsiveContainer>
+      </ChartCard>
+
+      <ChartCard title="완료 시간 분포" subtitle="대부분 몇 초에 완료하는지">
+        <ResponsiveContainer width="100%" height={200}>
+          <BarChart data={currentData.completionTime}>
+            <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+            <XAxis dataKey="range" tick={{ fontSize: 11 }} />
+            <YAxis />
+            <Tooltip />
+            <Bar dataKey="count" fill="#6366f1" radius={[4, 4, 0, 0]} />
+          </BarChart>
         </ResponsiveContainer>
       </ChartCard>
     </div>
