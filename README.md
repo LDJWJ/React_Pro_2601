@@ -5,7 +5,7 @@
 > A/B 테스트 및 미션 기반 사용자 행동 분석 기능 포함
 
 **프로젝트 기간**: 2026-01-19 ~ 현재
-**현재 버전**: v2.5.0 (2026-02-06)
+**현재 버전**: v2.6.0 (2026-02-07)
 **GitHub**: https://github.com/LDJWJ/React_Pro_2601
 
 ---
@@ -91,7 +91,18 @@
 지표: 퍼널, 완료율, 소요시간, 히트맵, A/B 비교
 ```
 
-### 2.6 데이터 시각화 (신규)
+### 2.6 기본 데이터 분석 (신규)
+```
+컴포넌트: BasicDataAnalysis.jsx
+기능: 미션별 기본 통계 분석 (라이트 모드 UI)
+특징:
+  - 종합 탭: 전체 세션 수, 디바이스 분류, 미션별 완료율
+  - 미션별 탭: 사용자 흐름 퍼널, 평균 소요 시간, 시간 분포
+  - 고유 사용자(세션) 기준 통계
+  - 세션별 첫 번째 완료 시간만 집계
+```
+
+### 2.7 데이터 시각화
 ```
 컴포넌트: DataVisualizer.jsx
 기능: 미션별 UX 분석 시각화 대시보드
@@ -156,7 +167,11 @@ React_Pro_2601/
 │   │   ├── DataAnalysis.jsx           # 분석 대시보드 (72.3KB)
 │   │   ├── DataAnalysis.css           # 분석 스타일
 │   │   │
-│   │   │── # ===== 데이터 시각화 (신규) =====
+│   │   │── # ===== 기본 데이터 분석 (신규) =====
+│   │   ├── BasicDataAnalysis.jsx      # 기본 통계 분석 (라이트 모드)
+│   │   ├── BasicDataAnalysis.css      # 기본 분석 스타일
+│   │   │
+│   │   │── # ===== 데이터 시각화 =====
 │   │   ├── DataVisualizer.jsx         # 시각화 대시보드
 │   │   ├── DataVisualizer.css         # 공통 스타일
 │   │   ├── DataVisualizer.mobile.css  # 모바일 전용 스타일
@@ -430,7 +445,213 @@ function computeFunnelAnalysis(data, mission) {
 }
 ```
 
-### 6.3 히트맵 시각화
+### 6.3 기본 데이터 분석 통계 계산 (BasicDataAnalysis.jsx)
+
+#### 6.3.1 개요
+
+기본 데이터 분석은 CSV 로그 데이터를 기반으로 **고유 사용자(세션)** 단위로 통계를 계산합니다.
+모든 지표는 중복을 제거한 고유 사용자 수를 기준으로 합니다.
+
+#### 6.3.2 CSV 컬럼 구조
+
+```
+타임스탬프, 사용자ID, 화면, 이벤트, 대상, 값, 행동, 브라우저, 디바이스
+```
+
+| 컬럼 | 설명 | 예시 |
+|------|------|------|
+| 타임스탬프 | 이벤트 발생 시간 | `2026. 2. 6 오후 4:54:59` |
+| 사용자ID | 세션 고유 ID | `session_1770362890762_pq9w493p4` |
+| 화면 | 현재 화면명 | `기획1-1_화면` |
+| 이벤트 | 이벤트 타입 | `미션 시작`, `미션 완료`, `버튼 클릭` |
+| 대상 | 이벤트 대상 | `기획1-1_미션시작`, `기획1-1_미션완료` |
+| 값 | 추가 데이터 | `완료시간:15.2초` |
+| 디바이스 | 기기 유형 | `desktop`, `mobile` |
+
+#### 6.3.3 전체 세션 수 계산
+
+**정의**: 정의된 미션에 참여한 고유 사용자의 **합집합**
+
+```javascript
+// 1단계: 정의된 미션 화면에 방문한 사용자 수집
+const missionUsers = new Set();
+validRows.forEach(r => {
+  const isInMission = missionPrefixes.some(prefix =>
+    screen.includes(prefix) || target.includes(prefix)
+  );
+  if (isInMission) {
+    missionUsers.add(r['사용자ID']);
+  }
+});
+
+// 결과: 전체 세션 수 = missionUsers.size
+```
+
+**예시**:
+- 사용자A → 기획1-1, 기획1-2 참여
+- 사용자B → 기획1-1만 참여
+- 사용자C → 기획1-2만 참여
+- **전체 세션 수 = 3명** (합집합, 단순 합계 4가 아님)
+
+#### 6.3.4 디바이스별 사용자 수 계산
+
+**핵심 로직**: 세션에 해당하는 사용자의 디바이스 정보를 **전체 CSV 데이터**에서 검색
+
+```javascript
+// 1단계: 미션에 참여한 세션(고유 사용자) 목록 확보
+const sessions = new Set(missionRows.map(r => r['사용자ID']));
+
+// 2단계: 전체 데이터에서 해당 사용자들의 디바이스 정보 검색
+const userDeviceMap = new Map();
+validRows.forEach(r => {
+  const userId = r['사용자ID'];
+  const device = r['디바이스'] || '';
+  // 이 미션의 세션에 해당하고, 아직 디바이스 정보가 없으면 저장
+  if (sessions.has(userId) && !userDeviceMap.has(userId) && device) {
+    userDeviceMap.set(userId, device);
+  }
+});
+
+// 3단계: 디바이스별 집계
+let desktopUsers = 0, mobileUsers = 0;
+userDeviceMap.forEach((device) => {
+  if (device === 'desktop') desktopUsers++;
+  else if (device === 'mobile') mobileUsers++;
+});
+```
+
+**왜 전체 데이터에서 검색하는가?**
+- 일부 사용자는 미션 화면에서 디바이스 정보가 기록되지 않을 수 있음
+- 로그인 화면, 메인 화면 등 다른 화면에서 기록된 디바이스 정보 활용
+- 예: 세션 9명인데 미션 화면에서만 검색하면 6명만 디바이스 확인 가능 → 전체 검색 시 9명 모두 확인
+
+#### 6.3.5 미션별 통계 계산
+
+**세션 수** (화면 방문자)
+```javascript
+const sessions = new Set(missionRows.map(r => r['사용자ID']));
+```
+
+**미션 시작 사용자**
+```javascript
+const startedUsers = new Set();
+validRows.forEach(r => {
+  if (r['이벤트'] === '미션 시작' && r['대상'] === mission.missionStartTarget) {
+    startedUsers.add(r['사용자ID']);
+  }
+});
+```
+
+**미션 완료 사용자 + 완료 시간**
+```javascript
+const completedUsers = new Set();
+const completionTimesByUser = new Map(); // 사용자별 첫 완료 시간만
+
+validRows.forEach(r => {
+  if (r['이벤트'] === '미션 완료' && r['대상'] === mission.missionCompleteTarget) {
+    const userId = r['사용자ID'];
+    completedUsers.add(userId);
+
+    // ⚠️ 첫 번째 완료 시간만 기록 (중복 시도는 무시)
+    if (!completionTimesByUser.has(userId)) {
+      const match = r['값']?.match(/완료시간:(\d+\.?\d*)초/);
+      if (match) {
+        completionTimesByUser.set(userId, parseFloat(match[1]));
+      }
+    }
+  }
+});
+```
+
+**왜 첫 번째 완료 시간만 사용하는가?**
+- 같은 사용자가 여러 번 미션을 완료할 수 있음
+- 분석 목적상 첫 시도의 소요 시간이 의미 있음
+- 이후 시도는 학습 효과로 인해 더 빠를 수 있어 통계 왜곡 방지
+
+#### 6.3.6 참여율 / 완료율 계산
+
+| 지표 | 공식 | 설명 |
+|------|------|------|
+| 참여율 | 시작 사용자 / 세션 수 × 100 | 화면 방문 후 미션 시작 비율 |
+| 완료율 | 완료 사용자 / 시작 사용자 × 100 | 미션 시작 후 완료 비율 |
+| 미시작 이탈 | 세션 수 - 시작 사용자 | 화면만 보고 이탈 |
+| 미완료 이탈 | 시작 사용자 - 완료 사용자 | 시작 후 완료 못함 |
+
+```javascript
+participationRate: (startedCount / sessionCount * 100).toFixed(1)
+completionRate: (completedCount / startedCount * 100).toFixed(1)
+notStarted: sessionCount - startedCount
+notCompleted: startedCount - completedCount
+```
+
+#### 6.3.7 2단계 미션 (편집 6-1) 통계
+
+편집 6-1은 기본 미션 + 추가 미션 2단계 구조
+
+```javascript
+// 기본 미션
+missionStartTarget: '편집6-1_기본미션시작'
+missionCompleteTarget: '편집6-1_기본미션완료'
+
+// 추가 미션
+additionalMissionStart: '편집6-1_추가미션시작'
+additionalMissionComplete: '편집6-1_추가미션완료'
+```
+
+**2단계 퍼널 구조**:
+```
+화면 방문 (14명)
+  ↳ 미시작 이탈 (1명, 7.1%)
+기본 미션 시작 (13명, 92.9%)
+기본 미션 완료 (12명, 92.3%)
+  ↳ 기본 미션 이탈 (1명, 7.7%)
+추가 미션 시작 (10명, 83.3%)
+추가 미션 완료 (8명, 80.0%)
+  ↳ 추가 미션 이탈 (2명, 20.0%)
+```
+
+**추가 미션 참여율 계산**:
+```javascript
+// 기본 미션 완료자 중 추가 미션 시작 비율
+additionalParticipationRate: (additionalStarted / basicCompleted * 100)
+```
+
+#### 6.3.8 평균 소요 시간 계산
+
+```javascript
+// 세션별 첫 완료 시간만 사용
+const completionTimes = Array.from(completionTimesByUser.values());
+
+avgTime: completionTimes.length > 0
+  ? (completionTimes.reduce((a, b) => a + b, 0) / completionTimes.length).toFixed(1)
+  : null
+
+minTime: Math.min(...completionTimes).toFixed(1)
+maxTime: Math.max(...completionTimes).toFixed(1)
+```
+
+#### 6.3.9 완료 시간 분포 (히스토그램)
+
+5초 단위로 구간을 나누어 사용자 수 집계
+
+```javascript
+const bucketSize = 5;
+const buckets = {};
+
+times.forEach(t => {
+  const bucket = Math.floor(t / bucketSize) * bucketSize;
+  const label = `${bucket}-${bucket + bucketSize}`;
+  buckets[label] = (buckets[label] || 0) + 1;
+});
+
+// 결과 예시:
+// 0-5초: 2명
+// 5-10초: 5명
+// 10-15초: 3명
+// 15-20초: 1명
+```
+
+### 6.4 히트맵 시각화
 
 ```javascript
 function computeHeatmapData(data, mission) {
@@ -638,6 +859,49 @@ Site settings → Environment variables에서 설정:
 ---
 
 ## 11. 버전 히스토리
+
+---
+
+### v2.6.0 (2026-02-07)
+**기본 데이터 분석 대시보드 추가**
+
+#### 새로운 기능
+CSV 로그 데이터 기반 미션별 기본 통계 분석 컴포넌트
+
+#### 주요 특징
+
+**1. 탭 구성**
+| 탭 | 내용 |
+|---|---|
+| 종합 | 전체 세션 수, 디바이스 분류(PC/모바일), 미션별 참여율/완료율, 평균 완료 시간 |
+| 미션별 | 사용자 흐름 퍼널, 이탈 분석, 평균 소요 시간, 완료 시간 분포 |
+
+**2. 통계 계산 원칙**
+- 모든 지표는 **고유 사용자(세션)** 기준
+- 같은 사용자의 중복 미션 수행은 1회로 카운트
+- 완료 시간은 **세션별 첫 번째 완료만** 집계
+- 디바이스 정보는 **전체 CSV 데이터**에서 검색
+
+**3. 2단계 미션 지원 (편집 6-1)**
+- 기본 미션 / 추가 미션 분리 퍼널
+- 각 단계별 시작/완료/이탈 통계
+- 기본 미션, 추가 미션 별도 평균 소요 시간
+
+**4. UI 스타일**
+- 라이트 모드 (다크 모드 X)
+- 파란색 계열 강조색 (#3b82f6)
+- 카드 기반 레이아웃, 부드러운 그림자
+
+#### 변경 내역
+| 파일 | 내용 |
+|------|------|
+| `BasicDataAnalysis.jsx` | **신규** - 기본 통계 분석 컴포넌트 |
+| `BasicDataAnalysis.css` | **신규** - 라이트 모드 스타일 |
+| `App.jsx` | BasicDataAnalysis 라우팅 추가 |
+| `MissionMain.jsx` | 기본 분석 / 확장 분석 메뉴 분리 |
+
+#### 통계 계산 상세
+자세한 내용은 [6.3 기본 데이터 분석 통계 계산](#63-기본-데이터-분석-통계-계산-basicdataanalysisjsx) 참조
 
 ---
 
@@ -1088,6 +1352,7 @@ src/
 
 | 버전 | 날짜 | 시간 | 주요 내용 | 파일 수 |
 |------|------|------|----------|--------|
+| **v2.6.0** | 2026-02-07 | - | 기본 데이터 분석 대시보드 | 4 |
 | **v2.5.0** | 2026-02-06 | - | 데이터 시각화 대시보드 | 6 |
 | **v2.4.2** | 2026-02-06 | 02:12~02:24 | 로그 버그 수정 | 5 |
 | **v2.4.1** | 2026-02-06 | 01:59~02:06 | 히트맵 기능 | 3 |
@@ -1117,4 +1382,4 @@ Private - All Rights Reserved
 
 ---
 
-*마지막 업데이트: 2026-02-06*
+*마지막 업데이트: 2026-02-07*

@@ -160,6 +160,47 @@
   margin-left: 4px;
 }
 
+/* 디바이스 분류 */
+.bda-device-breakdown {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 24px;
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid #e5e7eb;
+}
+
+.bda-device-breakdown.mission {
+  justify-content: flex-start;
+  margin-top: 12px;
+  padding-top: 12px;
+  gap: 16px;
+}
+
+.bda-device-label {
+  font-size: 14px;
+  color: #666;
+  font-weight: 600;
+}
+
+.bda-device-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 15px;
+  color: #333;
+  font-weight: 500;
+}
+
+.bda-device-icon {
+  font-size: 16px;
+}
+
+.bda-device-item.unknown {
+  color: #888;
+}
+
 /* 차트 리스트 */
 .bda-chart-list {
   display: flex;
@@ -540,6 +581,20 @@
   margin-left: 4px;
 }
 
+.bda-time-summary {
+  margin-top: 16px;
+  padding-top: 12px;
+  border-top: 1px solid #e5e7eb;
+  font-size: 14px;
+  color: #666;
+  text-align: center;
+}
+
+.bda-time-summary strong {
+  color: #3b82f6;
+  font-weight: 700;
+}
+
 /* 이탈 분석 */
 .bda-dropout {
   display: flex;
@@ -609,5 +664,445 @@
 
   .bda-time-grid {
     grid-template-columns: 1fr 1fr;
+  }
+}
+
+/* =====================================
+   데이터 시각화 스타일
+   ===================================== */
+
+/* 시각화 버튼 */
+.bda-viz-btn {
+  padding: 12px 24px;
+  background: linear-gradient(135deg, #22c55e, #16a34a);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+  margin-left: auto;
+}
+
+.bda-viz-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3);
+}
+
+/* 시각화 컨테이너 */
+.bda-visualization-container {
+  width: 100%;
+  min-height: 100vh;
+  background-color: #f8f9fa;
+  color: #1a1a1a;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.bda-visualization-container.pc-view {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.bda-visualization-container.fullscreen {
+  max-width: none;
+  background: #f8f9fa;
+}
+
+/* 시각화 헤더 */
+.bda-viz-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 20px;
+  background: #fff;
+  border-bottom: 1px solid #e5e5e5;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.bda-viz-controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-left: auto;
+}
+
+.bda-view-toggle {
+  display: flex;
+  background: #f0f0f0;
+  border-radius: 8px;
+  padding: 2px;
+}
+
+.bda-view-btn {
+  background: transparent;
+  border: none;
+  padding: 8px 12px;
+  font-size: 16px;
+  cursor: pointer;
+  border-radius: 6px;
+  transition: all 0.2s;
+}
+
+.bda-view-btn.active {
+  background: #fff;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.bda-view-btn:hover:not(.active) {
+  background: #e5e5e5;
+}
+
+.bda-fullscreen-btn {
+  background: #f0f0f0;
+  border: none;
+  padding: 8px 12px;
+  font-size: 18px;
+  cursor: pointer;
+  border-radius: 8px;
+  transition: all 0.2s;
+}
+
+.bda-fullscreen-btn:hover {
+  background: #e5e5e5;
+}
+
+/* 시각화 콘텐츠 */
+.bda-viz-content {
+  padding: 20px;
+  max-width: 100%;
+}
+
+.bda-visualization-container.pc-view .bda-viz-content {
+  max-width: 1160px;
+  margin: 0 auto;
+}
+
+/* 시각화 섹션 */
+.bda-viz-section {
+  background: #fff;
+  border-radius: 16px;
+  padding: 24px;
+  margin-bottom: 20px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+}
+
+.bda-viz-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin-bottom: 20px;
+  padding-bottom: 12px;
+  border-bottom: 2px solid #3b82f6;
+}
+
+/* 바 차트 */
+.bda-bar-chart {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.bda-bar-item {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.bda-bar-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+}
+
+.bda-bar-track {
+  height: 32px;
+  background: #e5e7eb;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.bda-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #3b82f6, #60a5fa);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding-right: 10px;
+  min-width: 50px;
+  transition: width 0.5s ease;
+}
+
+.bda-bar-value {
+  font-size: 13px;
+  font-weight: 700;
+  color: #fff;
+}
+
+/* 파이 차트 */
+.bda-pie-chart-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 40px;
+  padding: 20px 0;
+  flex-wrap: wrap;
+}
+
+.bda-pie-svg {
+  width: 200px;
+  height: 200px;
+}
+
+.bda-pie-legend {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.bda-pie-legend .bda-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+  color: #333;
+}
+
+.bda-legend-color {
+  width: 16px;
+  height: 16px;
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+
+/* 히스토그램 */
+.bda-histogram {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  height: 200px;
+  padding: 20px 0;
+  overflow-x: auto;
+}
+
+.bda-histogram-bar {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  min-width: 60px;
+  flex: 1;
+}
+
+.bda-histogram-label {
+  font-size: 11px;
+  color: #666;
+  white-space: nowrap;
+  order: 3;
+}
+
+.bda-histogram-track {
+  width: 100%;
+  height: 120px;
+  background: #e5e7eb;
+  border-radius: 6px 6px 0 0;
+  display: flex;
+  align-items: flex-end;
+  order: 2;
+}
+
+.bda-histogram-fill {
+  width: 100%;
+  background: linear-gradient(180deg, #8b5cf6, #a78bfa);
+  border-radius: 6px 6px 0 0;
+  transition: height 0.5s ease;
+  min-height: 4px;
+}
+
+.bda-histogram-count {
+  font-size: 12px;
+  font-weight: 600;
+  color: #8b5cf6;
+  order: 1;
+}
+
+.bda-empty-chart {
+  text-align: center;
+  padding: 40px;
+  color: #888;
+  font-size: 14px;
+}
+
+/* 퍼널 차트 (시각화용) */
+.bda-funnel-chart {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 20px 0;
+}
+
+.bda-funnel-chart .bda-funnel-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  width: 100%;
+}
+
+.bda-funnel-bar-container {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.bda-funnel-chart .bda-funnel-bar {
+  height: 48px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 600;
+  color: #fff;
+  transition: width 0.5s ease;
+}
+
+.bda-funnel-chart .bda-funnel-bar.visit {
+  background: linear-gradient(90deg, #6366f1, #818cf8);
+}
+
+.bda-funnel-chart .bda-funnel-bar.started {
+  background: linear-gradient(90deg, #3b82f6, #60a5fa);
+}
+
+.bda-funnel-chart .bda-funnel-bar.completed {
+  background: linear-gradient(90deg, #22c55e, #4ade80);
+}
+
+.bda-funnel-stat {
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+  margin-top: 4px;
+}
+
+.bda-funnel-arrow {
+  color: #9ca3af;
+  font-size: 20px;
+  margin: 4px 0;
+}
+
+/* 그룹 바 차트 */
+.bda-grouped-bar-chart {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.bda-grouped-bar-item {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.bda-grouped-bar-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 4px;
+}
+
+.bda-grouped-bars {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.bda-grouped-bar-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.bda-grouped-bar-type {
+  width: 50px;
+  font-size: 12px;
+  color: #666;
+  flex-shrink: 0;
+}
+
+.bda-grouped-bar-track {
+  flex: 1;
+  height: 24px;
+  background: #e5e7eb;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.bda-grouped-bar-fill {
+  height: 100%;
+  border-radius: 6px;
+  transition: width 0.5s ease;
+  min-width: 4px;
+}
+
+.bda-grouped-bar-fill.participation {
+  background: linear-gradient(90deg, #f59e0b, #fbbf24);
+}
+
+.bda-grouped-bar-fill.completion {
+  background: linear-gradient(90deg, #22c55e, #4ade80);
+}
+
+.bda-grouped-bar-value {
+  width: 50px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #333;
+  text-align: right;
+  flex-shrink: 0;
+}
+
+/* 시각화 반응형 */
+@media (max-width: 600px) {
+  .bda-pie-chart-container {
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  .bda-pie-svg {
+    width: 160px;
+    height: 160px;
+  }
+
+  .bda-histogram {
+    height: 180px;
+  }
+
+  .bda-histogram-bar {
+    min-width: 50px;
+  }
+
+  .bda-funnel-chart .bda-funnel-bar {
+    height: 40px;
+    font-size: 12px;
+  }
+
+  .bda-viz-controls {
+    gap: 8px;
+  }
+
+  .bda-view-btn {
+    padding: 6px 10px;
+    font-size: 14px;
+  }
+
+  .bda-fullscreen-btn {
+    padding: 6px 10px;
+    font-size: 16px;
   }
 }
