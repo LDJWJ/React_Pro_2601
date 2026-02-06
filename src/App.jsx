@@ -15,6 +15,7 @@ import Edit6_1Screen from './components/Edit6_1Screen';
 import SampleTemplateA from './components/SampleTemplateA';
 import SampleTemplateB from './components/SampleTemplateB';
 import DataAnalysis from './components/DataAnalysis';
+import DataVisualizer from './components/DataVisualizer';
 import Plan1_1AScreen from './components/Plan1_1AScreen';
 import Plan1_1BScreen from './components/Plan1_1BScreen';
 import { startInteractionLogging, setInteractionScreen } from './utils/interactionLogger';
@@ -111,6 +112,8 @@ function App() {
       setCurrentScreen('편집1-1');
     } else if (missionId === 10) {
       setCurrentScreen('기획1-1A');
+    } else if (missionId === 11) {
+      setCurrentScreen('dataVisualizer');
     }
   };
 
@@ -378,6 +381,13 @@ function App() {
       case 'dataAnalysis':
         return (
           <DataAnalysis
+            onBack={() => setCurrentScreen('missionMain')}
+          />
+        );
+
+      case 'dataVisualizer':
+        return (
+          <DataVisualizer
             onBack={() => setCurrentScreen('missionMain')}
           />
         );

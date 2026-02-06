@@ -8,6 +8,7 @@ const missions = [
   { id: 8, title: '편집6-1', subtitle: 'AI 자막 추천', enabled: true },
   { id: 10, title: '기획1-1A', subtitle: '기획 기능 사용성 개선', enabled: true },
   { id: 6, title: '데이터 분석', subtitle: '트래킹 로그 분석', enabled: true },
+  { id: 11, title: '데이터 시각화', subtitle: 'CSV/샘플 데이터 차트', enabled: true },
   { id: 2, title: '(미사용) 미션 1', subtitle: '영상 기획하기', enabled: false },
   { id: 3, title: '(미사용) 미션 2', subtitle: '콘텐츠 업로드', enabled: false },
   { id: 1, title: '(미사용) 미션 9', subtitle: '영상 기획하기', enabled: false },
