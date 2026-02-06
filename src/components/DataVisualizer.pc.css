@@ -1,181 +1,177 @@
 /* DataVisualizer.pc.css - PC 뷰 전용 스타일 */
 
-/* PC 프리뷰 컨테이너 - 전체 너비 */
-.dv-preview-container.pc {
-  width: 100%;
-  margin-top: 20px;
-}
-
-/* PC 프리뷰 프레임 - 반응형 확대 */
-.dv-preview-container.pc .dv-preview-frame {
-  width: 100% !important;
-  max-width: 100% !important;
-  border: 1px solid #e2e8f0;
+/* PC 콘텐츠 컨테이너 - 전체 화면 */
+.dv-pc-content {
+  background: #ffffff;
   border-radius: 16px;
+  margin-top: 20px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
 }
 
-/* PC 콘텐츠 영역 - 반응형 높이 */
-.dv-preview-container.pc .dv-content {
+/* PC 콘텐츠 영역 */
+.dv-pc-content .dv-content {
   padding: 32px;
-  max-height: calc(100vh - 280px);
-  min-height: 500px;
+  min-height: 60vh;
 }
 
-/* PC KPI 그리드 - 4열 반응형 */
-.dv-preview-container.pc .dv-kpi-grid {
+/* PC KPI 그리드 - 4열 */
+.dv-pc-content .dv-kpi-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 20px;
 }
 
 /* PC KPI 카드 확대 */
-.dv-preview-container.pc .dv-kpi-card {
+.dv-pc-content .dv-kpi-card {
   padding: 20px;
 }
 
-.dv-preview-container.pc .dv-kpi-value {
+.dv-pc-content .dv-kpi-value {
   font-size: 28px;
 }
 
-.dv-preview-container.pc .dv-kpi-title {
+.dv-pc-content .dv-kpi-title {
   font-size: 14px;
 }
 
-.dv-preview-container.pc .dv-kpi-icon {
+.dv-pc-content .dv-kpi-icon {
   width: 42px;
   height: 42px;
 }
 
 /* PC 차트 그리드 - 2열 */
-.dv-preview-container.pc .dv-charts-grid {
+.dv-pc-content .dv-charts-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 24px;
 }
 
 /* PC 차트 카드 확대 */
-.dv-preview-container.pc .dv-chart-card {
+.dv-pc-content .dv-chart-card {
   padding: 24px;
 }
 
-.dv-preview-container.pc .dv-chart-title {
+.dv-pc-content .dv-chart-title {
   font-size: 18px;
 }
 
-.dv-preview-container.pc .dv-chart-subtitle {
+.dv-pc-content .dv-chart-subtitle {
   font-size: 14px;
 }
 
 /* PC 비교 카드 - 2열 */
-.dv-preview-container.pc .dv-compare-cards {
+.dv-pc-content .dv-compare-cards {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 20px;
 }
 
 /* PC 질문 카드 확대 */
-.dv-preview-container.pc .dv-question-card {
-  font-size: 15px;
-  padding: 18px;
+.dv-pc-content .dv-question-card {
+  font-size: 16px;
+  padding: 20px;
 }
 
 /* PC 인사이트 카드 확대 */
-.dv-preview-container.pc .dv-insight-card {
+.dv-pc-content .dv-insight-card {
   padding: 24px;
 }
 
-.dv-preview-container.pc .dv-insight-title {
+.dv-pc-content .dv-insight-title {
   font-size: 16px;
 }
 
-.dv-preview-container.pc .dv-insight-list,
-.dv-preview-container.pc .dv-insight-text {
+.dv-pc-content .dv-insight-list,
+.dv-pc-content .dv-insight-text {
   font-size: 15px;
 }
 
 /* PC 푸터 */
-.dv-preview-container.pc .dv-footer {
+.dv-pc-content .dv-footer {
   padding: 20px;
   font-size: 13px;
 }
 
 /* 대형 화면 최적화 (1440px 이상) */
 @media (min-width: 1440px) {
-  .dv-preview-container.pc .dv-content {
+  .dv-pc-content .dv-content {
     padding: 40px;
   }
 
-  .dv-preview-container.pc .dv-kpi-value {
+  .dv-pc-content .dv-kpi-value {
     font-size: 32px;
   }
 
-  .dv-preview-container.pc .dv-chart-card {
+  .dv-pc-content .dv-chart-card {
     padding: 28px;
   }
 
-  .dv-preview-container.pc .dv-charts-grid {
+  .dv-pc-content .dv-charts-grid {
     gap: 28px;
   }
 }
 
 /* 초대형 화면 최적화 (1920px 이상) */
 @media (min-width: 1920px) {
-  .dv-preview-container.pc .dv-content {
+  .dv-pc-content .dv-content {
     padding: 48px;
-    max-height: calc(100vh - 320px);
   }
 
-  .dv-preview-container.pc .dv-kpi-grid {
+  .dv-pc-content .dv-kpi-grid {
     gap: 28px;
   }
 
-  .dv-preview-container.pc .dv-kpi-value {
+  .dv-pc-content .dv-kpi-value {
     font-size: 36px;
   }
 
-  .dv-preview-container.pc .dv-kpi-icon {
+  .dv-pc-content .dv-kpi-icon {
     width: 48px;
     height: 48px;
   }
 
-  .dv-preview-container.pc .dv-chart-title {
+  .dv-pc-content .dv-chart-title {
     font-size: 20px;
   }
 
-  .dv-preview-container.pc .dv-charts-grid {
+  .dv-pc-content .dv-charts-grid {
     gap: 32px;
   }
 }
 
 /* 중간 화면 (1024px ~ 1280px) */
-@media (min-width: 1024px) and (max-width: 1280px) {
-  .dv-preview-container.pc .dv-kpi-grid {
+@media (max-width: 1280px) {
+  .dv-pc-content .dv-kpi-grid {
     grid-template-columns: repeat(2, 1fr);
   }
 
-  .dv-preview-container.pc .dv-charts-grid {
+  .dv-pc-content .dv-charts-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .dv-pc-content .dv-compare-cards {
     grid-template-columns: 1fr;
   }
 }
 
 /* 작은 PC 화면 (768px ~ 1024px) */
-@media (min-width: 768px) and (max-width: 1024px) {
-  .dv-preview-container.pc .dv-content {
+@media (max-width: 1024px) {
+  .dv-pc-content .dv-content {
     padding: 24px;
   }
 
-  .dv-preview-container.pc .dv-kpi-grid {
+  .dv-pc-content .dv-kpi-grid {
     grid-template-columns: repeat(2, 1fr);
     gap: 16px;
   }
 
-  .dv-preview-container.pc .dv-charts-grid {
-    grid-template-columns: 1fr;
-    gap: 20px;
+  .dv-pc-content .dv-kpi-value {
+    font-size: 24px;
   }
 
-  .dv-preview-container.pc .dv-compare-cards {
+  .dv-pc-content .dv-charts-grid {
     grid-template-columns: 1fr;
+    gap: 20px;
   }
 }

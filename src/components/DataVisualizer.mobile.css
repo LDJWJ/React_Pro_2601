@@ -1,24 +1,49 @@
 /* DataVisualizer.mobile.css - 모바일 뷰 전용 스타일 */
 
-/* 모바일 뷰 모드 탭 - 2행 배치 */
-.dv-container.mobile-view .dv-tabs {
+/* 모바일 프레임 내 탭 스타일 */
+.dv-tabs-mobile {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 6px;
-  overflow-x: visible;
-  padding-bottom: 0;
+  padding: 12px;
+  background: #fff;
+  border-bottom: 1px solid #e5e7eb;
 }
 
-.dv-container.mobile-view .dv-tab {
-  padding: 8px 6px;
-  font-size: 11px;
+.dv-tab-mobile {
+  display: flex;
+  align-items: center;
   justify-content: center;
   gap: 4px;
+  padding: 8px 6px;
+  font-size: 11px;
+  font-weight: 500;
+  color: #6b7280;
+  background: #f3f4f6;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
 }
 
-.dv-container.mobile-view .dv-tab svg {
-  width: 14px;
-  height: 14px;
+.dv-tab-mobile:hover {
+  background: #e5e7eb;
+}
+
+.dv-tab-mobile.active {
+  background: #3b82f6;
+  color: #fff;
+  border-color: #3b82f6;
+}
+
+.dv-tab-mobile svg {
+  flex-shrink: 0;
+}
+
+.dv-tab-mobile span {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 /* 모바일 프리뷰 프레임 */

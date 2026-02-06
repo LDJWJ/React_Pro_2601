@@ -687,48 +687,47 @@ export default function DataVisualizer({ onBack }) {
         </div>
       </div>
 
-      {/* 탭 네비게이션 */}
-      <div className="dv-tabs">
-        <button
-          className={`dv-tab ${activeTab === 'overview' ? 'active' : ''}`}
-          onClick={() => setActiveTab('overview')}
-        >
-          <TrendingUp size={16} />
-          <span>종합</span>
-        </button>
-        <button
-          className={`dv-tab ${activeTab === 'mission1' ? 'active' : ''}`}
-          onClick={() => setActiveTab('mission1')}
-        >
-          <Play size={16} />
-          <span>편집 1-1</span>
-        </button>
-        <button
-          className={`dv-tab ${activeTab === 'mission2' ? 'active' : ''}`}
-          onClick={() => setActiveTab('mission2')}
-        >
-          <Grid size={16} />
-          <span>편집 2-1</span>
-        </button>
-        <button
-          className={`dv-tab ${activeTab === 'mission6' ? 'active' : ''}`}
-          onClick={() => setActiveTab('mission6')}
-        >
-          <Sparkles size={16} />
-          <span>편집 6-1</span>
-        </button>
-        <button
-          className={`dv-tab ${activeTab === 'planning1' ? 'active' : ''}`}
-          onClick={() => setActiveTab('planning1')}
-        >
-          <FileText size={16} />
-          <span>기획 1-1</span>
-        </button>
-      </div>
-
-      {/* 프리뷰 컨테이너 */}
-      <div className={`dv-preview-container ${viewMode === 'mobile' ? 'mobile' : 'pc'}`}>
-        <div className="dv-preview-frame">
+      {/* PC 뷰: 프레임 없이 전체 화면 */}
+      {viewMode === 'pc' && (
+        <div className="dv-pc-content">
+          {/* 탭 네비게이션 */}
+          <div className="dv-tabs">
+            <button
+              className={`dv-tab ${activeTab === 'overview' ? 'active' : ''}`}
+              onClick={() => setActiveTab('overview')}
+            >
+              <TrendingUp size={16} />
+              <span>종합</span>
+            </button>
+            <button
+              className={`dv-tab ${activeTab === 'mission1' ? 'active' : ''}`}
+              onClick={() => setActiveTab('mission1')}
+            >
+              <Play size={16} />
+              <span>편집 1-1</span>
+            </button>
+            <button
+              className={`dv-tab ${activeTab === 'mission2' ? 'active' : ''}`}
+              onClick={() => setActiveTab('mission2')}
+            >
+              <Grid size={16} />
+              <span>편집 2-1</span>
+            </button>
+            <button
+              className={`dv-tab ${activeTab === 'mission6' ? 'active' : ''}`}
+              onClick={() => setActiveTab('mission6')}
+            >
+              <Sparkles size={16} />
+              <span>편집 6-1</span>
+            </button>
+            <button
+              className={`dv-tab ${activeTab === 'planning1' ? 'active' : ''}`}
+              onClick={() => setActiveTab('planning1')}
+            >
+              <FileText size={16} />
+              <span>기획 1-1</span>
+            </button>
+          </div>
           <div className="dv-content">
             {activeTab === 'overview' && renderOverview()}
             {activeTab === 'mission1' && renderMission1()}
@@ -736,14 +735,69 @@ export default function DataVisualizer({ onBack }) {
             {activeTab === 'mission6' && renderMission6()}
             {activeTab === 'planning1' && renderPlanning1()}
           </div>
-
-          {/* 푸터 */}
           <div className="dv-footer">
             데이터 기준일: {new Date().toLocaleDateString('ko-KR')} |
             {useSampleData ? ' 샘플 데이터' : ` ${fileName}`}
           </div>
         </div>
-      </div>
+      )}
+
+      {/* 모바일 뷰: 모바일 프레임 안에 탭과 콘텐츠 포함 */}
+      {viewMode === 'mobile' && (
+        <div className="dv-preview-container mobile">
+          <div className="dv-preview-frame">
+            {/* 탭 네비게이션 - 모바일 프레임 안 */}
+            <div className="dv-tabs-mobile">
+              <button
+                className={`dv-tab-mobile ${activeTab === 'overview' ? 'active' : ''}`}
+                onClick={() => setActiveTab('overview')}
+              >
+                <TrendingUp size={14} />
+                <span>종합</span>
+              </button>
+              <button
+                className={`dv-tab-mobile ${activeTab === 'mission1' ? 'active' : ''}`}
+                onClick={() => setActiveTab('mission1')}
+              >
+                <Play size={14} />
+                <span>편집 1-1</span>
+              </button>
+              <button
+                className={`dv-tab-mobile ${activeTab === 'mission2' ? 'active' : ''}`}
+                onClick={() => setActiveTab('mission2')}
+              >
+                <Grid size={14} />
+                <span>편집 2-1</span>
+              </button>
+              <button
+                className={`dv-tab-mobile ${activeTab === 'mission6' ? 'active' : ''}`}
+                onClick={() => setActiveTab('mission6')}
+              >
+                <Sparkles size={14} />
+                <span>편집 6-1</span>
+              </button>
+              <button
+                className={`dv-tab-mobile ${activeTab === 'planning1' ? 'active' : ''}`}
+                onClick={() => setActiveTab('planning1')}
+              >
+                <FileText size={14} />
+                <span>기획 1-1</span>
+              </button>
+            </div>
+            <div className="dv-content">
+              {activeTab === 'overview' && renderOverview()}
+              {activeTab === 'mission1' && renderMission1()}
+              {activeTab === 'mission2' && renderMission2()}
+              {activeTab === 'mission6' && renderMission6()}
+              {activeTab === 'planning1' && renderPlanning1()}
+            </div>
+            <div className="dv-footer">
+              데이터 기준일: {new Date().toLocaleDateString('ko-KR')} |
+              {useSampleData ? ' 샘플 데이터' : ` ${fileName}`}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
