@@ -94,6 +94,76 @@ const SAMPLE_DATA = {
     mobileRatio: 68,
     firstTryRate: 78,
     completionRate: 88,
+  },
+  // 미션 2-1 상세
+  mission2: {
+    funnel: [
+      { name: '화면 진입', value: 100, fill: '#6366f1' },
+      { name: '미션 시작', value: 95, fill: '#818cf8' },
+      { name: '컷 선택', value: 92, fill: '#a5b4fc' },
+      { name: '미션 완료', value: 78, fill: '#c7d2fe' },
+    ],
+    attempts: [
+      { attempts: '1회', count: 65 },
+      { attempts: '2회', count: 20 },
+      { attempts: '3회', count: 10 },
+      { attempts: '4회+', count: 5 },
+    ],
+    kpi: {
+      firstTryRate: 65,
+      avgAttempts: 1.5,
+      avgTime: '5.2초',
+      completionRate: 95,
+    }
+  },
+  // 미션 6-1 상세
+  mission6: {
+    funnel: [
+      { name: '기본미션 시작', value: 100, fill: '#8b5cf6' },
+      { name: 'AI자막 클릭', value: 88, fill: '#a78bfa' },
+      { name: '기본미션 완료', value: 85, fill: '#c4b5fd' },
+      { name: '팝업 확인', value: 78, fill: '#ddd6fe' },
+      { name: '추가미션 시작', value: 75, fill: '#ede9fe' },
+      { name: 'AI자막 재클릭', value: 70, fill: '#f5f3ff' },
+      { name: '추가미션 완료', value: 68, fill: '#faf5ff' },
+    ],
+    aiSelect: [
+      { name: 'AI 추천 1', value: 45, color: '#3b82f6' },
+      { name: 'AI 추천 2', value: 35, color: '#6366f1' },
+      { name: 'AI 추천 3', value: 20, color: '#8b5cf6' },
+    ],
+    stageTime: [
+      { stage: '기본 미션', avgTime: 18.5 },
+      { stage: '추가 미션', avgTime: 8.2 },
+    ],
+    kpi: {
+      basicRate: 85,
+      additionalRate: 68,
+      dropoffRate: 20,
+      aiUsageRate: 82,
+    }
+  },
+  // 기획 1-1 상세
+  planning1: {
+    compare: [
+      { metric: '완료율', A파트: 92, B파트: 88 },
+      { metric: '평균시간(초)', A파트: 45, B파트: 32 },
+      { metric: '메모작성률', A파트: 68, B파트: 75 },
+    ],
+    cutMemo: [
+      { cut: '컷1', A: 85, B: 90 },
+      { cut: '컷2', A: 72, B: 82 },
+      { cut: '컷3', A: 65, B: 78 },
+      { cut: '컷4', A: 58, B: null },
+      { cut: '컷5', A: 45, B: null },
+      { cut: '컷6', A: 38, B: null },
+    ],
+    kpi: {
+      aCompletionRate: 92,
+      bCompletionRate: 88,
+      aMemoLength: 12.5,
+      bMemoLength: 18.2,
+    }
   }
 };
 
@@ -306,162 +376,259 @@ export default function DataVisualizer({ onBack }) {
     </div>
   );
 
-  // 사용자 분석 탭 렌더링
-  const renderUsers = () => (
+  // 편집 1-1 탭 렌더링
+  const renderMission1 = () => (
     <div className="dv-section">
+      <div className="dv-question-card blue">
+        <Play size={18} />
+        <span>핵심 질문: "영상 업로드 후 재생 버튼을 바로 찾는가?"</span>
+      </div>
+
+      <div className="dv-kpi-grid">
+        <KPICard title="미션 완료율" value="88%" subtitle="시작 대비" icon={CheckCircle} color="green" />
+        <KPICard title="평균 완료 시간" value="9.3초" subtitle="업로드→재생" icon={Clock} color="blue" />
+        <KPICard title="첫 시도 성공" value="78%" subtitle="바로 재생 클릭" icon={Target} color="purple" />
+        <KPICard title="평균 파일 크기" value="125MB" subtitle="업로드 영상" icon={FileText} color="orange" />
+      </div>
+
       <div className="dv-charts-grid">
-        <ChartCard title="디바이스 분포" subtitle="모바일/PC/태블릿 비율">
-          <div className="dv-pie-container">
-            <ResponsiveContainer width="100%" height={250}>
-              <PieChart>
-                <Pie
-                  data={currentData.category}
-                  cx="50%"
-                  cy="50%"
-                  innerRadius={50}
-                  outerRadius={90}
-                  dataKey="value"
-                  label={({ name, value }) => `${name}: ${value}%`}
-                >
-                  {currentData.category.map((entry, index) => (
-                    <Cell key={index} fill={entry.color} />
-                  ))}
-                </Pie>
-                <Tooltip />
-              </PieChart>
-            </ResponsiveContainer>
-          </div>
+        <ChartCard title="단계별 이탈 퍼널" subtitle="어느 단계에서 빠지는지">
+          <ResponsiveContainer width="100%" height={250}>
+            <BarChart data={currentData.mission1Funnel} layout="vertical">
+              <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+              <XAxis type="number" domain={[0, 100]} tickFormatter={(v) => `${v}%`} />
+              <YAxis type="category" dataKey="name" width={90} tick={{ fontSize: 11 }} />
+              <Tooltip formatter={(v) => `${v}%`} />
+              <Bar dataKey="value" fill="#3b82f6" radius={[0, 4, 4, 0]} />
+            </BarChart>
+          </ResponsiveContainer>
         </ChartCard>
 
-        <ChartCard title="첫 시도 성공률" subtitle="재생 버튼 직관성 평가">
-          <div className="dv-pie-container">
-            <ResponsiveContainer width="100%" height={250}>
-              <PieChart>
-                <Pie
-                  data={currentData.firstTrySuccess}
-                  cx="50%"
-                  cy="50%"
-                  innerRadius={50}
-                  outerRadius={90}
-                  dataKey="value"
-                  label={({ name, value }) => `${name}: ${value}%`}
-                >
-                  {currentData.firstTrySuccess.map((entry, index) => (
-                    <Cell key={index} fill={entry.color} />
-                  ))}
-                </Pie>
-                <Tooltip />
-              </PieChart>
-            </ResponsiveContainer>
-          </div>
+        <ChartCard title="완료 시간 분포" subtitle="대부분 몇 초에 완료하는지">
+          <ResponsiveContainer width="100%" height={250}>
+            <BarChart data={currentData.completionTime}>
+              <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+              <XAxis dataKey="range" tick={{ fontSize: 11 }} />
+              <YAxis />
+              <Tooltip />
+              <Bar dataKey="count" fill="#6366f1" radius={[4, 4, 0, 0]} />
+            </BarChart>
+          </ResponsiveContainer>
         </ChartCard>
       </div>
 
-      <ChartCard title="컷 선택 히트맵 (편집 2-1)" subtitle="어떤 컷을 4번으로 착각하는지">
-        <ResponsiveContainer width="100%" height={200}>
-          <BarChart data={currentData.cutSelection}>
-            <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-            <XAxis dataKey="cut" tick={{ fontSize: 11 }} />
-            <YAxis tickFormatter={(v) => `${v}%`} />
-            <Tooltip formatter={(v) => `${v}%`} />
-            <Bar dataKey="clicks" radius={[4, 4, 0, 0]}>
-              {currentData.cutSelection.map((entry, index) => (
-                <Cell key={index} fill={entry.isAnswer ? '#22c55e' : '#ef4444'} />
-              ))}
-            </Bar>
-          </BarChart>
-        </ResponsiveContainer>
-        <div className="dv-legend-row">
-          <span className="dv-legend-item"><span className="dv-legend-dot success"></span> 정답 (컷4)</span>
-          <span className="dv-legend-item"><span className="dv-legend-dot error"></span> 오답</span>
+      <ChartCard title="첫 시도 성공률" subtitle="재생 버튼 직관성 평가">
+        <div className="dv-pie-container">
+          <ResponsiveContainer width="100%" height={200}>
+            <PieChart>
+              <Pie
+                data={currentData.firstTrySuccess}
+                cx="50%"
+                cy="50%"
+                innerRadius={50}
+                outerRadius={80}
+                dataKey="value"
+                label={({ name, value }) => `${name}: ${value}%`}
+              >
+                {currentData.firstTrySuccess.map((entry, index) => (
+                  <Cell key={index} fill={entry.color} />
+                ))}
+              </Pie>
+              <Tooltip />
+            </PieChart>
+          </ResponsiveContainer>
         </div>
       </ChartCard>
+    </div>
+  );
 
-      {/* 인사이트 카드 */}
-      <div className="dv-insight-card">
+  // 편집 2-1 탭 렌더링
+  const renderMission2 = () => (
+    <div className="dv-section">
+      <div className="dv-question-card indigo">
+        <Grid size={18} />
+        <span>핵심 질문: "타임라인 UI에서 원하는 컷을 쉽게 찾는가?"</span>
+      </div>
+
+      <div className="dv-kpi-grid">
+        <KPICard title="첫 시도 정답률" value={`${currentData.mission2.kpi.firstTryRate}%`} subtitle="바로 컷4 선택" icon={Target} color="green" />
+        <KPICard title="평균 시도 횟수" value={`${currentData.mission2.kpi.avgAttempts}회`} subtitle="정답까지" icon={TrendingUp} color="blue" />
+        <KPICard title="평균 완료 시간" value={currentData.mission2.kpi.avgTime} subtitle="미션 완료" icon={Clock} color="purple" />
+        <KPICard title="미션 완료율" value={`${currentData.mission2.kpi.completionRate}%`} subtitle="시작 대비" icon={CheckCircle} color="orange" />
+      </div>
+
+      <div className="dv-charts-grid">
+        <ChartCard title="컷별 클릭 히트맵" subtitle="어떤 컷을 4번으로 착각하는지">
+          <ResponsiveContainer width="100%" height={250}>
+            <BarChart data={currentData.cutSelection}>
+              <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+              <XAxis dataKey="cut" tick={{ fontSize: 11 }} />
+              <YAxis tickFormatter={(v) => `${v}%`} />
+              <Tooltip formatter={(v) => `${v}%`} />
+              <Bar dataKey="clicks" radius={[4, 4, 0, 0]}>
+                {currentData.cutSelection.map((entry, index) => (
+                  <Cell key={index} fill={entry.isAnswer ? '#22c55e' : '#ef4444'} />
+                ))}
+              </Bar>
+            </BarChart>
+          </ResponsiveContainer>
+          <div className="dv-legend-row">
+            <span className="dv-legend-item"><span className="dv-legend-dot success"></span> 정답 (컷4)</span>
+            <span className="dv-legend-item"><span className="dv-legend-dot error"></span> 오답</span>
+          </div>
+        </ChartCard>
+
+        <ChartCard title="시도 횟수 분포" subtitle="몇 번 만에 맞추는지">
+          <ResponsiveContainer width="100%" height={250}>
+            <BarChart data={currentData.mission2.attempts}>
+              <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+              <XAxis dataKey="attempts" tick={{ fontSize: 11 }} />
+              <YAxis tickFormatter={(v) => `${v}%`} />
+              <Tooltip formatter={(v) => `${v}%`} />
+              <Bar dataKey="count" fill="#6366f1" radius={[4, 4, 0, 0]} />
+            </BarChart>
+          </ResponsiveContainer>
+        </ChartCard>
+      </div>
+
+      <div className="dv-insight-card warning">
         <div className="dv-insight-icon">
           <Zap size={20} />
         </div>
         <div className="dv-insight-content">
-          <h4 className="dv-insight-title">주요 인사이트</h4>
-          <ul className="dv-insight-list">
-            <li>모바일 사용자가 68%로 대다수를 차지합니다.</li>
-            <li>컷3을 4번으로 착각하는 비율이 25%로 높음 → 컷 번호 표시 UI 개선 필요</li>
-            <li>첫 시도 성공률 78% → 재생 버튼 발견성 양호</li>
-          </ul>
+          <h4 className="dv-insight-title">인사이트</h4>
+          <p className="dv-insight-text">컷3을 4번으로 착각하는 비율이 25%로 높음 → 컷 번호 표시 UI 개선 필요</p>
         </div>
       </div>
     </div>
   );
 
-  // 성과 분석 탭 렌더링
-  const renderPerformance = () => (
+  // 편집 6-1 탭 렌더링
+  const renderMission6 = () => (
     <div className="dv-section">
-      <div className="dv-performance-grid">
-        <div className="dv-metric-card">
-          <div className="dv-metric-header">
-            <CheckCircle className="dv-metric-icon success" size={24} />
-            <span className="dv-metric-label">편집 1-1</span>
-          </div>
-          <div className="dv-metric-value">88%</div>
-          <div className="dv-metric-bar">
-            <div className="dv-metric-bar-fill success" style={{ width: '88%' }} />
-          </div>
-          <div className="dv-metric-desc">평균 9.3초 완료</div>
-        </div>
-
-        <div className="dv-metric-card">
-          <div className="dv-metric-header">
-            <TrendingUp className="dv-metric-icon growth" size={24} />
-            <span className="dv-metric-label">편집 2-1</span>
-          </div>
-          <div className="dv-metric-value">78%</div>
-          <div className="dv-metric-bar">
-            <div className="dv-metric-bar-fill growth" style={{ width: '78%' }} />
-          </div>
-          <div className="dv-metric-desc">평균 4.0초 완료</div>
-        </div>
-
-        <div className="dv-metric-card">
-          <div className="dv-metric-header">
-            <Target className="dv-metric-icon warning" size={24} />
-            <span className="dv-metric-label">편집 6-1</span>
-          </div>
-          <div className="dv-metric-value">62%</div>
-          <div className="dv-metric-bar">
-            <div className="dv-metric-bar-fill warning" style={{ width: '62%' }} />
-          </div>
-          <div className="dv-metric-desc">평균 18.5초 완료</div>
-        </div>
+      <div className="dv-question-card purple">
+        <Sparkles size={18} />
+        <span>핵심 질문: "AI 자막 추천 기능을 자연스럽게 발견하고 사용하는가?"</span>
       </div>
 
-      <ChartCard title="편집 1-1 단계별 퍼널" subtitle="어느 단계에서 이탈하는지">
-        <ResponsiveContainer width="100%" height={220}>
-          <BarChart data={currentData.mission1Funnel} layout="vertical">
-            <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-            <XAxis type="number" domain={[0, 100]} tickFormatter={(v) => `${v}%`} />
-            <YAxis type="category" dataKey="name" width={90} tick={{ fontSize: 11 }} />
-            <Tooltip formatter={(v) => `${v}%`} />
-            <Bar dataKey="value" radius={[0, 4, 4, 0]}>
-              {currentData.mission1Funnel.map((entry, index) => (
-                <Cell key={index} fill={entry.fill} />
-              ))}
-            </Bar>
-          </BarChart>
-        </ResponsiveContainer>
-      </ChartCard>
+      <div className="dv-kpi-grid">
+        <KPICard title="기본 미션 완료율" value={`${currentData.mission6.kpi.basicRate}%`} subtitle="AI 버튼 발견" icon={CheckCircle} color="green" />
+        <KPICard title="추가 미션 완료율" value={`${currentData.mission6.kpi.additionalRate}%`} subtitle="재추천 사용" icon={Target} color="blue" />
+        <KPICard title="기본→추가 이탈률" value={`${currentData.mission6.kpi.dropoffRate}%`} subtitle="팝업 후 이탈" icon={XCircle} color="orange" />
+        <KPICard title="AI 추천 채택률" value={`${currentData.mission6.kpi.aiUsageRate}%`} subtitle="직접입력 대비" icon={Sparkles} color="purple" />
+      </div>
 
-      <ChartCard title="완료 시간 분포" subtitle="대부분 몇 초에 완료하는지">
-        <ResponsiveContainer width="100%" height={200}>
-          <BarChart data={currentData.completionTime}>
+      <div className="dv-charts-grid">
+        <ChartCard title="2단계 미션 퍼널" subtitle="기본 → 추가 미션 진행률">
+          <ResponsiveContainer width="100%" height={280}>
+            <BarChart data={currentData.mission6.funnel} layout="vertical">
+              <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+              <XAxis type="number" domain={[0, 100]} tickFormatter={(v) => `${v}%`} />
+              <YAxis type="category" dataKey="name" width={100} tick={{ fontSize: 10 }} />
+              <Tooltip formatter={(v) => `${v}%`} />
+              <Bar dataKey="value" fill="#8b5cf6" radius={[0, 4, 4, 0]} />
+            </BarChart>
+          </ResponsiveContainer>
+        </ChartCard>
+
+        <ChartCard title="AI 추천 선택 분포" subtitle="어떤 추천이 선호되는지">
+          <ResponsiveContainer width="100%" height={280}>
+            <PieChart>
+              <Pie
+                data={currentData.mission6.aiSelect}
+                cx="50%"
+                cy="50%"
+                outerRadius={90}
+                dataKey="value"
+                label={({ name, value }) => `${name}: ${value}%`}
+              >
+                {currentData.mission6.aiSelect.map((entry, index) => (
+                  <Cell key={index} fill={entry.color} />
+                ))}
+              </Pie>
+              <Tooltip />
+            </PieChart>
+          </ResponsiveContainer>
+        </ChartCard>
+      </div>
+
+      <ChartCard title="단계별 평균 완료 시간" subtitle="기본 vs 추가 미션 난이도">
+        <ResponsiveContainer width="100%" height={150}>
+          <BarChart data={currentData.mission6.stageTime} layout="vertical">
             <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-            <XAxis dataKey="range" tick={{ fontSize: 11 }} />
-            <YAxis />
-            <Tooltip />
-            <Bar dataKey="count" fill="#6366f1" radius={[4, 4, 0, 0]} />
+            <XAxis type="number" unit="초" />
+            <YAxis type="category" dataKey="stage" width={80} />
+            <Tooltip formatter={(v) => `${v}초`} />
+            <Bar dataKey="avgTime" fill="#a855f7" radius={[0, 4, 4, 0]} />
           </BarChart>
         </ResponsiveContainer>
+        <p className="dv-chart-note">추가 미션이 기본 미션보다 2배 이상 빠름 → 재추천 기능 학습 효과</p>
       </ChartCard>
+    </div>
+  );
+
+  // 기획 1-1 탭 렌더링
+  const renderPlanning1 = () => (
+    <div className="dv-section">
+      <div className="dv-question-card teal">
+        <FileText size={18} />
+        <span>핵심 질문: "6컷 개별 UI vs 3컷 그룹 UI 중 어떤 게 메모 작성에 효과적인가?"</span>
+      </div>
+
+      <div className="dv-kpi-grid">
+        <KPICard title="A파트 완료율" value={`${currentData.planning1.kpi.aCompletionRate}%`} subtitle="6컷 개별" icon={CheckCircle} color="green" />
+        <KPICard title="B파트 완료율" value={`${currentData.planning1.kpi.bCompletionRate}%`} subtitle="3컷 그룹" icon={CheckCircle} color="blue" />
+        <KPICard title="A 평균 메모 길이" value={`${currentData.planning1.kpi.aMemoLength}자`} subtitle="6컷 기준" icon={FileText} color="purple" />
+        <KPICard title="B 평균 메모 길이" value={`${currentData.planning1.kpi.bMemoLength}자`} subtitle="3컷 기준" icon={FileText} color="orange" />
+      </div>
+
+      <div className="dv-charts-grid">
+        <ChartCard title="A vs B 성과 비교" subtitle="완료율, 시간, 메모작성률">
+          <ResponsiveContainer width="100%" height={250}>
+            <BarChart data={currentData.planning1.compare}>
+              <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+              <XAxis dataKey="metric" tick={{ fontSize: 11 }} />
+              <YAxis />
+              <Tooltip />
+              <Legend />
+              <Bar dataKey="A파트" fill="#14b8a6" radius={[4, 4, 0, 0]} />
+              <Bar dataKey="B파트" fill="#f59e0b" radius={[4, 4, 0, 0]} />
+            </BarChart>
+          </ResponsiveContainer>
+        </ChartCard>
+
+        <ChartCard title="컷별 메모 작성률" subtitle="어떤 컷에서 메모를 많이 쓰는지">
+          <ResponsiveContainer width="100%" height={250}>
+            <BarChart data={currentData.planning1.cutMemo}>
+              <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+              <XAxis dataKey="cut" tick={{ fontSize: 11 }} />
+              <YAxis tickFormatter={(v) => `${v}%`} />
+              <Tooltip formatter={(v) => v ? `${v}%` : 'N/A'} />
+              <Legend />
+              <Bar dataKey="A" name="A파트" fill="#14b8a6" radius={[4, 4, 0, 0]} />
+              <Bar dataKey="B" name="B파트" fill="#f59e0b" radius={[4, 4, 0, 0]} />
+            </BarChart>
+          </ResponsiveContainer>
+        </ChartCard>
+      </div>
+
+      <div className="dv-compare-cards">
+        <div className="dv-compare-card teal">
+          <h4 className="dv-compare-title">A파트 (6컷 개별) 장점</h4>
+          <ul className="dv-compare-list">
+            <li>완료율이 4% 높음</li>
+            <li>세밀한 컷별 메모 가능</li>
+          </ul>
+        </div>
+        <div className="dv-compare-card orange">
+          <h4 className="dv-compare-title">B파트 (3컷 그룹) 장점</h4>
+          <ul className="dv-compare-list">
+            <li>완료 시간 29% 빠름 (45초 → 32초)</li>
+            <li>메모 길이 45% 김 (12.5자 → 18.2자)</li>
+            <li>메모 작성률 7%p 높음</li>
+          </ul>
+        </div>
+      </div>
     </div>
   );
 
@@ -525,21 +692,35 @@ export default function DataVisualizer({ onBack }) {
           onClick={() => setActiveTab('overview')}
         >
           <TrendingUp size={16} />
-          <span>개요</span>
+          <span>종합</span>
         </button>
         <button
-          className={`dv-tab ${activeTab === 'users' ? 'active' : ''}`}
-          onClick={() => setActiveTab('users')}
+          className={`dv-tab ${activeTab === 'mission1' ? 'active' : ''}`}
+          onClick={() => setActiveTab('mission1')}
         >
-          <Users size={16} />
-          <span>사용자</span>
+          <Play size={16} />
+          <span>편집 1-1</span>
         </button>
         <button
-          className={`dv-tab ${activeTab === 'performance' ? 'active' : ''}`}
-          onClick={() => setActiveTab('performance')}
+          className={`dv-tab ${activeTab === 'mission2' ? 'active' : ''}`}
+          onClick={() => setActiveTab('mission2')}
         >
-          <Target size={16} />
-          <span>성과</span>
+          <Grid size={16} />
+          <span>편집 2-1</span>
+        </button>
+        <button
+          className={`dv-tab ${activeTab === 'mission6' ? 'active' : ''}`}
+          onClick={() => setActiveTab('mission6')}
+        >
+          <Sparkles size={16} />
+          <span>편집 6-1</span>
+        </button>
+        <button
+          className={`dv-tab ${activeTab === 'planning1' ? 'active' : ''}`}
+          onClick={() => setActiveTab('planning1')}
+        >
+          <FileText size={16} />
+          <span>기획 1-1</span>
         </button>
       </div>
 
@@ -548,8 +729,10 @@ export default function DataVisualizer({ onBack }) {
         <div className="dv-preview-frame">
           <div className="dv-content">
             {activeTab === 'overview' && renderOverview()}
-            {activeTab === 'users' && renderUsers()}
-            {activeTab === 'performance' && renderPerformance()}
+            {activeTab === 'mission1' && renderMission1()}
+            {activeTab === 'mission2' && renderMission2()}
+            {activeTab === 'mission6' && renderMission6()}
+            {activeTab === 'planning1' && renderPlanning1()}
           </div>
 
           {/* 푸터 */}

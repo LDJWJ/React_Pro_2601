@@ -625,3 +625,122 @@
 .dv-legend-dot.error {
   background: #ef4444;
 }
+
+/* 질문 카드 */
+.dv-question-card {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 16px;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.dv-question-card.blue {
+  background: #dbeafe;
+  border: 1px solid #bfdbfe;
+  color: #1e40af;
+}
+
+.dv-question-card.indigo {
+  background: #e0e7ff;
+  border: 1px solid #c7d2fe;
+  color: #3730a3;
+}
+
+.dv-question-card.purple {
+  background: #f3e8ff;
+  border: 1px solid #e9d5ff;
+  color: #6b21a8;
+}
+
+.dv-question-card.teal {
+  background: #ccfbf1;
+  border: 1px solid #99f6e4;
+  color: #115e59;
+}
+
+/* 차트 노트 */
+.dv-chart-note {
+  font-size: 12px;
+  color: #64748b;
+  margin-top: 8px;
+  padding-left: 4px;
+}
+
+/* 인사이트 카드 (warning 버전) */
+.dv-insight-card.warning {
+  background: #fef3c7;
+  border-color: #fde68a;
+}
+
+.dv-insight-card.warning .dv-insight-icon {
+  background: #fef3c7;
+  color: #d97706;
+}
+
+.dv-insight-card.warning .dv-insight-title {
+  color: #92400e;
+}
+
+.dv-insight-text {
+  font-size: 14px;
+  color: #a16207;
+  margin: 0;
+}
+
+/* 비교 카드 */
+.dv-compare-cards {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+.dv-preview-container.mobile .dv-compare-cards {
+  grid-template-columns: 1fr;
+}
+
+.dv-compare-card {
+  padding: 16px;
+  border-radius: 12px;
+}
+
+.dv-compare-card.teal {
+  background: #ccfbf1;
+  border: 1px solid #99f6e4;
+}
+
+.dv-compare-card.orange {
+  background: #ffedd5;
+  border: 1px solid #fed7aa;
+}
+
+.dv-compare-title {
+  font-size: 14px;
+  font-weight: 600;
+  margin: 0 0 10px 0;
+}
+
+.dv-compare-card.teal .dv-compare-title {
+  color: #115e59;
+}
+
+.dv-compare-card.orange .dv-compare-title {
+  color: #9a3412;
+}
+
+.dv-compare-list {
+  margin: 0;
+  padding-left: 18px;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.dv-compare-card.teal .dv-compare-list {
+  color: #0f766e;
+}
+
+.dv-compare-card.orange .dv-compare-list {
+  color: #c2410c;
+}
