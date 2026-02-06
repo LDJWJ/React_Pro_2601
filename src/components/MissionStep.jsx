@@ -11,8 +11,6 @@ function MissionStep({ stepTitle, description, buttonText, onNext, screenName })
 
   const handleClick = () => {
     logButtonClick(screenName || 'mission_step', 'next_button');
-    // 미션 시작 시간 저장 (다음 버튼 클릭 시점)
-    sessionStorage.setItem('missionStartTime', Date.now().toString());
     onNext();
   };
 

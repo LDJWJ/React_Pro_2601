@@ -20,9 +20,8 @@ function StoryPlanningScreenB({ onComplete, onBack }) {
   useEffect(() => {
     logScreenView('story_planning_b');
     const enterTime = Date.now();
-    // MissionStep에서 다음 버튼 클릭 시점을 미션 시작 시간으로 사용
-    const savedStartTime = sessionStorage.getItem('missionStartTime');
-    missionStartTime.current = savedStartTime ? parseInt(savedStartTime, 10) : enterTime;
+    // 화면 진입 시점을 미션 시작 시간으로 사용
+    missionStartTime.current = enterTime;
     return () => {
       const dwellTime = Date.now() - enterTime;
       logScreenExit('story_planning_b', dwellTime);

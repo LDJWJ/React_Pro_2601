@@ -25,9 +25,8 @@ function ContentUploadScreenA({ onComplete, onBack }) {
   useEffect(() => {
     logScreenView('content_upload_a');
     const enterTime = Date.now();
-    // MissionStep에서 다음 버튼 클릭 시점을 미션 시작 시간으로 사용
-    const savedStartTime = sessionStorage.getItem('missionStartTime');
-    missionStartTime.current = savedStartTime ? parseInt(savedStartTime, 10) : enterTime;
+    // 화면 진입 시점을 미션 시작 시간으로 사용
+    missionStartTime.current = enterTime;
     setCutData(defaultCuts.map(cut => ({
       ...cut,
       videoFile: null,

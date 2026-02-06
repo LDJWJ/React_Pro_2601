@@ -34,9 +34,8 @@ function Plan1_1AScreen({ onComplete, onBack }) {
 
   useEffect(() => {
     const enterTime = Date.now();
-    // MissionStep에서 다음 버튼 클릭 시점을 미션 시작 시간으로 사용
-    const savedStartTime = sessionStorage.getItem('missionStartTime');
-    missionStartTime.current = savedStartTime ? parseInt(savedStartTime, 10) : enterTime;
+    // 화면 진입 시점을 미션 시작 시간으로 사용
+    missionStartTime.current = enterTime;
 
     // 화면 진입 로그를 먼저 전송 (완료 대기)
     const initLogs = async () => {
@@ -117,10 +116,12 @@ function Plan1_1AScreen({ onComplete, onBack }) {
     };
     logButtonClick('기획1-1_화면', '저장하기', JSON.stringify(state));
 
-    // 2초 후 미션 완료
+    // 미션 완료 시간은 버튼 클릭 시점에 계산 (2초 대기 시간 제외)
+    const completionTime = ((Date.now() - missionStartTime.current) / 1000).toFixed(1);
+    logMissionComplete('기획1-1_화면', '기획1-1_미션완료', `완료시간:${completionTime}초,메모수:${memoCount},총길이:${totalMemoLength}`);
+
+    // 2초 후 완료 화면 표시
     setTimeout(() => {
-      const completionTime = ((Date.now() - missionStartTime.current) / 1000).toFixed(1);
-      logMissionComplete('기획1-1_화면', '기획1-1_미션완료', `완료시간:${completionTime}초,메모수:${memoCount},총길이:${totalMemoLength}`);
       setCompleted(true);
     }, 2000);
   };

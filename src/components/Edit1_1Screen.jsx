@@ -35,9 +35,8 @@ function Edit1_1Screen({ onComplete, onBack }) {
 
   useEffect(() => {
     const enterTime = Date.now();
-    // MissionStep에서 다음 버튼 클릭 시점을 미션 시작 시간으로 사용
-    const savedStartTime = sessionStorage.getItem('missionStartTime');
-    missionStartTime.current = savedStartTime ? parseInt(savedStartTime, 10) : enterTime;
+    // 화면 진입 시점을 미션 시작 시간으로 사용
+    missionStartTime.current = enterTime;
 
     // 화면 진입 로그를 먼저 전송 (완료 대기)
     const initLogs = async () => {
@@ -197,9 +196,10 @@ function Edit1_1Screen({ onComplete, onBack }) {
         if (hasUploaded && !missionCompletingRef.current) {
           missionCompletingRef.current = true;  // 동기적으로 즉시 설정
           setIsCompleting(true);
+          // 미션 완료 시간은 버튼 클릭 시점에 계산 (2초 대기 시간 제외)
+          const completionTime = ((Date.now() - missionStartTime.current) / 1000).toFixed(1);
+          logMissionComplete('편집1-1_화면', '편집1-1_미션완료', `완료시간:${completionTime}초`);
           setTimeout(() => {
-            const completionTime = ((Date.now() - missionStartTime.current) / 1000).toFixed(1);
-            logMissionComplete('편집1-1_화면', '편집1-1_미션완료', `완료시간:${completionTime}초`);
             setCompleted(true);
           }, 2000);
         }

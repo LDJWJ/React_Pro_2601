@@ -36,9 +36,8 @@ function Edit6_1Screen({ onComplete, onBack }) {
 
   useEffect(() => {
     const enterTime = Date.now();
-    // MissionStep에서 다음 버튼 클릭 시점을 미션 시작 시간으로 사용
-    const savedStartTime = sessionStorage.getItem('missionStartTime');
-    missionStartTime.current = savedStartTime ? parseInt(savedStartTime, 10) : enterTime;
+    // 화면 진입 시점을 미션 시작 시간으로 사용
+    missionStartTime.current = enterTime;
 
     // 화면 진입 로그를 먼저 전송 (완료 대기)
     const initLogs = async () => {
@@ -327,9 +326,10 @@ function Edit6_1Screen({ onComplete, onBack }) {
       if (missionStage === 0 && !missionCompletingRef.current) {
         missionCompletingRef.current = true;  // 동기적으로 즉시 설정
         setIsCompleting(true);
+        // 미션 완료 시간은 버튼 클릭 시점에 계산 (2초 대기 시간 제외)
+        const completionTime = ((Date.now() - missionStartTime.current) / 1000).toFixed(1);
+        logMissionComplete('편집6-1_화면', '편집6-1_기본미션완료', `완료시간:${completionTime}초`);
         setTimeout(() => {
-          const completionTime = ((Date.now() - missionStartTime.current) / 1000).toFixed(1);
-          logMissionComplete('편집6-1_화면', '편집6-1_기본미션완료', `완료시간:${completionTime}초`);
           logMissionStart('편집6-1_화면', '편집6-1_추가미션시작');
           missionStartTime.current = Date.now(); // 추가 미션 시작 시간 초기화
           setMissionStage(1);
@@ -342,9 +342,10 @@ function Edit6_1Screen({ onComplete, onBack }) {
       if (missionStage === 2 && !missionCompletingRef.current) {
         missionCompletingRef.current = true;  // 동기적으로 즉시 설정
         setIsCompleting(true);
+        // 미션 완료 시간은 버튼 클릭 시점에 계산 (2초 대기 시간 제외)
+        const completionTime = ((Date.now() - missionStartTime.current) / 1000).toFixed(1);
+        logMissionComplete('편집6-1_화면', '편집6-1_추가미션완료', `완료시간:${completionTime}초`);
         setTimeout(() => {
-          const completionTime = ((Date.now() - missionStartTime.current) / 1000).toFixed(1);
-          logMissionComplete('편집6-1_화면', '편집6-1_추가미션완료', `완료시간:${completionTime}초`);
           setCompleted(true);
         }, 2000);
       }

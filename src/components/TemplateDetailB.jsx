@@ -24,9 +24,8 @@ function TemplateDetailB({ onComplete, onBack }) {
 
   useEffect(() => {
     logScreenView('template_detail_b');
-    // MissionStep에서 다음 버튼 클릭 시점을 미션 시작 시간으로 사용
-    const savedStartTime = sessionStorage.getItem('missionStartTime');
-    missionStartTime.current = savedStartTime ? parseInt(savedStartTime, 10) : Date.now();
+    // 화면 진입 시점을 미션 시작 시간으로 사용
+    missionStartTime.current = Date.now();
   }, []);
 
   const handlePlayPause = () => {
