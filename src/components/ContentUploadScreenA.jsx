@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import './ContentUploadScreenA.css';
-import { logScreenView, logButtonClick, logScreenExit } from '../utils/logger';
+import { logScreenView, logButtonClick, logMissionComplete, logScreenExit } from '../utils/logger';
 
 const defaultCuts = [
   { id: 1, title: '인트로 (첫 장면)', duration: '2초', description: '시선을 끌고 분위기를 시작하는 장면이에요.' },
@@ -147,6 +147,7 @@ function ContentUploadScreenA({ onComplete, onBack }) {
   // "완성하기"
   const handleComplete = () => {
     logButtonClick('content_upload_a', 'complete');
+    logMissionComplete('content_upload_a', 'mission_3');
     setCompleted(true);
   };
 

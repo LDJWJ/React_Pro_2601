@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import './StoryPlanningScreen.css';
-import { logScreenView, logButtonClick, logScreenExit } from '../utils/logger';
+import { logScreenView, logButtonClick, logMissionComplete, logScreenExit } from '../utils/logger';
 
 const VIDEO_URL = '/videos/sample-2.mp4';
 
@@ -85,6 +85,7 @@ function StoryPlanningScreenA({ onComplete, onBack }) {
 
   const handleSave = () => {
     logButtonClick('story_planning_a', 'save');
+    logMissionComplete('story_planning_a', 'mission_2');
     setCompleted(true);
   };
 
