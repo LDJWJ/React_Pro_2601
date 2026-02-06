@@ -10,6 +10,8 @@ import {
   Play, Grid, Sparkles
 } from 'lucide-react';
 import './DataVisualizer.css';
+import './DataVisualizer.mobile.css';
+import './DataVisualizer.pc.css';
 
 // 샘플 데이터 (Tracking_Sheet_260206_04.csv 기반)
 const SAMPLE_DATA = {
@@ -252,7 +254,7 @@ const ChartCard = ({ title, subtitle, children }) => (
 
 // 메인 컴포넌트
 export default function DataVisualizer({ onBack }) {
-  const [viewMode, setViewMode] = useState('pc'); // 'pc' | 'mobile'
+  const [viewMode, setViewMode] = useState('mobile'); // 'mobile' | 'pc'
   const [useSampleData, setUseSampleData] = useState(true);
   const [csvData, setCsvData] = useState(null);
   const [fileName, setFileName] = useState('');

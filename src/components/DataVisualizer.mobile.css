@@ -1,0 +1,129 @@
+/* DataVisualizer.mobile.css - 모바일 뷰 전용 스타일 */
+
+/* 모바일 뷰 모드 탭 - 2행 배치 */
+.dv-container.mobile-view .dv-tabs {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+  overflow-x: visible;
+  padding-bottom: 0;
+}
+
+.dv-container.mobile-view .dv-tab {
+  padding: 8px 6px;
+  font-size: 11px;
+  justify-content: center;
+  gap: 4px;
+}
+
+.dv-container.mobile-view .dv-tab svg {
+  width: 14px;
+  height: 14px;
+}
+
+/* 모바일 프리뷰 프레임 */
+.dv-preview-container.mobile .dv-preview-frame {
+  width: 375px;
+  max-width: 100%;
+  border: 8px solid #1e293b;
+  border-radius: 32px;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+}
+
+/* 모바일 콘텐츠 영역 */
+.dv-preview-container.mobile .dv-content {
+  padding: 16px;
+  max-height: 600px;
+}
+
+/* 모바일 KPI 그리드 - 2열 */
+.dv-preview-container.mobile .dv-kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+/* 모바일 KPI 값 크기 */
+.dv-preview-container.mobile .dv-kpi-value {
+  font-size: 20px;
+}
+
+/* 모바일 차트 그리드 - 1열 */
+.dv-preview-container.mobile .dv-charts-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+}
+
+/* 모바일 비교 카드 - 1열 */
+.dv-preview-container.mobile .dv-compare-cards {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+}
+
+/* 모바일 질문 카드 */
+.dv-preview-container.mobile .dv-question-card {
+  font-size: 12px;
+  padding: 12px;
+}
+
+/* 모바일 차트 카드 */
+.dv-preview-container.mobile .dv-chart-card {
+  padding: 16px;
+}
+
+.dv-preview-container.mobile .dv-chart-title {
+  font-size: 14px;
+}
+
+.dv-preview-container.mobile .dv-chart-subtitle {
+  font-size: 12px;
+}
+
+/* 모바일 인사이트 카드 */
+.dv-preview-container.mobile .dv-insight-card {
+  padding: 14px;
+  gap: 12px;
+}
+
+.dv-preview-container.mobile .dv-insight-icon {
+  width: 32px;
+  height: 32px;
+}
+
+.dv-preview-container.mobile .dv-insight-title {
+  font-size: 13px;
+}
+
+.dv-preview-container.mobile .dv-insight-text,
+.dv-preview-container.mobile .dv-insight-list {
+  font-size: 12px;
+}
+
+/* 모바일 폰트 조정 */
+.dv-container.mobile-view .dv-content {
+  font-size: 14px;
+}
+
+/* 실제 모바일 기기 반응형 */
+@media (max-width: 768px) {
+  .dv-controls {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .dv-data-source {
+    justify-content: center;
+  }
+
+  .dv-view-toggle {
+    align-self: center;
+  }
+
+  .dv-preview-container.mobile .dv-preview-frame {
+    width: 100%;
+    border-width: 4px;
+    border-radius: 24px;
+  }
+}

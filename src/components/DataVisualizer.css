@@ -1,4 +1,4 @@
-/* DataVisualizer.css - 데이터 시각화 컴포넌트 스타일 */
+/* DataVisualizer.css - 공통 스타일 */
 
 /* 컨테이너 */
 .dv-container {
@@ -148,7 +148,7 @@
   color: #ffffff;
 }
 
-/* 탭 네비게이션 */
+/* 탭 네비게이션 - 기본 */
 .dv-tabs {
   display: flex;
   gap: 8px;
@@ -190,19 +190,6 @@
   margin-top: 20px;
 }
 
-.dv-preview-container.pc .dv-preview-frame {
-  width: 100%;
-  max-width: 1200px;
-}
-
-.dv-preview-container.mobile .dv-preview-frame {
-  width: 375px;
-  max-width: 100%;
-  border: 8px solid #1e293b;
-  border-radius: 32px;
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-}
-
 .dv-preview-frame {
   background: #ffffff;
   border-radius: 16px;
@@ -213,13 +200,7 @@
 /* 콘텐츠 영역 */
 .dv-content {
   padding: 20px;
-  max-height: 70vh;
   overflow-y: auto;
-}
-
-.dv-preview-container.mobile .dv-content {
-  padding: 16px;
-  max-height: 600px;
 }
 
 /* 섹션 */
@@ -227,18 +208,6 @@
   display: flex;
   flex-direction: column;
   gap: 20px;
-}
-
-/* KPI 그리드 */
-.dv-kpi-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 16px;
-}
-
-.dv-preview-container.mobile .dv-kpi-grid {
-  grid-template-columns: repeat(2, 1fr);
-  gap: 12px;
 }
 
 /* KPI 카드 */
@@ -299,10 +268,6 @@
   margin-bottom: 4px;
 }
 
-.dv-preview-container.mobile .dv-kpi-value {
-  font-size: 20px;
-}
-
 .dv-kpi-footer {
   display: flex;
   align-items: center;
@@ -329,17 +294,6 @@
 .dv-kpi-subtitle {
   font-size: 12px;
   color: #94a3b8;
-}
-
-/* 차트 그리드 */
-.dv-charts-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 20px;
-}
-
-.dv-preview-container.mobile .dv-charts-grid {
-  grid-template-columns: 1fr;
 }
 
 /* 차트 카드 */
@@ -418,92 +372,24 @@
   margin-bottom: 4px;
 }
 
-/* 성과 분석 그리드 */
-.dv-performance-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 16px;
+.dv-insight-card.warning {
+  background: #fef3c7;
+  border-color: #fde68a;
 }
 
-.dv-preview-container.mobile .dv-performance-grid {
-  grid-template-columns: 1fr;
+.dv-insight-card.warning .dv-insight-icon {
+  background: #fef3c7;
+  color: #d97706;
 }
 
-/* 메트릭 카드 */
-.dv-metric-card {
-  background: #ffffff;
-  border: 1px solid #e2e8f0;
-  border-radius: 12px;
-  padding: 20px;
-  text-align: center;
+.dv-insight-card.warning .dv-insight-title {
+  color: #92400e;
 }
 
-.dv-metric-header {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  margin-bottom: 12px;
-}
-
-.dv-metric-icon {
-  opacity: 0.9;
-}
-
-.dv-metric-icon.success {
-  color: #22c55e;
-}
-
-.dv-metric-icon.growth {
-  color: #3b82f6;
-}
-
-.dv-metric-icon.warning {
-  color: #f97316;
-}
-
-.dv-metric-label {
+.dv-insight-text {
   font-size: 14px;
-  font-weight: 500;
-  color: #475569;
-}
-
-.dv-metric-value {
-  font-size: 32px;
-  font-weight: 700;
-  color: #1e293b;
-  margin-bottom: 12px;
-}
-
-.dv-metric-bar {
-  height: 8px;
-  background: #e2e8f0;
-  border-radius: 4px;
-  overflow: hidden;
-  margin-bottom: 12px;
-}
-
-.dv-metric-bar-fill {
-  height: 100%;
-  border-radius: 4px;
-  transition: width 0.5s ease;
-}
-
-.dv-metric-bar-fill.success {
-  background: linear-gradient(90deg, #22c55e, #4ade80);
-}
-
-.dv-metric-bar-fill.growth {
-  background: linear-gradient(90deg, #3b82f6, #60a5fa);
-}
-
-.dv-metric-bar-fill.warning {
-  background: linear-gradient(90deg, #f97316, #fb923c);
-}
-
-.dv-metric-desc {
-  font-size: 13px;
-  color: #94a3b8;
+  color: #a16207;
+  margin: 0;
 }
 
 /* 푸터 */
@@ -514,45 +400,6 @@
   color: #94a3b8;
   border-top: 1px solid #e2e8f0;
   background: #f8fafc;
-}
-
-/* 모바일 뷰 모드일 때 추가 스타일 */
-.dv-container.mobile-view .dv-content {
-  font-size: 14px;
-}
-
-/* 반응형 */
-@media (max-width: 768px) {
-  .dv-controls {
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  .dv-data-source {
-    justify-content: center;
-  }
-
-  .dv-view-toggle {
-    align-self: center;
-  }
-
-  .dv-kpi-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  .dv-charts-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .dv-performance-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .dv-preview-container.mobile .dv-preview-frame {
-    width: 100%;
-    border-width: 4px;
-    border-radius: 24px;
-  }
 }
 
 /* 스크롤바 스타일 */
@@ -574,7 +421,7 @@
   background: #94a3b8;
 }
 
-/* 차트 툴팁 스타일 개선 */
+/* 차트 툴팁 스타일 */
 .recharts-tooltip-wrapper {
   outline: none;
 }
@@ -586,7 +433,6 @@
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1) !important;
 }
 
-/* 범례 스타일 */
 .recharts-legend-wrapper {
   padding-top: 8px !important;
 }
@@ -669,38 +515,7 @@
   padding-left: 4px;
 }
 
-/* 인사이트 카드 (warning 버전) */
-.dv-insight-card.warning {
-  background: #fef3c7;
-  border-color: #fde68a;
-}
-
-.dv-insight-card.warning .dv-insight-icon {
-  background: #fef3c7;
-  color: #d97706;
-}
-
-.dv-insight-card.warning .dv-insight-title {
-  color: #92400e;
-}
-
-.dv-insight-text {
-  font-size: 14px;
-  color: #a16207;
-  margin: 0;
-}
-
 /* 비교 카드 */
-.dv-compare-cards {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 16px;
-}
-
-.dv-preview-container.mobile .dv-compare-cards {
-  grid-template-columns: 1fr;
-}
-
 .dv-compare-card {
   padding: 16px;
   border-radius: 12px;

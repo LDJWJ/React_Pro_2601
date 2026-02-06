@@ -1,0 +1,175 @@
+/* DataVisualizer.pc.css - PC 뷰 전용 스타일 */
+
+/* PC 프리뷰 프레임 - 반응형 확대 */
+.dv-preview-container.pc .dv-preview-frame {
+  width: 100%;
+  max-width: none;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
+/* PC 콘텐츠 영역 - 반응형 높이 */
+.dv-preview-container.pc .dv-content {
+  padding: 32px;
+  max-height: calc(100vh - 280px);
+  min-height: 500px;
+}
+
+/* PC KPI 그리드 - 4열 반응형 */
+.dv-preview-container.pc .dv-kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+}
+
+/* PC KPI 카드 확대 */
+.dv-preview-container.pc .dv-kpi-card {
+  padding: 20px;
+}
+
+.dv-preview-container.pc .dv-kpi-value {
+  font-size: 28px;
+}
+
+.dv-preview-container.pc .dv-kpi-title {
+  font-size: 14px;
+}
+
+.dv-preview-container.pc .dv-kpi-icon {
+  width: 42px;
+  height: 42px;
+}
+
+/* PC 차트 그리드 - 2열 */
+.dv-preview-container.pc .dv-charts-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 24px;
+}
+
+/* PC 차트 카드 확대 */
+.dv-preview-container.pc .dv-chart-card {
+  padding: 24px;
+}
+
+.dv-preview-container.pc .dv-chart-title {
+  font-size: 18px;
+}
+
+.dv-preview-container.pc .dv-chart-subtitle {
+  font-size: 14px;
+}
+
+/* PC 비교 카드 - 2열 */
+.dv-preview-container.pc .dv-compare-cards {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+}
+
+/* PC 질문 카드 확대 */
+.dv-preview-container.pc .dv-question-card {
+  font-size: 15px;
+  padding: 18px;
+}
+
+/* PC 인사이트 카드 확대 */
+.dv-preview-container.pc .dv-insight-card {
+  padding: 24px;
+}
+
+.dv-preview-container.pc .dv-insight-title {
+  font-size: 16px;
+}
+
+.dv-preview-container.pc .dv-insight-list,
+.dv-preview-container.pc .dv-insight-text {
+  font-size: 15px;
+}
+
+/* PC 푸터 */
+.dv-preview-container.pc .dv-footer {
+  padding: 20px;
+  font-size: 13px;
+}
+
+/* 대형 화면 최적화 (1440px 이상) */
+@media (min-width: 1440px) {
+  .dv-preview-container.pc .dv-content {
+    padding: 40px;
+  }
+
+  .dv-preview-container.pc .dv-kpi-value {
+    font-size: 32px;
+  }
+
+  .dv-preview-container.pc .dv-chart-card {
+    padding: 28px;
+  }
+
+  .dv-preview-container.pc .dv-charts-grid {
+    gap: 28px;
+  }
+}
+
+/* 초대형 화면 최적화 (1920px 이상) */
+@media (min-width: 1920px) {
+  .dv-preview-container.pc .dv-content {
+    padding: 48px;
+    max-height: calc(100vh - 320px);
+  }
+
+  .dv-preview-container.pc .dv-kpi-grid {
+    gap: 28px;
+  }
+
+  .dv-preview-container.pc .dv-kpi-value {
+    font-size: 36px;
+  }
+
+  .dv-preview-container.pc .dv-kpi-icon {
+    width: 48px;
+    height: 48px;
+  }
+
+  .dv-preview-container.pc .dv-chart-title {
+    font-size: 20px;
+  }
+
+  .dv-preview-container.pc .dv-charts-grid {
+    gap: 32px;
+  }
+}
+
+/* 중간 화면 (1024px ~ 1280px) */
+@media (min-width: 1024px) and (max-width: 1280px) {
+  .dv-preview-container.pc .dv-kpi-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .dv-preview-container.pc .dv-charts-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* 작은 PC 화면 (768px ~ 1024px) */
+@media (min-width: 768px) and (max-width: 1024px) {
+  .dv-preview-container.pc .dv-content {
+    padding: 24px;
+  }
+
+  .dv-preview-container.pc .dv-kpi-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+  }
+
+  .dv-preview-container.pc .dv-charts-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  .dv-preview-container.pc .dv-compare-cards {
+    grid-template-columns: 1fr;
+  }
+}
