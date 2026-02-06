@@ -269,7 +269,10 @@ function computeStatsFromCSV(data) {
   };
 }
 
+// ============================================
 // 기본 샘플 데이터 (CSV 로드 전 표시용)
+// CSV 업로드 시 computeStatsFromCSV()로 계산된 실제 데이터로 대체됨
+// ============================================
 const overallFunnelData = [
   { name: '로그인', value: 100, fill: '#3b82f6' },
   { name: '미션 1-1 시작', value: 95, fill: '#60a5fa' },
@@ -1015,7 +1018,10 @@ export default function UXDashboard() {
 
         {/* Footer */}
         <div className="mt-8 text-center text-xs text-gray-400">
-          데이터 기준일: 2026.02.06 | 샘플 데이터 기반 시각화
+          {useRealData
+            ? `데이터 출처: ${fileName} | ${computedStats.totalRows}개 로그, ${computedStats.totalUsers}명 사용자`
+            : '데이터 기준일: 2026.02.06 | 샘플 데이터 기반 시각화 (CSV 업로드 시 실제 데이터로 전환)'
+          }
         </div>
       </div>
     </div>
