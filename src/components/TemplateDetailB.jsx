@@ -19,10 +19,14 @@ function TemplateDetailB({ onComplete, onBack }) {
   const [isSaved, setIsSaved] = useState(false);
   const [showComplete, setShowComplete] = useState(false);
   const videoRef = useRef(null);
+  const missionStartTime = useRef(null);
   const template = defaultTemplate;
 
   useEffect(() => {
     logScreenView('template_detail_b');
+    // MissionStep에서 다음 버튼 클릭 시점을 미션 시작 시간으로 사용
+    const savedStartTime = sessionStorage.getItem('missionStartTime');
+    missionStartTime.current = savedStartTime ? parseInt(savedStartTime, 10) : Date.now();
   }, []);
 
   const handlePlayPause = () => {
@@ -38,7 +42,8 @@ function TemplateDetailB({ onComplete, onBack }) {
 
   const handleStoryPlanning = () => {
     logButtonClick('template_detail_b', 'story_planning_button');
-    logMissionComplete('template_detail_b', 'mission_1');
+    const completionTime = ((Date.now() - missionStartTime.current) / 1000).toFixed(1);
+    logMissionComplete('template_detail_b', 'mission_1', `완료시간:${completionTime}초`);
     setShowComplete(true);
     setTimeout(() => {
       onComplete();

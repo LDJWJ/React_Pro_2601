@@ -18,12 +18,16 @@ function StoryPlanningScreenA({ onComplete, onBack }) {
   const [completed, setCompleted] = useState(false);
   const [cutThumbnails, setCutThumbnails] = useState({});
   const scrollRef = useRef(null);
+  const missionStartTime = useRef(null);
 
   const cuts = defaultCuts;
 
   useEffect(() => {
     logScreenView('story_planning_a');
     const enterTime = Date.now();
+    // MissionStep에서 다음 버튼 클릭 시점을 미션 시작 시간으로 사용
+    const savedStartTime = sessionStorage.getItem('missionStartTime');
+    missionStartTime.current = savedStartTime ? parseInt(savedStartTime, 10) : enterTime;
     return () => {
       const dwellTime = Date.now() - enterTime;
       logScreenExit('story_planning_a', dwellTime);
@@ -85,7 +89,8 @@ function StoryPlanningScreenA({ onComplete, onBack }) {
 
   const handleSave = () => {
     logButtonClick('story_planning_a', 'save');
-    logMissionComplete('story_planning_a', 'mission_2');
+    const completionTime = ((Date.now() - missionStartTime.current) / 1000).toFixed(1);
+    logMissionComplete('story_planning_a', 'mission_2', `완료시간:${completionTime}초`);
     setCompleted(true);
   };
 

@@ -1,11 +1,16 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import './StoryPlanningScreen.css';
 import { logScreenView, logButtonClick, logMissionComplete, logScreenExit } from '../utils/logger';
 
 function SampleTemplateB({ onComplete, onBack }) {
+  const missionStartTime = useRef(null);
+
   useEffect(() => {
     logScreenView('sample_template_b');
     const enterTime = Date.now();
+    // MissionStep에서 다음 버튼 클릭 시점을 미션 시작 시간으로 사용
+    const savedStartTime = sessionStorage.getItem('missionStartTime');
+    missionStartTime.current = savedStartTime ? parseInt(savedStartTime, 10) : enterTime;
     return () => {
       const dwellTime = Date.now() - enterTime;
       logScreenExit('sample_template_b', dwellTime);
@@ -19,7 +24,8 @@ function SampleTemplateB({ onComplete, onBack }) {
 
   const handleComplete = () => {
     logButtonClick('sample_template_b', 'complete');
-    logMissionComplete('sample_template_b', 'mission_99');
+    const completionTime = ((Date.now() - missionStartTime.current) / 1000).toFixed(1);
+    logMissionComplete('sample_template_b', 'mission_99', `완료시간:${completionTime}초`);
     onComplete();
   };
 

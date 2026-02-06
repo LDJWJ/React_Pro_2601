@@ -36,7 +36,9 @@ function Edit6_1Screen({ onComplete, onBack }) {
 
   useEffect(() => {
     const enterTime = Date.now();
-    missionStartTime.current = enterTime;
+    // MissionStep에서 다음 버튼 클릭 시점을 미션 시작 시간으로 사용
+    const savedStartTime = sessionStorage.getItem('missionStartTime');
+    missionStartTime.current = savedStartTime ? parseInt(savedStartTime, 10) : enterTime;
 
     // 화면 진입 로그를 먼저 전송 (완료 대기)
     const initLogs = async () => {

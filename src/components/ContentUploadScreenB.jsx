@@ -28,10 +28,14 @@ function ContentUploadScreenB({ onComplete, onBack }) {
 
   const fileInputRef = useRef(null);
   const videoRef = useRef(null);
+  const missionStartTime = useRef(null);
 
   useEffect(() => {
     logScreenView('content_upload_b');
     const enterTime = Date.now();
+    // MissionStep에서 다음 버튼 클릭 시점을 미션 시작 시간으로 사용
+    const savedStartTime = sessionStorage.getItem('missionStartTime');
+    missionStartTime.current = savedStartTime ? parseInt(savedStartTime, 10) : enterTime;
     setCutData(defaultCuts.map(cut => ({
       ...cut,
       videoFile: null,
@@ -274,7 +278,8 @@ function ContentUploadScreenB({ onComplete, onBack }) {
   // 완료
   const handleComplete = () => {
     logButtonClick('content_upload_b', 'complete');
-    logMissionComplete('content_upload_b', 'mission_3');
+    const completionTime = ((Date.now() - missionStartTime.current) / 1000).toFixed(1);
+    logMissionComplete('content_upload_b', 'mission_3', `완료시간:${completionTime}초`);
     setCompleted(true);
   };
 
