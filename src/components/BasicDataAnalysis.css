@@ -46,9 +46,7 @@
 }
 
 .bda-content {
-  padding: 20px;
-  max-width: 800px;
-  margin: 0 auto;
+  padding: 0;
 }
 
 /* 업로드 섹션 */
@@ -56,8 +54,8 @@
   display: flex;
   align-items: center;
   gap: 16px;
-  margin-bottom: 24px;
-  padding: 20px;
+  margin-bottom: 16px;
+  padding: 16px;
   background: #fff;
   border-radius: 12px;
   box-shadow: 0 1px 3px rgba(0,0,0,0.08);
@@ -90,7 +88,7 @@
 .bda-tabs {
   display: flex;
   gap: 4px;
-  margin-bottom: 24px;
+  margin-bottom: 16px;
   padding: 4px;
   background: #fff;
   border-radius: 12px;
@@ -131,8 +129,8 @@
 .bda-section {
   background: #fff;
   border-radius: 16px;
-  padding: 24px;
-  margin-bottom: 20px;
+  padding: 16px;
+  margin-bottom: 16px;
   box-shadow: 0 1px 3px rgba(0,0,0,0.08);
 }
 
@@ -140,9 +138,16 @@
   font-size: 14px;
   font-weight: 600;
   color: #3b82f6;
-  margin-bottom: 16px;
+  margin-bottom: 8px;
   text-transform: uppercase;
   letter-spacing: 0.5px;
+}
+
+.bda-section-subtitle {
+  font-size: 13px;
+  color: #888;
+  margin-bottom: 16px;
+  font-weight: 400;
 }
 
 /* 큰 숫자 */
@@ -150,7 +155,7 @@
   font-size: 56px;
   font-weight: 700;
   color: #1a1a1a;
-  text-align: center;
+  text-align: left;
   line-height: 1;
 }
 
@@ -163,7 +168,7 @@
 /* 디바이스 분류 */
 .bda-device-breakdown {
   display: flex;
-  justify-content: center;
+  justify-content: flex-start;
   align-items: center;
   gap: 24px;
   margin-top: 16px;
@@ -263,7 +268,7 @@
   background: #f8f9fa;
   border-radius: 12px;
   padding: 16px;
-  text-align: center;
+  text-align: left;
   border: 1px solid #e5e7eb;
 }
 
@@ -350,7 +355,7 @@
 .bda-completion-visual {
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   gap: 40px;
   padding: 20px 0;
 }
@@ -439,7 +444,7 @@
 .bda-time-display {
   display: flex;
   align-items: baseline;
-  justify-content: center;
+  justify-content: flex-start;
   gap: 4px;
 }
 
@@ -455,7 +460,7 @@
 }
 
 .bda-time-range {
-  text-align: center;
+  text-align: left;
   font-size: 13px;
   color: #888;
   margin-top: 12px;
@@ -587,7 +592,7 @@
   border-top: 1px solid #e5e7eb;
   font-size: 14px;
   color: #666;
-  text-align: center;
+  text-align: left;
 }
 
 .bda-time-summary strong {
@@ -629,8 +634,8 @@
 
 /* 빈 상태 */
 .bda-empty {
-  text-align: center;
-  padding: 80px 20px;
+  text-align: left;
+  padding: 40px 0;
   color: #888;
   font-size: 15px;
 }

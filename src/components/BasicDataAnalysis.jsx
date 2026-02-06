@@ -1,4 +1,4 @@
-import { useState, useMemo, useRef } from 'react';
+import { useState, useMemo } from 'react';
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer,
   PieChart, Pie, Cell
@@ -78,7 +78,7 @@ const MISSIONS = {
   'plan1-1': {
     id: 'plan1-1',
     name: '기획 1-1',
-    description: '아이디어 메모 (6컷)',
+    description: '영상 아이디어를 메모하려고 합니다. 아이디어 노트를 활용해, 메모 작성이 완료되면 저장하기를 선택해 주세요. 하나 이상은 메모 작성이 필요합니다.',
     screenPrefix: '기획1-1',
     missionStartTarget: '기획1-1_미션시작',
     missionCompleteTarget: '기획1-1_미션완료',
@@ -86,7 +86,7 @@ const MISSIONS = {
   'plan1-2': {
     id: 'plan1-2',
     name: '기획 1-2',
-    description: '아이디어 메모 (3컷)',
+    description: '영상 아이디어를 메모하려고 합니다. 아이디어 노트를 활용해, 메모 작성이 완료되면 저장하기를 선택해 주세요. 하나 이상은 메모 작성이 필요합니다.',
     screenPrefix: '기획1-2',
     missionStartTarget: '기획1-2_미션시작',
     missionCompleteTarget: '기획1-2_미션완료',
@@ -106,12 +106,11 @@ function computeMissionStats(data, mission) {
   // 세션 수 (화면에 진입한 고유 사용자)
   const sessions = new Set(missionRows.map(r => r['사용자ID']));
 
-  // 전체 데이터에서 사용자별 디바이스 정보 수집 (세션에 해당하는 사용자만)
+  // 전체 데이터에서 사용자별 디바이스 정보 수집
   const userDeviceMap = new Map();
   validRows.forEach(r => {
     const userId = r['사용자ID'];
     const device = r['디바이스'] || '';
-    // 이 미션의 세션에 해당하는 사용자이고, 아직 디바이스 정보가 없으면 저장
     if (sessions.has(userId) && !userDeviceMap.has(userId) && device) {
       userDeviceMap.set(userId, device);
     }
@@ -125,7 +124,6 @@ function computeMissionStats(data, mission) {
     else if (device === 'mobile') mobileUsers++;
   });
 
-  // 디바이스 정보가 없는 사용자 수
   const unknownDeviceUsers = sessions.size - desktopUsers - mobileUsers;
 
   // 미션 시작한 고유 사용자
@@ -136,14 +134,13 @@ function computeMissionStats(data, mission) {
     }
   });
 
-  // 미션 완료한 고유 사용자 (세션별 첫 번째 완료 시간만 기록)
+  // 미션 완료한 고유 사용자
   const completedUsers = new Set();
-  const completionTimesByUser = new Map(); // 사용자별 첫 완료 시간
+  const completionTimesByUser = new Map();
   validRows.forEach(r => {
     if (r['이벤트'] === '미션 완료' && r['대상'] === mission.missionCompleteTarget) {
       const userId = r['사용자ID'];
       completedUsers.add(userId);
-      // 첫 번째 완료 시간만 기록 (이후 중복은 무시)
       if (!completionTimesByUser.has(userId)) {
         const match = r['값']?.match(/완료시간:(\d+\.?\d*)초/);
         if (match) {
@@ -166,8 +163,8 @@ function computeMissionStats(data, mission) {
     const basicCompletedUsers = new Set();
     const additionalStartedUsers = new Set();
     const additionalCompletedUsers = new Set();
-    const basicCompletionTimesByUser = new Map(); // 기본 미션 완료 시간
-    const additionalCompletionTimesByUser = new Map(); // 추가 미션 완료 시간
+    const basicCompletionTimesByUser = new Map();
+    const additionalCompletionTimesByUser = new Map();
 
     validRows.forEach(r => {
       const userId = r['사용자ID'];
@@ -199,10 +196,9 @@ function computeMissionStats(data, mission) {
     const basicCompletionTimes = Array.from(basicCompletionTimesByUser.values());
     const additionalCompletionTimes = Array.from(additionalCompletionTimesByUser.values());
 
-    // 이탈 계산
     const basicNotStarted = sessionCount - basicStartedUsers.size;
     const basicNotCompleted = basicStartedUsers.size - basicCompletedUsers.size;
-    const additionalNotStarted = basicCompletedUsers.size - additionalStartedUsers.size; // 기본 완료 후 추가 미시작
+    const additionalNotStarted = basicCompletedUsers.size - additionalStartedUsers.size;
     const additionalNotCompleted = additionalStartedUsers.size - additionalCompletedUsers.size;
 
     return {
@@ -258,14 +254,11 @@ function computeMissionStats(data, mission) {
   }
 }
 
-// 전체 요약 통계 (정의된 미션에 참여한 사용자의 합집합)
+// 전체 요약 통계
 function computeOverallStats(data) {
   const validRows = data.filter(r => r['사용자ID']);
-
-  // 정의된 미션들의 화면 prefix 목록
   const missionPrefixes = Object.values(MISSIONS).map(m => m.screenPrefix);
 
-  // 1단계: 정의된 미션 화면에 방문한 사용자 수집 (합집합)
   const missionUsers = new Set();
   validRows.forEach(r => {
     const screen = r['화면'] || '';
@@ -278,18 +271,15 @@ function computeOverallStats(data) {
     }
   });
 
-  // 2단계: 전체 데이터에서 해당 사용자들의 디바이스 정보 수집
   const userDeviceMap = new Map();
   validRows.forEach(r => {
     const userId = r['사용자ID'];
     const device = r['디바이스'] || '';
-    // 미션 참여 사용자이고, 아직 디바이스 정보가 없으면 저장
     if (missionUsers.has(userId) && !userDeviceMap.has(userId) && device) {
       userDeviceMap.set(userId, device);
     }
   });
 
-  // 디바이스별 사용자 수 계산
   let desktopUsers = 0;
   let mobileUsers = 0;
   userDeviceMap.forEach((device) => {
@@ -297,7 +287,6 @@ function computeOverallStats(data) {
     else if (device === 'mobile') mobileUsers++;
   });
 
-  // 디바이스 정보가 없는 사용자 수
   const unknownDeviceUsers = missionUsers.size - desktopUsers - mobileUsers;
 
   return {
@@ -313,10 +302,6 @@ function BasicDataAnalysis({ onBack }) {
   const [csvData, setCsvData] = useState(null);
   const [activeTab, setActiveTab] = useState('summary');
   const [fileName, setFileName] = useState('');
-  const [showVisualization, setShowVisualization] = useState(false);
-  const [viewMode, setViewMode] = useState('mobile'); // 'mobile' | 'pc'
-  const [isFullscreen, setIsFullscreen] = useState(false);
-  const visualizationRef = useRef(null);
 
   const handleFileUpload = (e) => {
     const file = e.target.files[0];
@@ -351,311 +336,18 @@ function BasicDataAnalysis({ onBack }) {
   const currentMission = activeTab !== 'summary' ? MISSIONS[activeTab] : null;
   const currentStats = activeTab !== 'summary' ? missionStatsMap[activeTab] : null;
 
-  // 전체화면 토글
-  const toggleFullscreen = () => {
-    if (!document.fullscreenElement) {
-      visualizationRef.current?.requestFullscreen();
-      setIsFullscreen(true);
-    } else {
-      document.exitFullscreen();
-      setIsFullscreen(false);
-    }
-  };
-
-  // 시각화 화면 렌더링
-  if (showVisualization && csvData) {
-    // 차트 데이터 준비
-    const chartData = Object.values(MISSIONS).map(mission => ({
-      name: mission.name.replace('편집 ', '편집').replace('기획 ', '기획'),
-      shortName: mission.name.replace('편집 ', '').replace('기획 ', ''),
-      참여율: parseFloat(missionStatsMap[mission.id]?.participationRate || 0),
-      완료율: parseFloat(missionStatsMap[mission.id]?.completionRate || 0),
-      avgTime: parseFloat(missionStatsMap[mission.id]?.avgTime || missionStatsMap[mission.id]?.basicAvgTime || 0),
-    }));
-
-    return (
-      <div
-        ref={visualizationRef}
-        className={`bda-visualization-container ${viewMode === 'pc' ? 'pc-view' : ''} ${isFullscreen ? 'fullscreen' : ''}`}
-      >
-        <div className="bda-viz-header">
-          <button className="bda-back-btn" onClick={() => setShowVisualization(false)}>&#8249;</button>
-          <span className="bda-title">데이터 시각화</span>
-          <div className="bda-viz-controls">
-            <div className="bda-view-toggle">
-              <button
-                className={`bda-view-btn ${viewMode === 'mobile' ? 'active' : ''}`}
-                onClick={() => setViewMode('mobile')}
-                title="모바일 뷰"
-              >
-                📱
-              </button>
-              <button
-                className={`bda-view-btn ${viewMode === 'pc' ? 'active' : ''}`}
-                onClick={() => setViewMode('pc')}
-                title="PC 뷰"
-              >
-                🖥️
-              </button>
-            </div>
-            <button className="bda-fullscreen-btn" onClick={toggleFullscreen} title="전체화면">
-              {isFullscreen ? '⛶' : '⛶'}
-            </button>
-          </div>
-        </div>
-
-        <div className="bda-viz-content">
-          {/* 1. 미션별 참여율 vs 완료율 비교 (참조 이미지 스타일) */}
-          <div className="bda-viz-section">
-            <div className="bda-viz-title">미션별 참여율 vs 완료율</div>
-            <div className="bda-recharts-container">
-              <ResponsiveContainer width="100%" height={380}>
-                <BarChart
-                  data={chartData}
-                  margin={{ top: 20, right: 20, left: 20, bottom: 100 }}
-                  barCategoryGap="20%"
-                >
-                  <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                  <XAxis
-                    dataKey="name"
-                    tick={{ fontSize: 12, fill: '#666' }}
-                    tickLine={false}
-                    axisLine={{ stroke: '#e5e7eb' }}
-                    interval={0}
-                    angle={-45}
-                    textAnchor="end"
-                    dy={10}
-                  />
-                  <YAxis
-                    domain={[0, 100]}
-                    ticks={[0, 25, 50, 75, 100]}
-                    tick={{ fontSize: 12, fill: '#666' }}
-                    tickFormatter={(value) => `${value}%`}
-                    tickLine={false}
-                    axisLine={{ stroke: '#e5e7eb' }}
-                  />
-                  <Tooltip
-                    formatter={(value, name) => [`${value}%`, name]}
-                    contentStyle={{
-                      backgroundColor: '#fff',
-                      border: '1px solid #e5e7eb',
-                      borderRadius: '8px',
-                      boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
-                    }}
-                    cursor={{ fill: 'rgba(0,0,0,0.05)' }}
-                  />
-                  <Legend
-                    verticalAlign="bottom"
-                    wrapperStyle={{ paddingTop: '30px', bottom: 0 }}
-                    iconType="square"
-                  />
-                  <Bar
-                    dataKey="완료율"
-                    fill="#22c55e"
-                    radius={[4, 4, 0, 0]}
-                    maxBarSize={40}
-                  />
-                  <Bar
-                    dataKey="참여율"
-                    fill="#f59e0b"
-                    radius={[4, 4, 0, 0]}
-                    maxBarSize={40}
-                  />
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
-          </div>
-
-          {/* 2. 미션별 평균 완료 시간 */}
-          <div className="bda-viz-section">
-            <div className="bda-viz-title">미션별 평균 완료 시간</div>
-            <div className="bda-recharts-container">
-              <ResponsiveContainer width="100%" height={350}>
-                <BarChart
-                  data={chartData.filter(d => d.avgTime > 0)}
-                  margin={{ top: 30, right: 30, left: 20, bottom: 80 }}
-                  barCategoryGap="25%"
-                >
-                  <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                  <XAxis
-                    dataKey="name"
-                    tick={{ fontSize: 12, fill: '#666' }}
-                    tickLine={false}
-                    axisLine={{ stroke: '#e5e7eb' }}
-                    interval={0}
-                    angle={-45}
-                    textAnchor="end"
-                    dy={10}
-                  />
-                  <YAxis
-                    tick={{ fontSize: 12, fill: '#666' }}
-                    tickFormatter={(value) => `${value}초`}
-                    tickLine={false}
-                    axisLine={{ stroke: '#e5e7eb' }}
-                  />
-                  <Tooltip
-                    formatter={(value) => [`${value}초`, '평균 완료 시간']}
-                    contentStyle={{
-                      backgroundColor: '#fff',
-                      border: '1px solid #e5e7eb',
-                      borderRadius: '8px',
-                      boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
-                    }}
-                    cursor={{ fill: 'rgba(0,0,0,0.05)' }}
-                  />
-                  <Bar
-                    dataKey="avgTime"
-                    fill="#3b82f6"
-                    radius={[4, 4, 0, 0]}
-                    maxBarSize={50}
-                    label={{
-                      position: 'top',
-                      formatter: (value) => `${value}초`,
-                      fontSize: 11,
-                      fill: '#666'
-                    }}
-                  />
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
-          </div>
-
-          {/* 3. 완료 시간 분포 히스토그램 */}
-          <div className="bda-viz-section">
-            <div className="bda-viz-title">완료 시간 분포 (전체 미션)</div>
-            <div className="bda-recharts-container">
-              {(() => {
-                // 모든 미션의 완료 시간 수집
-                const allTimes = [];
-                Object.values(missionStatsMap).forEach(stats => {
-                  if (stats?.completionTimes) {
-                    allTimes.push(...stats.completionTimes);
-                  }
-                  if (stats?.basicCompletionTimes) {
-                    allTimes.push(...stats.basicCompletionTimes);
-                  }
-                });
-
-                if (allTimes.length === 0) {
-                  return <div className="bda-empty-chart">완료 시간 데이터가 없습니다.</div>;
-                }
-
-                // 10초 단위 버킷
-                const bucketSize = 10;
-                const buckets = {};
-                allTimes.forEach(t => {
-                  const bucket = Math.floor(t / bucketSize) * bucketSize;
-                  const label = `${bucket}-${bucket + bucketSize}`;
-                  buckets[label] = (buckets[label] || 0) + 1;
-                });
-
-                const data = Object.entries(buckets)
-                  .map(([label, count]) => ({
-                    시간구간: label + '초',
-                    인원: count,
-                    sortKey: parseInt(label)
-                  }))
-                  .sort((a, b) => a.sortKey - b.sortKey);
-
-                return (
-                  <ResponsiveContainer width="100%" height={350}>
-                    <BarChart
-                      data={data}
-                      margin={{ top: 30, right: 30, left: 20, bottom: 80 }}
-                      barCategoryGap="15%"
-                    >
-                      <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                      <XAxis
-                        dataKey="시간구간"
-                        tick={{ fontSize: 11, fill: '#666' }}
-                        tickLine={false}
-                        axisLine={{ stroke: '#e5e7eb' }}
-                        interval={0}
-                        angle={-45}
-                        textAnchor="end"
-                        dy={10}
-                      />
-                      <YAxis
-                        tick={{ fontSize: 12, fill: '#666' }}
-                        tickFormatter={(value) => `${value}명`}
-                        tickLine={false}
-                        axisLine={{ stroke: '#e5e7eb' }}
-                        allowDecimals={false}
-                      />
-                      <Tooltip
-                        formatter={(value) => [`${value}명`, '인원']}
-                        contentStyle={{
-                          backgroundColor: '#fff',
-                          border: '1px solid #e5e7eb',
-                          borderRadius: '8px',
-                          boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
-                        }}
-                        cursor={{ fill: 'rgba(0,0,0,0.05)' }}
-                      />
-                      <Bar
-                        dataKey="인원"
-                        fill="#8b5cf6"
-                        radius={[4, 4, 0, 0]}
-                        label={{
-                          position: 'top',
-                          formatter: (value) => value > 0 ? `${value}` : '',
-                          fontSize: 11,
-                          fill: '#666'
-                        }}
-                      />
-                    </BarChart>
-                  </ResponsiveContainer>
-                );
-              })()}
-            </div>
-          </div>
-
-          {/* 4. 디바이스 분포 파이 차트 */}
-          <div className="bda-viz-section">
-            <div className="bda-viz-title">디바이스 분포</div>
-            <div className="bda-recharts-container">
-              <ResponsiveContainer width="100%" height={300}>
-                <PieChart>
-                  <Pie
-                    data={[
-                      { name: 'PC', value: overallStats?.desktopUsers || 0, color: '#3b82f6' },
-                      { name: '모바일', value: overallStats?.mobileUsers || 0, color: '#22c55e' },
-                      ...(overallStats?.unknownDeviceUsers > 0 ? [{ name: '알 수 없음', value: overallStats.unknownDeviceUsers, color: '#9ca3af' }] : [])
-                    ].filter(d => d.value > 0)}
-                    cx="50%"
-                    cy="50%"
-                    innerRadius={60}
-                    outerRadius={100}
-                    paddingAngle={2}
-                    dataKey="value"
-                    label={({ name, value, percent }) => `${name} ${value}명 (${(percent * 100).toFixed(0)}%)`}
-                    labelLine={{ stroke: '#999', strokeWidth: 1 }}
-                  >
-                    {[
-                      { name: 'PC', value: overallStats?.desktopUsers || 0, color: '#3b82f6' },
-                      { name: '모바일', value: overallStats?.mobileUsers || 0, color: '#22c55e' },
-                      ...(overallStats?.unknownDeviceUsers > 0 ? [{ name: '알 수 없음', value: overallStats.unknownDeviceUsers, color: '#9ca3af' }] : [])
-                    ].filter(d => d.value > 0).map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={entry.color} />
-                    ))}
-                  </Pie>
-                  <Tooltip
-                    formatter={(value, name) => [`${value}명`, name]}
-                    contentStyle={{
-                      backgroundColor: '#fff',
-                      border: '1px solid #e5e7eb',
-                      borderRadius: '8px',
-                      boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
-                    }}
-                  />
-                </PieChart>
-              </ResponsiveContainer>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
+  // 차트용 데이터
+  const chartData = useMemo(() => {
+    return Object.values(MISSIONS).map(mission => {
+      const stats = missionStatsMap[mission.id];
+      return {
+        name: mission.name,
+        참여율: parseFloat(stats?.participationRate || 0),
+        완료율: parseFloat(stats?.completionRate || 0),
+        avgTime: parseFloat(stats?.avgTime || stats?.basicAvgTime || 0),
+      };
+    });
+  }, [missionStatsMap]);
 
   return (
     <div className="bda-container">
@@ -677,14 +369,6 @@ function BasicDataAnalysis({ onBack }) {
             />
           </label>
           {fileName && <span className="bda-file-name">{fileName}</span>}
-          {csvData && (
-            <button
-              className="bda-viz-btn"
-              onClick={() => setShowVisualization(true)}
-            >
-              데이터 시각화
-            </button>
-          )}
         </div>
 
         {csvData && (
@@ -730,7 +414,7 @@ function BasicDataAnalysis({ onBack }) {
                   </div>
                 </div>
 
-                {/* 미션별 참여율/완료율 */}
+                {/* 미션별 참여율/완료율 테이블 */}
                 <div className="bda-section">
                   <div className="bda-section-title">미션별 참여율 / 완료율</div>
                   <div className="bda-chart-list">
@@ -757,7 +441,119 @@ function BasicDataAnalysis({ onBack }) {
                   </div>
                 </div>
 
-                {/* 미션별 평균 완료 시간 */}
+                {/* 미션별 참여율 차트 */}
+                <div className="bda-section">
+                  <div className="bda-section-title">미션별 참여율</div>
+                  <div className="bda-section-subtitle">화면 방문자 중 미션을 시작한 비율</div>
+                  <div className="bda-recharts-container">
+                    <ResponsiveContainer width="100%" height={320}>
+                      <BarChart
+                        data={chartData}
+                        margin={{ top: 20, right: 20, left: 20, bottom: 80 }}
+                        barCategoryGap="25%"
+                      >
+                        <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                        <XAxis
+                          dataKey="name"
+                          tick={{ fontSize: 12, fill: '#666' }}
+                          tickLine={false}
+                          axisLine={{ stroke: '#e5e7eb' }}
+                          interval={0}
+                          angle={-45}
+                          textAnchor="end"
+                          dy={10}
+                        />
+                        <YAxis
+                          domain={[0, 100]}
+                          ticks={[0, 25, 50, 75, 100]}
+                          tick={{ fontSize: 12, fill: '#666' }}
+                          tickFormatter={(value) => `${value}%`}
+                          tickLine={false}
+                          axisLine={{ stroke: '#e5e7eb' }}
+                        />
+                        <Tooltip
+                          formatter={(value) => [`${value}%`, '참여율']}
+                          contentStyle={{
+                            backgroundColor: '#fff',
+                            border: '1px solid #e5e7eb',
+                            borderRadius: '8px',
+                            boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
+                          }}
+                        />
+                        <Bar
+                          dataKey="참여율"
+                          fill="#f59e0b"
+                          radius={[4, 4, 0, 0]}
+                          maxBarSize={50}
+                          label={{
+                            position: 'top',
+                            formatter: (value) => `${value}%`,
+                            fontSize: 11,
+                            fill: '#666'
+                          }}
+                        />
+                      </BarChart>
+                    </ResponsiveContainer>
+                  </div>
+                </div>
+
+                {/* 미션별 완료율 차트 */}
+                <div className="bda-section">
+                  <div className="bda-section-title">미션별 완료율</div>
+                  <div className="bda-section-subtitle">미션 시작자 중 완료한 비율</div>
+                  <div className="bda-recharts-container">
+                    <ResponsiveContainer width="100%" height={320}>
+                      <BarChart
+                        data={chartData}
+                        margin={{ top: 20, right: 20, left: 20, bottom: 80 }}
+                        barCategoryGap="25%"
+                      >
+                        <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                        <XAxis
+                          dataKey="name"
+                          tick={{ fontSize: 12, fill: '#666' }}
+                          tickLine={false}
+                          axisLine={{ stroke: '#e5e7eb' }}
+                          interval={0}
+                          angle={-45}
+                          textAnchor="end"
+                          dy={10}
+                        />
+                        <YAxis
+                          domain={[0, 100]}
+                          ticks={[0, 25, 50, 75, 100]}
+                          tick={{ fontSize: 12, fill: '#666' }}
+                          tickFormatter={(value) => `${value}%`}
+                          tickLine={false}
+                          axisLine={{ stroke: '#e5e7eb' }}
+                        />
+                        <Tooltip
+                          formatter={(value) => [`${value}%`, '완료율']}
+                          contentStyle={{
+                            backgroundColor: '#fff',
+                            border: '1px solid #e5e7eb',
+                            borderRadius: '8px',
+                            boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
+                          }}
+                        />
+                        <Bar
+                          dataKey="완료율"
+                          fill="#22c55e"
+                          radius={[4, 4, 0, 0]}
+                          maxBarSize={50}
+                          label={{
+                            position: 'top',
+                            formatter: (value) => `${value}%`,
+                            fontSize: 11,
+                            fill: '#666'
+                          }}
+                        />
+                      </BarChart>
+                    </ResponsiveContainer>
+                  </div>
+                </div>
+
+                {/* 미션별 평균 완료 시간 테이블 */}
                 <div className="bda-section">
                   <div className="bda-section-title">미션별 평균 완료 시간</div>
                   <div className="bda-time-grid">
@@ -767,11 +563,107 @@ function BasicDataAnalysis({ onBack }) {
                         <div key={mission.id} className="bda-time-card">
                           <div className="bda-time-card-name">{mission.name}</div>
                           <div className="bda-time-card-value">
-                            {stats?.avgTime ? `${stats.avgTime}초` : '-'}
+                            {stats?.avgTime || stats?.basicAvgTime ? `${stats?.avgTime || stats?.basicAvgTime}초` : '-'}
                           </div>
                         </div>
                       );
                     })}
+                  </div>
+                </div>
+
+                {/* 미션별 평균 완료 시간 차트 */}
+                <div className="bda-section">
+                  <div className="bda-section-title">미션별 평균 완료 시간 (차트)</div>
+                  <div className="bda-recharts-container">
+                    <ResponsiveContainer width="100%" height={350}>
+                      <BarChart
+                        data={chartData.filter(d => d.avgTime > 0)}
+                        margin={{ top: 30, right: 30, left: 20, bottom: 80 }}
+                        barCategoryGap="25%"
+                      >
+                        <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                        <XAxis
+                          dataKey="name"
+                          tick={{ fontSize: 12, fill: '#666' }}
+                          tickLine={false}
+                          axisLine={{ stroke: '#e5e7eb' }}
+                          interval={0}
+                          angle={-45}
+                          textAnchor="end"
+                          dy={10}
+                        />
+                        <YAxis
+                          tick={{ fontSize: 12, fill: '#666' }}
+                          tickFormatter={(value) => `${value}초`}
+                          tickLine={false}
+                          axisLine={{ stroke: '#e5e7eb' }}
+                        />
+                        <Tooltip
+                          formatter={(value) => [`${value}초`, '평균 완료 시간']}
+                          contentStyle={{
+                            backgroundColor: '#fff',
+                            border: '1px solid #e5e7eb',
+                            borderRadius: '8px',
+                            boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
+                          }}
+                        />
+                        <Bar
+                          dataKey="avgTime"
+                          fill="#3b82f6"
+                          radius={[4, 4, 0, 0]}
+                          maxBarSize={50}
+                          label={{
+                            position: 'top',
+                            formatter: (value) => `${value}초`,
+                            fontSize: 11,
+                            fill: '#666'
+                          }}
+                        />
+                      </BarChart>
+                    </ResponsiveContainer>
+                  </div>
+                </div>
+
+                {/* 디바이스 분포 차트 */}
+                <div className="bda-section">
+                  <div className="bda-section-title">디바이스 분포</div>
+                  <div className="bda-recharts-container">
+                    <ResponsiveContainer width="100%" height={300}>
+                      <PieChart>
+                        <Pie
+                          data={[
+                            { name: 'PC', value: overallStats?.desktopUsers || 0, color: '#3b82f6' },
+                            { name: '모바일', value: overallStats?.mobileUsers || 0, color: '#22c55e' },
+                            ...(overallStats?.unknownDeviceUsers > 0 ? [{ name: '알 수 없음', value: overallStats.unknownDeviceUsers, color: '#9ca3af' }] : [])
+                          ].filter(d => d.value > 0)}
+                          cx="50%"
+                          cy="50%"
+                          innerRadius={60}
+                          outerRadius={100}
+                          paddingAngle={2}
+                          dataKey="value"
+                          label={({ name, value, percent }) => `${name} ${value}명 (${(percent * 100).toFixed(0)}%)`}
+                          labelLine={{ stroke: '#999', strokeWidth: 1 }}
+                        >
+                          {[
+                            { name: 'PC', value: overallStats?.desktopUsers || 0, color: '#3b82f6' },
+                            { name: '모바일', value: overallStats?.mobileUsers || 0, color: '#22c55e' },
+                            ...(overallStats?.unknownDeviceUsers > 0 ? [{ name: '알 수 없음', value: overallStats.unknownDeviceUsers, color: '#9ca3af' }] : [])
+                          ].filter(d => d.value > 0).map((entry, index) => (
+                            <Cell key={`cell-${index}`} fill={entry.color} />
+                          ))}
+                        </Pie>
+                        <Tooltip
+                          formatter={(value, name) => [`${value}명`, name]}
+                          contentStyle={{
+                            backgroundColor: '#fff',
+                            border: '1px solid #e5e7eb',
+                            borderRadius: '8px',
+                            boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
+                          }}
+                        />
+                      </PieChart>
+                    </ResponsiveContainer>
                   </div>
                 </div>
               </div>
@@ -781,8 +673,7 @@ function BasicDataAnalysis({ onBack }) {
             {activeTab !== 'summary' && currentMission && currentStats && (
               <div className="bda-tab-content">
                 <div className="bda-mission-header">
-                  <div className="bda-mission-name">{currentMission.name}</div>
-                  <div className="bda-mission-desc">{currentMission.description}</div>
+                  <div className="bda-mission-name">{currentMission.name}: {currentMission.description}</div>
                   <div className="bda-device-breakdown mission">
                     <span className="bda-device-label">세션 {currentStats.sessions}명:</span>
                     <span className="bda-device-item">
@@ -799,12 +690,11 @@ function BasicDataAnalysis({ onBack }) {
                   </div>
                 </div>
 
-                {/* 일반 미션 퍼널 (2단계 미션이 아닌 경우) */}
+                {/* 일반 미션 퍼널 */}
                 {!currentMission.additionalMissionStart && (
                   <div className="bda-section">
                     <div className="bda-section-title">사용자 흐름</div>
                     <div className="bda-funnel">
-                      {/* 1. 화면 방문 */}
                       <div className="bda-funnel-step">
                         <div className="bda-funnel-label">화면 방문</div>
                         <div className="bda-funnel-bar-wrap">
@@ -812,8 +702,6 @@ function BasicDataAnalysis({ onBack }) {
                         </div>
                         <div className="bda-funnel-value">{currentStats.sessions}명</div>
                       </div>
-
-                      {/* 2. 미시작 이탈 */}
                       <div className="bda-funnel-step dropout">
                         <div className="bda-funnel-label">↳ 미시작 이탈</div>
                         <div className="bda-funnel-bar-wrap">
@@ -824,8 +712,6 @@ function BasicDataAnalysis({ onBack }) {
                           <span className="bda-funnel-rate">({currentStats.sessions > 0 ? ((currentStats.notStarted / currentStats.sessions) * 100).toFixed(1) : 0}%)</span>
                         </div>
                       </div>
-
-                      {/* 3. 미션 시작 */}
                       <div className="bda-funnel-step">
                         <div className="bda-funnel-label">미션 시작</div>
                         <div className="bda-funnel-bar-wrap">
@@ -836,8 +722,6 @@ function BasicDataAnalysis({ onBack }) {
                           <span className="bda-funnel-rate">({currentStats.participationRate}%)</span>
                         </div>
                       </div>
-
-                      {/* 4. 미션 완료 */}
                       <div className="bda-funnel-step">
                         <div className="bda-funnel-label">미션 완료</div>
                         <div className="bda-funnel-bar-wrap">
@@ -848,8 +732,6 @@ function BasicDataAnalysis({ onBack }) {
                           <span className="bda-funnel-rate">({currentStats.completionRate}%)</span>
                         </div>
                       </div>
-
-                      {/* 5. 미완료 이탈 */}
                       <div className="bda-funnel-step dropout">
                         <div className="bda-funnel-label">↳ 미완료 이탈</div>
                         <div className="bda-funnel-bar-wrap">
@@ -864,39 +746,35 @@ function BasicDataAnalysis({ onBack }) {
                   </div>
                 )}
 
-                {/* 2단계 미션 퍼널 (편집 6-1) - 화면 방문 */}
-                {currentMission.additionalMissionStart && (
-                  <div className="bda-section">
-                    <div className="bda-section-title">화면 방문</div>
-                    <div className="bda-funnel">
-                      <div className="bda-funnel-step">
-                        <div className="bda-funnel-label">화면 방문</div>
-                        <div className="bda-funnel-bar-wrap">
-                          <div className="bda-funnel-bar" style={{ width: '100%' }}></div>
-                        </div>
-                        <div className="bda-funnel-value">{currentStats.sessions}명</div>
-                      </div>
-                      <div className="bda-funnel-step dropout">
-                        <div className="bda-funnel-label">↳ 미시작 이탈</div>
-                        <div className="bda-funnel-bar-wrap">
-                          <div className="bda-funnel-bar dropout-bar" style={{ width: `${currentStats.sessions > 0 ? (currentStats.basicNotStarted / currentStats.sessions * 100) : 0}%` }}></div>
-                        </div>
-                        <div className="bda-funnel-value dropout-value">
-                          {currentStats.basicNotStarted}명
-                          <span className="bda-funnel-rate">({currentStats.sessions > 0 ? ((currentStats.basicNotStarted / currentStats.sessions) * 100).toFixed(1) : 0}%)</span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                )}
-
-                {/* 2단계 미션 (편집 6-1) - 기본 미션 퍼널 */}
+                {/* 2단계 미션 (편집 6-1) */}
                 {currentMission.additionalMissionStart && (
                   <>
                     <div className="bda-section">
+                      <div className="bda-section-title">화면 방문</div>
+                      <div className="bda-funnel">
+                        <div className="bda-funnel-step">
+                          <div className="bda-funnel-label">화면 방문</div>
+                          <div className="bda-funnel-bar-wrap">
+                            <div className="bda-funnel-bar" style={{ width: '100%' }}></div>
+                          </div>
+                          <div className="bda-funnel-value">{currentStats.sessions}명</div>
+                        </div>
+                        <div className="bda-funnel-step dropout">
+                          <div className="bda-funnel-label">↳ 미시작 이탈</div>
+                          <div className="bda-funnel-bar-wrap">
+                            <div className="bda-funnel-bar dropout-bar" style={{ width: `${currentStats.sessions > 0 ? (currentStats.basicNotStarted / currentStats.sessions * 100) : 0}%` }}></div>
+                          </div>
+                          <div className="bda-funnel-value dropout-value">
+                            {currentStats.basicNotStarted}명
+                            <span className="bda-funnel-rate">({currentStats.sessions > 0 ? ((currentStats.basicNotStarted / currentStats.sessions) * 100).toFixed(1) : 0}%)</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="bda-section">
                       <div className="bda-section-title">기본 미션</div>
                       <div className="bda-funnel">
-                        {/* 기본 미션 시작 */}
                         <div className="bda-funnel-step">
                           <div className="bda-funnel-label">기본 미션 시작</div>
                           <div className="bda-funnel-bar-wrap">
@@ -907,8 +785,6 @@ function BasicDataAnalysis({ onBack }) {
                             <span className="bda-funnel-rate">({currentStats.participationRate}%)</span>
                           </div>
                         </div>
-
-                        {/* 기본 미션 완료 */}
                         <div className="bda-funnel-step">
                           <div className="bda-funnel-label">기본 미션 완료</div>
                           <div className="bda-funnel-bar-wrap">
@@ -919,8 +795,6 @@ function BasicDataAnalysis({ onBack }) {
                             <span className="bda-funnel-rate">({currentStats.basicCompletionRate}%)</span>
                           </div>
                         </div>
-
-                        {/* 기본 미션 이탈 */}
                         <div className="bda-funnel-step dropout">
                           <div className="bda-funnel-label">↳ 기본 미션 이탈</div>
                           <div className="bda-funnel-bar-wrap">
@@ -942,7 +816,6 @@ function BasicDataAnalysis({ onBack }) {
                     <div className="bda-section">
                       <div className="bda-section-title">추가 미션</div>
                       <div className="bda-funnel">
-                        {/* 추가 미션 시작 */}
                         <div className="bda-funnel-step">
                           <div className="bda-funnel-label">추가 미션 시작</div>
                           <div className="bda-funnel-bar-wrap">
@@ -953,8 +826,6 @@ function BasicDataAnalysis({ onBack }) {
                             <span className="bda-funnel-rate">({currentStats.additionalParticipationRate}%)</span>
                           </div>
                         </div>
-
-                        {/* 추가 미션 완료 */}
                         <div className="bda-funnel-step">
                           <div className="bda-funnel-label">추가 미션 완료</div>
                           <div className="bda-funnel-bar-wrap">
@@ -965,8 +836,6 @@ function BasicDataAnalysis({ onBack }) {
                             <span className="bda-funnel-rate">({currentStats.additionalCompletionRate}%)</span>
                           </div>
                         </div>
-
-                        {/* 추가 미션 이탈 */}
                         <div className="bda-funnel-step dropout">
                           <div className="bda-funnel-label">↳ 추가 미션 이탈</div>
                           <div className="bda-funnel-bar-wrap">
@@ -1003,11 +872,145 @@ function BasicDataAnalysis({ onBack }) {
                   </div>
                 )}
 
-                {/* 완료 시간 분포 */}
+                {/* 완료 시간 분포 차트 */}
                 {currentStats.completionTimes && currentStats.completionTimes.length > 0 && (
                   <div className="bda-section">
                     <div className="bda-section-title">완료 시간 분포</div>
-                    <TimeDistributionChart times={currentStats.completionTimes} />
+                    <div className="bda-recharts-container">
+                      {(() => {
+                        const times = currentStats.completionTimes;
+                        const bucketSize = 5;
+                        const buckets = {};
+                        times.forEach(t => {
+                          const bucket = Math.floor(t / bucketSize) * bucketSize;
+                          const label = `${bucket}-${bucket + bucketSize}`;
+                          buckets[label] = (buckets[label] || 0) + 1;
+                        });
+
+                        const data = Object.entries(buckets)
+                          .map(([label, count]) => ({
+                            시간구간: label + '초',
+                            인원: count,
+                            sortKey: parseInt(label)
+                          }))
+                          .sort((a, b) => a.sortKey - b.sortKey);
+
+                        return (
+                          <ResponsiveContainer width="100%" height={280}>
+                            <BarChart
+                              data={data}
+                              margin={{ top: 20, right: 20, left: 20, bottom: 60 }}
+                            >
+                              <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                              <XAxis
+                                dataKey="시간구간"
+                                tick={{ fontSize: 11, fill: '#666' }}
+                                tickLine={false}
+                                interval={0}
+                                angle={-45}
+                                textAnchor="end"
+                                dy={10}
+                              />
+                              <YAxis
+                                tick={{ fontSize: 12, fill: '#666' }}
+                                tickFormatter={(value) => `${value}명`}
+                                allowDecimals={false}
+                              />
+                              <Tooltip
+                                formatter={(value) => [`${value}명`, '인원']}
+                                contentStyle={{
+                                  backgroundColor: '#fff',
+                                  border: '1px solid #e5e7eb',
+                                  borderRadius: '8px'
+                                }}
+                              />
+                              <Bar
+                                dataKey="인원"
+                                fill="#22c55e"
+                                radius={[4, 4, 0, 0]}
+                                label={{
+                                  position: 'top',
+                                  formatter: (value) => value > 0 ? `${value}` : '',
+                                  fontSize: 11,
+                                  fill: '#666'
+                                }}
+                              />
+                            </BarChart>
+                          </ResponsiveContainer>
+                        );
+                      })()}
+                    </div>
+                  </div>
+                )}
+
+                {/* 기본 미션 완료 시간 분포 (2단계 미션) */}
+                {currentMission.additionalMissionStart && currentStats.basicCompletionTimes && currentStats.basicCompletionTimes.length > 0 && (
+                  <div className="bda-section">
+                    <div className="bda-section-title">기본 미션 완료 시간 분포</div>
+                    <div className="bda-recharts-container">
+                      {(() => {
+                        const times = currentStats.basicCompletionTimes;
+                        const bucketSize = 10;
+                        const buckets = {};
+                        times.forEach(t => {
+                          const bucket = Math.floor(t / bucketSize) * bucketSize;
+                          const label = `${bucket}-${bucket + bucketSize}`;
+                          buckets[label] = (buckets[label] || 0) + 1;
+                        });
+
+                        const data = Object.entries(buckets)
+                          .map(([label, count]) => ({
+                            시간구간: label + '초',
+                            인원: count,
+                            sortKey: parseInt(label)
+                          }))
+                          .sort((a, b) => a.sortKey - b.sortKey);
+
+                        return (
+                          <ResponsiveContainer width="100%" height={280}>
+                            <BarChart
+                              data={data}
+                              margin={{ top: 20, right: 20, left: 20, bottom: 60 }}
+                            >
+                              <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                              <XAxis
+                                dataKey="시간구간"
+                                tick={{ fontSize: 11, fill: '#666' }}
+                                tickLine={false}
+                                interval={0}
+                                angle={-45}
+                                textAnchor="end"
+                                dy={10}
+                              />
+                              <YAxis
+                                tick={{ fontSize: 12, fill: '#666' }}
+                                tickFormatter={(value) => `${value}명`}
+                                allowDecimals={false}
+                              />
+                              <Tooltip
+                                formatter={(value) => [`${value}명`, '인원']}
+                                contentStyle={{
+                                  backgroundColor: '#fff',
+                                  border: '1px solid #e5e7eb',
+                                  borderRadius: '8px'
+                                }}
+                              />
+                              <Bar
+                                dataKey="인원"
+                                fill="#3b82f6"
+                                radius={[4, 4, 0, 0]}
+                                label={{
+                                  position: 'top',
+                                  formatter: (value) => value > 0 ? `${value}` : '',
+                                  fontSize: 11,
+                                  fill: '#666'
+                                }}
+                              />
+                            </BarChart>
+                          </ResponsiveContainer>
+                        );
+                      })()}
+                    </div>
                   </div>
                 )}
               </div>
@@ -1021,41 +1024,6 @@ function BasicDataAnalysis({ onBack }) {
           </div>
         )}
       </div>
-    </div>
-  );
-}
-
-// 시간 분포 차트 컴포넌트
-function TimeDistributionChart({ times }) {
-  const bucketSize = 5;
-  const buckets = {};
-
-  times.forEach(t => {
-    const bucket = Math.floor(t / bucketSize) * bucketSize;
-    const label = `${bucket}-${bucket + bucketSize}`;
-    buckets[label] = (buckets[label] || 0) + 1;
-  });
-
-  const data = Object.entries(buckets)
-    .map(([label, count]) => ({ label: `${label}초`, count }))
-    .sort((a, b) => parseInt(a.label) - parseInt(b.label));
-
-  const maxCount = Math.max(...data.map(d => d.count), 1);
-
-  return (
-    <div className="bda-time-dist">
-      {data.map(({ label, count }) => (
-        <div key={label} className="bda-time-dist-item">
-          <span className="bda-time-dist-label">{label}</span>
-          <div className="bda-time-dist-bar-bg">
-            <div
-              className="bda-time-dist-bar-fill"
-              style={{ width: `${(count / maxCount) * 100}%` }}
-            />
-          </div>
-          <span className="bda-time-dist-count">{count}명</span>
-        </div>
-      ))}
     </div>
   );
 }
