@@ -15,7 +15,7 @@ import Edit6_1Screen from './components/Edit6_1Screen';
 import SampleTemplateA from './components/SampleTemplateA';
 import SampleTemplateB from './components/SampleTemplateB';
 import DataAnalysis from './components/DataAnalysis';
-import DataVisualizer from './components/DataVisualizer';
+import BasicDataAnalysis from './components/BasicDataAnalysis';
 import Plan1_1AScreen from './components/Plan1_1AScreen';
 import Plan1_1BScreen from './components/Plan1_1BScreen';
 import { startInteractionLogging, setInteractionScreen } from './utils/interactionLogger';
@@ -42,7 +42,7 @@ const ROUTE_FROM_SCREEN = Object.fromEntries(
 );
 
 function App() {
-  const [currentScreen, setCurrentScreen] = useState('login');
+  const [currentScreen, setCurrentScreen] = useState('missionMain'); // 로그인 건너뛰기
   const [user, setUser] = useState(null);
 
   // URL 해시에서 초기 화면 설정
@@ -114,8 +114,8 @@ function App() {
       setCurrentScreen('기획1-1');
     } else if (missionId === 12) {
       setCurrentScreen('기획1-2');
-    } else if (missionId === 11) {
-      setCurrentScreen('dataVisualizer');
+    } else if (missionId === 13) {
+      setCurrentScreen('basicDataAnalysis');
     }
   };
 
@@ -387,9 +387,9 @@ function App() {
           />
         );
 
-      case 'dataVisualizer':
+      case 'basicDataAnalysis':
         return (
-          <DataVisualizer
+          <BasicDataAnalysis
             onBack={() => setCurrentScreen('missionMain')}
           />
         );
@@ -399,10 +399,10 @@ function App() {
     }
   };
 
-  // DataVisualizer는 전체 화면 사용
-  if (currentScreen === 'dataVisualizer') {
+  // 전체 화면 사용 컴포넌트
+  if (currentScreen === 'basicDataAnalysis') {
     return (
-      <DataVisualizer
+      <BasicDataAnalysis
         onBack={() => setCurrentScreen('missionMain')}
       />
     );

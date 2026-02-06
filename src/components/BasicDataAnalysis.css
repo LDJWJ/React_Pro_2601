@@ -1,0 +1,613 @@
+.bda-container {
+  width: 100%;
+  min-height: 100vh;
+  background-color: #f8f9fa;
+  color: #1a1a1a;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.bda-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 20px;
+  background: #fff;
+  border-bottom: 1px solid #e5e5e5;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.bda-back-btn {
+  background: none;
+  border: none;
+  color: #333;
+  font-size: 28px;
+  cursor: pointer;
+  padding: 0;
+  line-height: 1;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  transition: background 0.2s;
+}
+
+.bda-back-btn:hover {
+  background: #f0f0f0;
+}
+
+.bda-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #1a1a1a;
+}
+
+.bda-content {
+  padding: 20px;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+/* 업로드 섹션 */
+.bda-upload-section {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 24px;
+  padding: 20px;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+}
+
+.bda-upload-btn {
+  display: inline-block;
+  padding: 12px 24px;
+  background: linear-gradient(135deg, #3b82f6, #2563eb);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.bda-upload-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+.bda-file-name {
+  font-size: 14px;
+  color: #666;
+}
+
+/* 탭 네비게이션 */
+.bda-tabs {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 24px;
+  padding: 4px;
+  background: #fff;
+  border-radius: 12px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+}
+
+.bda-tabs::-webkit-scrollbar {
+  display: none;
+}
+
+.bda-tab {
+  flex-shrink: 0;
+  padding: 12px 20px;
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+  color: #666;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.bda-tab:hover {
+  color: #333;
+  background: #f5f5f5;
+}
+
+.bda-tab.active {
+  color: #fff;
+  background: #3b82f6;
+}
+
+/* 섹션 */
+.bda-section {
+  background: #fff;
+  border-radius: 16px;
+  padding: 24px;
+  margin-bottom: 20px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+}
+
+.bda-section-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #3b82f6;
+  margin-bottom: 16px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* 큰 숫자 */
+.bda-big-number {
+  font-size: 56px;
+  font-weight: 700;
+  color: #1a1a1a;
+  text-align: center;
+  line-height: 1;
+}
+
+.bda-unit {
+  font-size: 20px;
+  color: #888;
+  margin-left: 4px;
+}
+
+/* 차트 리스트 */
+.bda-chart-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.bda-chart-item {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.bda-chart-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.bda-chart-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+}
+
+.bda-chart-value {
+  font-size: 16px;
+  font-weight: 700;
+  color: #3b82f6;
+}
+
+.bda-chart-bar-bg {
+  height: 12px;
+  background: #e5e7eb;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.bda-chart-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #3b82f6, #60a5fa);
+  border-radius: 6px;
+  transition: width 0.5s ease;
+  min-width: 4px;
+}
+
+.bda-chart-detail {
+  font-size: 12px;
+  color: #888;
+}
+
+/* 시간 그리드 */
+.bda-time-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 12px;
+}
+
+.bda-time-card {
+  background: #f8f9fa;
+  border-radius: 12px;
+  padding: 16px;
+  text-align: center;
+  border: 1px solid #e5e7eb;
+}
+
+.bda-time-card-name {
+  font-size: 12px;
+  color: #666;
+  margin-bottom: 8px;
+}
+
+.bda-time-card-value {
+  font-size: 24px;
+  font-weight: 700;
+  color: #3b82f6;
+}
+
+/* 미션 헤더 */
+.bda-mission-header {
+  margin-bottom: 20px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.bda-mission-name {
+  font-size: 24px;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin-bottom: 4px;
+}
+
+.bda-mission-desc {
+  font-size: 14px;
+  color: #666;
+}
+
+/* 2단계 미션 완료율 */
+.bda-dual-rate {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.bda-rate-item {
+  background: #f8f9fa;
+  border-radius: 12px;
+  padding: 16px;
+  border: 1px solid #e5e7eb;
+}
+
+.bda-rate-label {
+  font-size: 12px;
+  color: #666;
+  margin-bottom: 8px;
+}
+
+.bda-rate-value {
+  font-size: 28px;
+  font-weight: 700;
+  color: #3b82f6;
+  margin-bottom: 12px;
+}
+
+.bda-rate-detail {
+  font-size: 12px;
+  color: #888;
+  margin-top: 8px;
+}
+
+/* 프로그레스 바 */
+.bda-progress-bar {
+  height: 8px;
+  background: #e5e7eb;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.bda-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #3b82f6, #60a5fa);
+  border-radius: 4px;
+  transition: width 0.5s ease;
+}
+
+/* 원형 차트 */
+.bda-completion-visual {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 40px;
+  padding: 20px 0;
+}
+
+.bda-pie-chart {
+  position: relative;
+  width: 140px;
+  height: 140px;
+}
+
+.bda-pie-chart svg {
+  transform: rotate(-90deg);
+  width: 100%;
+  height: 100%;
+}
+
+.bda-pie-bg,
+.bda-pie-fill {
+  fill: none;
+  stroke-width: 4;
+  stroke-linecap: round;
+}
+
+.bda-pie-bg {
+  stroke: #e5e7eb;
+}
+
+.bda-pie-fill {
+  stroke: #3b82f6;
+  transition: stroke-dasharray 0.5s ease;
+}
+
+.bda-pie-center {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+}
+
+.bda-pie-rate {
+  font-size: 28px;
+  font-weight: 700;
+  color: #3b82f6;
+}
+
+.bda-completion-legend {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.bda-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.bda-legend-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+}
+
+.bda-legend-item.success .bda-legend-dot {
+  background: #3b82f6;
+}
+
+.bda-legend-item.fail .bda-legend-dot {
+  background: #d1d5db;
+}
+
+.bda-legend-label {
+  font-size: 14px;
+  color: #666;
+  width: 60px;
+}
+
+.bda-legend-value {
+  font-size: 16px;
+  font-weight: 600;
+  color: #1a1a1a;
+}
+
+/* 평균 시간 */
+.bda-time-display {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 4px;
+}
+
+.bda-time-value {
+  font-size: 56px;
+  font-weight: 700;
+  color: #3b82f6;
+}
+
+.bda-time-unit {
+  font-size: 20px;
+  color: #888;
+}
+
+.bda-time-range {
+  text-align: center;
+  font-size: 13px;
+  color: #888;
+  margin-top: 12px;
+}
+
+/* 시간 분포 */
+.bda-time-dist {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.bda-time-dist-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.bda-time-dist-label {
+  width: 70px;
+  font-size: 13px;
+  color: #666;
+  text-align: right;
+  flex-shrink: 0;
+}
+
+.bda-time-dist-bar-bg {
+  flex: 1;
+  height: 20px;
+  background: #e5e7eb;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.bda-time-dist-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #22c55e, #4ade80);
+  border-radius: 6px;
+  transition: width 0.5s ease;
+}
+
+.bda-time-dist-count {
+  width: 50px;
+  font-size: 14px;
+  color: #22c55e;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+/* 퍼널 */
+.bda-funnel {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.bda-funnel-step {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.bda-funnel-label {
+  width: 90px;
+  font-size: 13px;
+  color: #666;
+  flex-shrink: 0;
+}
+
+.bda-funnel-bar-wrap {
+  flex: 1;
+  height: 32px;
+  background: #e5e7eb;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.bda-funnel-bar {
+  height: 100%;
+  background: linear-gradient(90deg, #9ca3af, #d1d5db);
+  border-radius: 8px;
+  transition: width 0.5s ease;
+}
+
+.bda-funnel-bar.started {
+  background: linear-gradient(90deg, #3b82f6, #60a5fa);
+}
+
+.bda-funnel-bar.completed {
+  background: linear-gradient(90deg, #22c55e, #4ade80);
+}
+
+.bda-funnel-bar.dropout-bar {
+  background: linear-gradient(90deg, #ef4444, #f87171);
+}
+
+.bda-funnel-step.dropout {
+  opacity: 0.9;
+}
+
+.bda-funnel-step.dropout .bda-funnel-label {
+  color: #ef4444;
+  font-size: 12px;
+  padding-left: 12px;
+}
+
+.bda-funnel-value.dropout-value {
+  color: #ef4444;
+}
+
+.bda-funnel-value {
+  width: 110px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+  text-align: right;
+  flex-shrink: 0;
+}
+
+.bda-funnel-rate {
+  font-size: 12px;
+  color: #888;
+  margin-left: 4px;
+}
+
+/* 이탈 분석 */
+.bda-dropout {
+  display: flex;
+  gap: 16px;
+  padding: 16px;
+  background: #f8f9fa;
+  border-radius: 12px;
+  margin-top: 8px;
+}
+
+.bda-dropout-item {
+  flex: 1;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px;
+  background: #fff;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+}
+
+.bda-dropout-label {
+  font-size: 13px;
+  color: #666;
+}
+
+.bda-dropout-value {
+  font-size: 16px;
+  font-weight: 600;
+  color: #ef4444;
+}
+
+/* 빈 상태 */
+.bda-empty {
+  text-align: center;
+  padding: 80px 20px;
+  color: #888;
+  font-size: 15px;
+}
+
+/* 반응형 */
+@media (max-width: 600px) {
+  .bda-content {
+    padding: 16px;
+  }
+
+  .bda-section {
+    padding: 20px;
+  }
+
+  .bda-big-number {
+    font-size: 44px;
+  }
+
+  .bda-time-value {
+    font-size: 44px;
+  }
+
+  .bda-completion-visual {
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  .bda-dual-rate {
+    grid-template-columns: 1fr;
+  }
+
+  .bda-time-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
