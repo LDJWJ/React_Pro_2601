@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import './ContentUploadScreenB.css';
+import './EditScreen.css';
 import { logScreenView, logButtonClick, logMissionComplete, logMissionStart, logScreenExit } from '../utils/logger';
 
 const defaultCuts = [

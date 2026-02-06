@@ -1,0 +1,63 @@
+.story-planning-container {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background-color: #1a1a1a;
+  color: #fff;
+}
+
+.story-header-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 16px 20px;
+  flex-shrink: 0;
+}
+
+.story-back-button {
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 28px;
+  cursor: pointer;
+  padding: 0;
+  line-height: 1;
+}
+
+.story-header-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #fff;
+}
+
+.story-scroll-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0 20px;
+}
+
+.story-content-section {
+  padding: 20px 0;
+}
+
+.story-bottom-buttons {
+  padding: 16px 20px;
+  flex-shrink: 0;
+}
+
+.story-save-btn {
+  width: 100%;
+  padding: 16px;
+  background: #F8FF33;
+  color: #000;
+  border: none;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.story-save-btn:hover {
+  background: #e5ec2e;
+}

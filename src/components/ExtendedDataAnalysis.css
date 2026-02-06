@@ -1,0 +1,255 @@
+/* ============================================
+   확장 데이터 분석 스타일
+   ============================================ */
+
+.eda-container {
+  min-height: 100vh;
+  background: #f8fafc;
+  padding-bottom: 20px;
+}
+
+.eda-header {
+  display: flex;
+  align-items: center;
+  padding: 16px;
+  background: #fff;
+  border-bottom: 1px solid #e5e7eb;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.eda-back-btn {
+  background: none;
+  border: none;
+  font-size: 28px;
+  color: #374151;
+  cursor: pointer;
+  padding: 0 12px 0 0;
+  line-height: 1;
+}
+
+.eda-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #111827;
+}
+
+.eda-content {
+  padding: 16px;
+}
+
+/* 업로드 섹션 */
+.eda-upload-section {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+.eda-upload-btn {
+  background: #3b82f6;
+  color: #fff;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.eda-upload-btn:hover {
+  background: #2563eb;
+}
+
+.eda-file-name {
+  font-size: 14px;
+  color: #6b7280;
+}
+
+/* 탭 네비게이션 */
+.eda-tabs {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding-bottom: 8px;
+  margin-bottom: 16px;
+  -webkit-overflow-scrolling: touch;
+}
+
+.eda-tab {
+  flex-shrink: 0;
+  padding: 8px 16px;
+  border: 1px solid #e5e7eb;
+  border-radius: 20px;
+  background: #fff;
+  font-size: 14px;
+  color: #6b7280;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.eda-tab:hover {
+  border-color: #3b82f6;
+  color: #3b82f6;
+}
+
+.eda-tab.active {
+  background: #3b82f6;
+  border-color: #3b82f6;
+  color: #fff;
+}
+
+/* 탭 콘텐츠 */
+.eda-tab-content {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* 섹션 */
+.eda-section {
+  background: #fff;
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.eda-section-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #111827;
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+/* 테이블 스타일 */
+.eda-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.eda-table th,
+.eda-table td {
+  padding: 10px 12px;
+  text-align: left;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.eda-table th {
+  color: #6b7280;
+  font-weight: 500;
+  width: 40%;
+}
+
+.eda-table td {
+  color: #111827;
+  font-weight: 500;
+}
+
+.eda-table tbody tr:last-child th,
+.eda-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+/* 전체 너비 테이블 */
+.eda-table-full {
+  overflow-x: auto;
+  display: block;
+}
+
+.eda-table-full th,
+.eda-table-full td {
+  text-align: center;
+  white-space: nowrap;
+}
+
+.eda-table-full th:first-child,
+.eda-table-full td:first-child {
+  text-align: left;
+}
+
+.eda-table-full thead th {
+  background: #f9fafb;
+  color: #374151;
+  font-weight: 600;
+}
+
+.eda-mission-name {
+  font-weight: 600 !important;
+  color: #3b82f6 !important;
+}
+
+.eda-highlight {
+  color: #059669 !important;
+  font-weight: 600 !important;
+}
+
+/* 미션 헤더 */
+.eda-mission-header {
+  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+  border-radius: 12px;
+  padding: 20px;
+  color: #fff;
+  margin-bottom: 16px;
+}
+
+.eda-mission-title {
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.eda-mission-desc {
+  font-size: 14px;
+  opacity: 0.9;
+}
+
+/* 확장 영역 */
+.eda-extension-area {
+  border: 2px dashed #e5e7eb;
+  background: #fafafa;
+}
+
+.eda-extension-placeholder {
+  text-align: center;
+  padding: 40px 20px;
+  color: #9ca3af;
+}
+
+.eda-extension-placeholder p {
+  margin: 0;
+  font-size: 14px;
+}
+
+/* 빈 상태 */
+.eda-empty {
+  text-align: center;
+  padding: 60px 20px;
+  color: #9ca3af;
+}
+
+.eda-empty p {
+  margin: 0;
+  font-size: 16px;
+}
+
+/* 반응형 */
+@media (min-width: 768px) {
+  .eda-content {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 24px;
+  }
+
+  .eda-section {
+    padding: 20px;
+  }
+
+  .eda-table th {
+    width: 30%;
+  }
+}

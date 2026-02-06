@@ -1,4 +1,8 @@
 import { useState, useMemo, useRef } from 'react';
+import {
+  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer,
+  PieChart, Pie, Cell
+} from 'recharts';
 import './BasicDataAnalysis.css';
 
 // CSV 파싱 (쉼표 구분, 따옴표 처리)
@@ -360,6 +364,15 @@ function BasicDataAnalysis({ onBack }) {
 
   // 시각화 화면 렌더링
   if (showVisualization && csvData) {
+    // 차트 데이터 준비
+    const chartData = Object.values(MISSIONS).map(mission => ({
+      name: mission.name.replace('편집 ', '편집').replace('기획 ', '기획'),
+      shortName: mission.name.replace('편집 ', '').replace('기획 ', ''),
+      참여율: parseFloat(missionStatsMap[mission.id]?.participationRate || 0),
+      완료율: parseFloat(missionStatsMap[mission.id]?.completionRate || 0),
+      avgTime: parseFloat(missionStatsMap[mission.id]?.avgTime || missionStatsMap[mission.id]?.basicAvgTime || 0),
+    }));
+
     return (
       <div
         ref={visualizationRef}
@@ -392,104 +405,125 @@ function BasicDataAnalysis({ onBack }) {
         </div>
 
         <div className="bda-viz-content">
-          {/* 1. 미션별 완료율 바 차트 */}
+          {/* 1. 미션별 참여율 vs 완료율 비교 (참조 이미지 스타일) */}
           <div className="bda-viz-section">
-            <div className="bda-viz-title">미션별 완료율</div>
-            <div className="bda-bar-chart">
-              {Object.values(MISSIONS).map(mission => {
-                const stats = missionStatsMap[mission.id];
-                const rate = parseFloat(stats?.completionRate || 0);
-                return (
-                  <div key={mission.id} className="bda-bar-item">
-                    <div className="bda-bar-label">{mission.name}</div>
-                    <div className="bda-bar-track">
-                      <div
-                        className="bda-bar-fill"
-                        style={{ width: `${rate}%` }}
-                      >
-                        <span className="bda-bar-value">{rate}%</span>
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
+            <div className="bda-viz-title">미션별 참여율 vs 완료율</div>
+            <div className="bda-recharts-container">
+              <ResponsiveContainer width="100%" height={380}>
+                <BarChart
+                  data={chartData}
+                  margin={{ top: 20, right: 20, left: 20, bottom: 100 }}
+                  barCategoryGap="20%"
+                >
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                  <XAxis
+                    dataKey="name"
+                    tick={{ fontSize: 12, fill: '#666' }}
+                    tickLine={false}
+                    axisLine={{ stroke: '#e5e7eb' }}
+                    interval={0}
+                    angle={-45}
+                    textAnchor="end"
+                    dy={10}
+                  />
+                  <YAxis
+                    domain={[0, 100]}
+                    ticks={[0, 25, 50, 75, 100]}
+                    tick={{ fontSize: 12, fill: '#666' }}
+                    tickFormatter={(value) => `${value}%`}
+                    tickLine={false}
+                    axisLine={{ stroke: '#e5e7eb' }}
+                  />
+                  <Tooltip
+                    formatter={(value, name) => [`${value}%`, name]}
+                    contentStyle={{
+                      backgroundColor: '#fff',
+                      border: '1px solid #e5e7eb',
+                      borderRadius: '8px',
+                      boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
+                    }}
+                    cursor={{ fill: 'rgba(0,0,0,0.05)' }}
+                  />
+                  <Legend
+                    verticalAlign="bottom"
+                    wrapperStyle={{ paddingTop: '30px', bottom: 0 }}
+                    iconType="square"
+                  />
+                  <Bar
+                    dataKey="완료율"
+                    fill="#22c55e"
+                    radius={[4, 4, 0, 0]}
+                    maxBarSize={40}
+                  />
+                  <Bar
+                    dataKey="참여율"
+                    fill="#f59e0b"
+                    radius={[4, 4, 0, 0]}
+                    maxBarSize={40}
+                  />
+                </BarChart>
+              </ResponsiveContainer>
             </div>
           </div>
 
-          {/* 2. 디바이스 분포 파이 차트 */}
+          {/* 2. 미션별 평균 완료 시간 */}
           <div className="bda-viz-section">
-            <div className="bda-viz-title">디바이스 분포</div>
-            <div className="bda-pie-chart-container">
-              <svg className="bda-pie-svg" viewBox="0 0 100 100">
-                {(() => {
-                  const total = overallStats?.totalSessions || 1;
-                  const desktop = overallStats?.desktopUsers || 0;
-                  const mobile = overallStats?.mobileUsers || 0;
-                  const unknown = overallStats?.unknownDeviceUsers || 0;
-
-                  const desktopPct = (desktop / total) * 100;
-                  const mobilePct = (mobile / total) * 100;
-                  const unknownPct = (unknown / total) * 100;
-
-                  // SVG 파이 차트 계산
-                  const createArc = (startAngle, endAngle, color) => {
-                    const start = (startAngle - 90) * Math.PI / 180;
-                    const end = (endAngle - 90) * Math.PI / 180;
-                    const largeArc = endAngle - startAngle > 180 ? 1 : 0;
-                    const x1 = 50 + 40 * Math.cos(start);
-                    const y1 = 50 + 40 * Math.sin(start);
-                    const x2 = 50 + 40 * Math.cos(end);
-                    const y2 = 50 + 40 * Math.sin(end);
-                    return (
-                      <path
-                        key={color}
-                        d={`M 50 50 L ${x1} ${y1} A 40 40 0 ${largeArc} 1 ${x2} ${y2} Z`}
-                        fill={color}
-                      />
-                    );
-                  };
-
-                  const arcs = [];
-                  let currentAngle = 0;
-
-                  if (desktopPct > 0) {
-                    arcs.push(createArc(currentAngle, currentAngle + desktopPct * 3.6, '#3b82f6'));
-                    currentAngle += desktopPct * 3.6;
-                  }
-                  if (mobilePct > 0) {
-                    arcs.push(createArc(currentAngle, currentAngle + mobilePct * 3.6, '#22c55e'));
-                    currentAngle += mobilePct * 3.6;
-                  }
-                  if (unknownPct > 0) {
-                    arcs.push(createArc(currentAngle, currentAngle + unknownPct * 3.6, '#9ca3af'));
-                  }
-
-                  return arcs.length > 0 ? arcs : <circle cx="50" cy="50" r="40" fill="#e5e7eb" />;
-                })()}
-              </svg>
-              <div className="bda-pie-legend">
-                <div className="bda-legend-item">
-                  <span className="bda-legend-color" style={{ background: '#3b82f6' }}></span>
-                  <span>PC {overallStats?.desktopUsers || 0}명 ({((overallStats?.desktopUsers || 0) / (overallStats?.totalSessions || 1) * 100).toFixed(1)}%)</span>
-                </div>
-                <div className="bda-legend-item">
-                  <span className="bda-legend-color" style={{ background: '#22c55e' }}></span>
-                  <span>모바일 {overallStats?.mobileUsers || 0}명 ({((overallStats?.mobileUsers || 0) / (overallStats?.totalSessions || 1) * 100).toFixed(1)}%)</span>
-                </div>
-                {(overallStats?.unknownDeviceUsers || 0) > 0 && (
-                  <div className="bda-legend-item">
-                    <span className="bda-legend-color" style={{ background: '#9ca3af' }}></span>
-                    <span>알 수 없음 {overallStats?.unknownDeviceUsers || 0}명 ({((overallStats?.unknownDeviceUsers || 0) / (overallStats?.totalSessions || 1) * 100).toFixed(1)}%)</span>
-                  </div>
-                )}
-              </div>
+            <div className="bda-viz-title">미션별 평균 완료 시간</div>
+            <div className="bda-recharts-container">
+              <ResponsiveContainer width="100%" height={350}>
+                <BarChart
+                  data={chartData.filter(d => d.avgTime > 0)}
+                  margin={{ top: 30, right: 30, left: 20, bottom: 80 }}
+                  barCategoryGap="25%"
+                >
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                  <XAxis
+                    dataKey="name"
+                    tick={{ fontSize: 12, fill: '#666' }}
+                    tickLine={false}
+                    axisLine={{ stroke: '#e5e7eb' }}
+                    interval={0}
+                    angle={-45}
+                    textAnchor="end"
+                    dy={10}
+                  />
+                  <YAxis
+                    tick={{ fontSize: 12, fill: '#666' }}
+                    tickFormatter={(value) => `${value}초`}
+                    tickLine={false}
+                    axisLine={{ stroke: '#e5e7eb' }}
+                  />
+                  <Tooltip
+                    formatter={(value) => [`${value}초`, '평균 완료 시간']}
+                    contentStyle={{
+                      backgroundColor: '#fff',
+                      border: '1px solid #e5e7eb',
+                      borderRadius: '8px',
+                      boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
+                    }}
+                    cursor={{ fill: 'rgba(0,0,0,0.05)' }}
+                  />
+                  <Bar
+                    dataKey="avgTime"
+                    fill="#3b82f6"
+                    radius={[4, 4, 0, 0]}
+                    maxBarSize={50}
+                    label={{
+                      position: 'top',
+                      formatter: (value) => `${value}초`,
+                      fontSize: 11,
+                      fill: '#666'
+                    }}
+                  />
+                </BarChart>
+              </ResponsiveContainer>
             </div>
           </div>
 
           {/* 3. 완료 시간 분포 히스토그램 */}
           <div className="bda-viz-section">
             <div className="bda-viz-title">완료 시간 분포 (전체 미션)</div>
-            <div className="bda-histogram">
+            <div className="bda-recharts-container">
               {(() => {
                 // 모든 미션의 완료 시간 수집
                 const allTimes = [];
@@ -516,122 +550,106 @@ function BasicDataAnalysis({ onBack }) {
                 });
 
                 const data = Object.entries(buckets)
-                  .map(([label, count]) => ({ label, count }))
-                  .sort((a, b) => parseInt(a.label) - parseInt(b.label));
-
-                const maxCount = Math.max(...data.map(d => d.count), 1);
-
-                return data.map(({ label, count }) => (
-                  <div key={label} className="bda-histogram-bar">
-                    <div className="bda-histogram-label">{label}초</div>
-                    <div className="bda-histogram-track">
-                      <div
-                        className="bda-histogram-fill"
-                        style={{ height: `${(count / maxCount) * 100}%` }}
-                      ></div>
-                    </div>
-                    <div className="bda-histogram-count">{count}명</div>
-                  </div>
-                ));
-              })()}
-            </div>
-          </div>
-
-          {/* 4. 전체 퍼널 차트 */}
-          <div className="bda-viz-section">
-            <div className="bda-viz-title">전체 사용자 흐름 (퍼널)</div>
-            <div className="bda-funnel-chart">
-              {(() => {
-                // 전체 미션의 합산 퍼널
-                let totalSessions = 0;
-                let totalStarted = 0;
-                let totalCompleted = 0;
-
-                Object.values(missionStatsMap).forEach(stats => {
-                  totalSessions += stats?.sessions || 0;
-                  totalStarted += stats?.started || 0;
-                  totalCompleted += stats?.completed || 0;
-                });
-
-                const maxWidth = 100;
-                const sessionWidth = maxWidth;
-                const startedWidth = totalSessions > 0 ? (totalStarted / totalSessions) * maxWidth : 0;
-                const completedWidth = totalSessions > 0 ? (totalCompleted / totalSessions) * maxWidth : 0;
+                  .map(([label, count]) => ({
+                    시간구간: label + '초',
+                    인원: count,
+                    sortKey: parseInt(label)
+                  }))
+                  .sort((a, b) => a.sortKey - b.sortKey);
 
                 return (
-                  <>
-                    <div className="bda-funnel-step">
-                      <div className="bda-funnel-bar-container">
-                        <div className="bda-funnel-bar visit" style={{ width: `${sessionWidth}%` }}>
-                          화면 방문
-                        </div>
-                      </div>
-                      <div className="bda-funnel-stat">{totalSessions}명 (100%)</div>
-                    </div>
-                    <div className="bda-funnel-arrow">▼</div>
-                    <div className="bda-funnel-step">
-                      <div className="bda-funnel-bar-container">
-                        <div className="bda-funnel-bar started" style={{ width: `${startedWidth}%` }}>
-                          미션 시작
-                        </div>
-                      </div>
-                      <div className="bda-funnel-stat">
-                        {totalStarted}명 ({totalSessions > 0 ? ((totalStarted / totalSessions) * 100).toFixed(1) : 0}%)
-                      </div>
-                    </div>
-                    <div className="bda-funnel-arrow">▼</div>
-                    <div className="bda-funnel-step">
-                      <div className="bda-funnel-bar-container">
-                        <div className="bda-funnel-bar completed" style={{ width: `${completedWidth}%` }}>
-                          미션 완료
-                        </div>
-                      </div>
-                      <div className="bda-funnel-stat">
-                        {totalCompleted}명 ({totalSessions > 0 ? ((totalCompleted / totalSessions) * 100).toFixed(1) : 0}%)
-                      </div>
-                    </div>
-                  </>
+                  <ResponsiveContainer width="100%" height={350}>
+                    <BarChart
+                      data={data}
+                      margin={{ top: 30, right: 30, left: 20, bottom: 80 }}
+                      barCategoryGap="15%"
+                    >
+                      <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                      <XAxis
+                        dataKey="시간구간"
+                        tick={{ fontSize: 11, fill: '#666' }}
+                        tickLine={false}
+                        axisLine={{ stroke: '#e5e7eb' }}
+                        interval={0}
+                        angle={-45}
+                        textAnchor="end"
+                        dy={10}
+                      />
+                      <YAxis
+                        tick={{ fontSize: 12, fill: '#666' }}
+                        tickFormatter={(value) => `${value}명`}
+                        tickLine={false}
+                        axisLine={{ stroke: '#e5e7eb' }}
+                        allowDecimals={false}
+                      />
+                      <Tooltip
+                        formatter={(value) => [`${value}명`, '인원']}
+                        contentStyle={{
+                          backgroundColor: '#fff',
+                          border: '1px solid #e5e7eb',
+                          borderRadius: '8px',
+                          boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
+                        }}
+                        cursor={{ fill: 'rgba(0,0,0,0.05)' }}
+                      />
+                      <Bar
+                        dataKey="인원"
+                        fill="#8b5cf6"
+                        radius={[4, 4, 0, 0]}
+                        label={{
+                          position: 'top',
+                          formatter: (value) => value > 0 ? `${value}` : '',
+                          fontSize: 11,
+                          fill: '#666'
+                        }}
+                      />
+                    </BarChart>
+                  </ResponsiveContainer>
                 );
               })()}
             </div>
           </div>
 
-          {/* 5. 미션별 참여율 vs 완료율 비교 */}
+          {/* 4. 디바이스 분포 파이 차트 */}
           <div className="bda-viz-section">
-            <div className="bda-viz-title">미션별 참여율 vs 완료율</div>
-            <div className="bda-grouped-bar-chart">
-              {Object.values(MISSIONS).map(mission => {
-                const stats = missionStatsMap[mission.id];
-                const participationRate = parseFloat(stats?.participationRate || 0);
-                const completionRate = parseFloat(stats?.completionRate || 0);
-                return (
-                  <div key={mission.id} className="bda-grouped-bar-item">
-                    <div className="bda-grouped-bar-label">{mission.name}</div>
-                    <div className="bda-grouped-bars">
-                      <div className="bda-grouped-bar-row">
-                        <span className="bda-grouped-bar-type">참여율</span>
-                        <div className="bda-grouped-bar-track">
-                          <div
-                            className="bda-grouped-bar-fill participation"
-                            style={{ width: `${participationRate}%` }}
-                          ></div>
-                        </div>
-                        <span className="bda-grouped-bar-value">{participationRate}%</span>
-                      </div>
-                      <div className="bda-grouped-bar-row">
-                        <span className="bda-grouped-bar-type">완료율</span>
-                        <div className="bda-grouped-bar-track">
-                          <div
-                            className="bda-grouped-bar-fill completion"
-                            style={{ width: `${completionRate}%` }}
-                          ></div>
-                        </div>
-                        <span className="bda-grouped-bar-value">{completionRate}%</span>
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
+            <div className="bda-viz-title">디바이스 분포</div>
+            <div className="bda-recharts-container">
+              <ResponsiveContainer width="100%" height={300}>
+                <PieChart>
+                  <Pie
+                    data={[
+                      { name: 'PC', value: overallStats?.desktopUsers || 0, color: '#3b82f6' },
+                      { name: '모바일', value: overallStats?.mobileUsers || 0, color: '#22c55e' },
+                      ...(overallStats?.unknownDeviceUsers > 0 ? [{ name: '알 수 없음', value: overallStats.unknownDeviceUsers, color: '#9ca3af' }] : [])
+                    ].filter(d => d.value > 0)}
+                    cx="50%"
+                    cy="50%"
+                    innerRadius={60}
+                    outerRadius={100}
+                    paddingAngle={2}
+                    dataKey="value"
+                    label={({ name, value, percent }) => `${name} ${value}명 (${(percent * 100).toFixed(0)}%)`}
+                    labelLine={{ stroke: '#999', strokeWidth: 1 }}
+                  >
+                    {[
+                      { name: 'PC', value: overallStats?.desktopUsers || 0, color: '#3b82f6' },
+                      { name: '모바일', value: overallStats?.mobileUsers || 0, color: '#22c55e' },
+                      ...(overallStats?.unknownDeviceUsers > 0 ? [{ name: '알 수 없음', value: overallStats.unknownDeviceUsers, color: '#9ca3af' }] : [])
+                    ].filter(d => d.value > 0).map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={entry.color} />
+                    ))}
+                  </Pie>
+                  <Tooltip
+                    formatter={(value, name) => [`${value}명`, name]}
+                    contentStyle={{
+                      backgroundColor: '#fff',
+                      border: '1px solid #e5e7eb',
+                      borderRadius: '8px',
+                      boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
+                    }}
+                  />
+                </PieChart>
+              </ResponsiveContainer>
             </div>
           </div>
         </div>

@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import './StoryPlanningScreen.css';
+import './PlanScreen.css';
 import { logScreenView, logButtonClick, logMissionComplete, logMissionStart, logScreenExit } from '../utils/logger';
 
 // 필름 아이콘 컴포넌트 (이미지 기반)

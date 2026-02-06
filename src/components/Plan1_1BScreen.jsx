@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import './StoryPlanningScreen.css';
+import './PlanScreen.css';
 import { logScreenView, logButtonClick, logMissionComplete, logMissionStart, logScreenExit } from '../utils/logger';
 
 const defaultCuts = [

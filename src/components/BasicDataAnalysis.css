@@ -798,6 +798,12 @@
   border-bottom: 2px solid #3b82f6;
 }
 
+/* Recharts 컨테이너 */
+.bda-recharts-container {
+  width: 100%;
+  min-height: 300px;
+}
+
 /* 바 차트 */
 .bda-bar-chart {
   display: flex;

@@ -9,9 +9,8 @@ const missions = [
   { id: 10, title: '기획1-1', subtitle: '아이디어 메모 (6컷 개별)', enabled: true },
   { id: 12, title: '기획1-2', subtitle: '아이디어 메모 (3컷 그룹)', enabled: true },
   { id: 13, title: '기본 분석', subtitle: '종합/미션별 기본 통계', enabled: true },
-  { id: 6, title: '확장 분석', subtitle: '퍼널/히트맵/시간분석', enabled: true },
-  { id: 2, title: '(미사용) 미션 1', subtitle: '영상 기획하기', enabled: false },
-  { id: 3, title: '(미사용) 미션 2', subtitle: '콘텐츠 업로드', enabled: false },
+  { id: 14, title: '확장 분석 (신규)', subtitle: '기본 분석 + 확장 기능', enabled: true },
+  { id: 6, title: '상세 분석', subtitle: '퍼널/히트맵/시간분석', enabled: true },
   { id: 1, title: '(미사용) 미션 9', subtitle: '영상 기획하기', enabled: false },
   { id: 5, title: '(미사용) 미션 99', subtitle: 'A/B안 샘플미션', enabled: false },
 ];

@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import './StoryPlanningScreen.css';
+import './SampleTemplate.css';
 import { logScreenView, logButtonClick, logMissionComplete, logScreenExit } from '../utils/logger';
 
 function SampleTemplateA({ onComplete, onBack }) {

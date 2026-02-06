@@ -5,10 +5,6 @@ import MissionMain from './components/MissionMain';
 import MissionStep from './components/MissionStep';
 import TemplateDetailA from './components/TemplateDetailA';
 import TemplateDetailB from './components/TemplateDetailB';
-import StoryPlanningScreenA from './components/StoryPlanningScreenA';
-import StoryPlanningScreenB from './components/StoryPlanningScreenB';
-import ContentUploadScreenA from './components/ContentUploadScreenA';
-import ContentUploadScreenB from './components/ContentUploadScreenB';
 import Edit2_1Screen from './components/Edit2_1Screen';
 import Edit1_1Screen from './components/Edit1_1Screen';
 import Edit6_1Screen from './components/Edit6_1Screen';
@@ -16,6 +12,7 @@ import SampleTemplateA from './components/SampleTemplateA';
 import SampleTemplateB from './components/SampleTemplateB';
 import DataAnalysis from './components/DataAnalysis';
 import BasicDataAnalysis from './components/BasicDataAnalysis';
+import ExtendedDataAnalysis from './components/ExtendedDataAnalysis';
 import Plan1_1AScreen from './components/Plan1_1AScreen';
 import Plan1_1BScreen from './components/Plan1_1BScreen';
 import { startInteractionLogging, setInteractionScreen } from './utils/interactionLogger';
@@ -96,10 +93,6 @@ function App() {
   const handleMissionSelect = (missionId) => {
     if (missionId === 1) {
       setCurrentScreen('mission1_1');
-    } else if (missionId === 2) {
-      setCurrentScreen('mission2_1');
-    } else if (missionId === 3) {
-      setCurrentScreen('mission3_1');
     } else if (missionId === 5) {
       setCurrentScreen('mission99_1');
     } else if (missionId === 6) {
@@ -116,6 +109,8 @@ function App() {
       setCurrentScreen('기획1-2');
     } else if (missionId === 13) {
       setCurrentScreen('basicDataAnalysis');
+    } else if (missionId === 14) {
+      setCurrentScreen('extendedDataAnalysis');
     }
   };
 
@@ -168,82 +163,6 @@ function App() {
           <TemplateDetailB
             onComplete={() => setCurrentScreen('missionMain')}
             onBack={() => setCurrentScreen('mission1_2')}
-          />
-        );
-
-      case 'mission2_1':
-        return (
-          <MissionStep
-            stepTitle="영상 기획하기 A안"
-            description="영상 아이디어 노트를 작성하고 저장하기를 눌러주세요."
-            buttonText="다음"
-            screenName="mission2_1"
-            onNext={() => setCurrentScreen('storyPlanningA')}
-          />
-        );
-
-      case 'storyPlanningA':
-        return (
-          <StoryPlanningScreenA
-            onComplete={() => setCurrentScreen('mission2_2')}
-            onBack={() => setCurrentScreen('mission2_1')}
-          />
-        );
-
-      case 'mission2_2':
-        return (
-          <MissionStep
-            stepTitle="영상 기획하기 B안"
-            description="화면을 보고 영상 기획 메모를 작성하고 저장하기를 눌러주세요."
-            buttonText="다음"
-            screenName="mission2_2"
-            onNext={() => setCurrentScreen('storyPlanningB')}
-          />
-        );
-
-      case 'storyPlanningB':
-        return (
-          <StoryPlanningScreenB
-            onComplete={() => setCurrentScreen('missionMain')}
-            onBack={() => setCurrentScreen('mission2_2')}
-          />
-        );
-
-      case 'mission3_1':
-        return (
-          <MissionStep
-            stepTitle="콘텐츠 업로드 A안"
-            description="화면을 보고 영상을 업로드하고 AI 자막 추천을 사용해보세요."
-            buttonText="다음"
-            screenName="mission3_1"
-            onNext={() => setCurrentScreen('contentUploadA')}
-          />
-        );
-
-      case 'contentUploadA':
-        return (
-          <ContentUploadScreenA
-            onComplete={() => setCurrentScreen('mission3_2')}
-            onBack={() => setCurrentScreen('mission3_1')}
-          />
-        );
-
-      case 'mission3_2':
-        return (
-          <MissionStep
-            stepTitle="콘텐츠 업로드 B안"
-            description="화면을 보고 영상을 업로드하고 AI 자막 추천을 사용해보세요."
-            buttonText="다음"
-            screenName="mission3_2"
-            onNext={() => setCurrentScreen('contentUploadB')}
-          />
-        );
-
-      case 'contentUploadB':
-        return (
-          <ContentUploadScreenB
-            onComplete={() => setCurrentScreen('missionMain')}
-            onBack={() => setCurrentScreen('mission3_2')}
           />
         );
 
@@ -394,6 +313,13 @@ function App() {
           />
         );
 
+      case 'extendedDataAnalysis':
+        return (
+          <ExtendedDataAnalysis
+            onBack={() => setCurrentScreen('missionMain')}
+          />
+        );
+
       default:
         return <LoginScreen onLogin={handleLogin} />;
     }
@@ -403,6 +329,14 @@ function App() {
   if (currentScreen === 'basicDataAnalysis') {
     return (
       <BasicDataAnalysis
+        onBack={() => setCurrentScreen('missionMain')}
+      />
+    );
+  }
+
+  if (currentScreen === 'extendedDataAnalysis') {
+    return (
+      <ExtendedDataAnalysis
         onBack={() => setCurrentScreen('missionMain')}
       />
     );
