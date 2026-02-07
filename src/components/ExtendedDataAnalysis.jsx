@@ -396,24 +396,24 @@ function ExtendedDataAnalysis({ onBack }) {
                     <tbody>
                       <tr>
                         <th>총 세션 수</th>
-                        <td>{overallStats.totalSessions}명</td>
+                        <td>{overallStats.totalSessions} 세션</td>
                       </tr>
                       <tr>
                         <th>총 이벤트 수</th>
                         <td>{overallStats.totalEvents}건</td>
                       </tr>
                       <tr>
-                        <th>PC 사용자</th>
-                        <td>{overallStats.desktopUsers}명</td>
+                        <th>PC</th>
+                        <td>{overallStats.desktopUsers} 세션</td>
                       </tr>
                       <tr>
-                        <th>모바일 사용자</th>
-                        <td>{overallStats.mobileUsers}명</td>
+                        <th>모바일</th>
+                        <td>{overallStats.mobileUsers} 세션</td>
                       </tr>
                       {overallStats.unknownDeviceUsers > 0 && (
                         <tr>
                           <th>알 수 없음</th>
-                          <td>{overallStats.unknownDeviceUsers}명</td>
+                          <td>{overallStats.unknownDeviceUsers} 세션</td>
                         </tr>
                       )}
                     </tbody>
@@ -482,23 +482,23 @@ function ExtendedDataAnalysis({ onBack }) {
                     <tbody>
                       <tr>
                         <th>화면 방문</th>
-                        <td>{currentStats.sessions}명</td>
+                        <td>{currentStats.sessions} 세션</td>
                       </tr>
                       <tr>
                         <th>미션 시작</th>
-                        <td>{currentStats.started}명 ({currentStats.participationRate}%)</td>
+                        <td>{currentStats.started} 세션 ({currentStats.participationRate}%)</td>
                       </tr>
                       <tr>
                         <th>미션 완료</th>
-                        <td>{currentStats.completed}명 ({currentStats.completionRate}%)</td>
+                        <td>{currentStats.completed} 세션 ({currentStats.completionRate}%)</td>
                       </tr>
                       <tr>
                         <th>미시작 이탈</th>
-                        <td>{currentStats.notStarted}명</td>
+                        <td>{currentStats.notStarted} 세션</td>
                       </tr>
                       <tr>
                         <th>미완료 이탈</th>
-                        <td>{currentStats.notCompleted}명</td>
+                        <td>{currentStats.notCompleted} 세션</td>
                       </tr>
                     </tbody>
                   </table>
@@ -511,16 +511,16 @@ function ExtendedDataAnalysis({ onBack }) {
                     <tbody>
                       <tr>
                         <th>PC</th>
-                        <td>{currentStats.desktopUsers}명</td>
+                        <td>{currentStats.desktopUsers} 세션</td>
                       </tr>
                       <tr>
                         <th>모바일</th>
-                        <td>{currentStats.mobileUsers}명</td>
+                        <td>{currentStats.mobileUsers} 세션</td>
                       </tr>
                       {currentStats.unknownDeviceUsers > 0 && (
                         <tr>
                           <th>알 수 없음</th>
-                          <td>{currentStats.unknownDeviceUsers}명</td>
+                          <td>{currentStats.unknownDeviceUsers} 세션</td>
                         </tr>
                       )}
                     </tbody>
@@ -561,11 +561,11 @@ function ExtendedDataAnalysis({ onBack }) {
                         <tbody>
                           <tr>
                             <th>시작</th>
-                            <td>{currentStats.basicStarted}명</td>
+                            <td>{currentStats.basicStarted} 세션</td>
                           </tr>
                           <tr>
                             <th>완료</th>
-                            <td>{currentStats.basicCompleted}명 ({currentStats.basicCompletionRate}%)</td>
+                            <td>{currentStats.basicCompleted} 세션 ({currentStats.basicCompletionRate}%)</td>
                           </tr>
                           <tr>
                             <th>평균 시간</th>
@@ -581,11 +581,11 @@ function ExtendedDataAnalysis({ onBack }) {
                         <tbody>
                           <tr>
                             <th>시작</th>
-                            <td>{currentStats.additionalStarted}명 ({currentStats.additionalParticipationRate}%)</td>
+                            <td>{currentStats.additionalStarted} 세션 ({currentStats.additionalParticipationRate}%)</td>
                           </tr>
                           <tr>
                             <th>완료</th>
-                            <td>{currentStats.additionalCompleted}명 ({currentStats.additionalCompletionRate}%)</td>
+                            <td>{currentStats.additionalCompleted} 세션 ({currentStats.additionalCompletionRate}%)</td>
                           </tr>
                           <tr>
                             <th>평균 시간</th>

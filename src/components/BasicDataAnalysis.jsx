@@ -398,17 +398,17 @@ function BasicDataAnalysis({ onBack }) {
                 {/* 전체 세션 수 */}
                 <div className="bda-section">
                   <div className="bda-section-title">전체 세션 수</div>
-                  <div className="bda-big-number">{overallStats.totalSessions}<span className="bda-unit">명</span></div>
+                  <div className="bda-big-number">{overallStats.totalSessions}<span className="bda-unit">세션</span></div>
                   <div className="bda-device-breakdown">
                     <span className="bda-device-item">
-                      <span className="bda-device-icon">🖥️</span> PC {overallStats.desktopUsers}명
+                      <span className="bda-device-icon">🖥️</span> PC {overallStats.desktopUsers} 세션
                     </span>
                     <span className="bda-device-item">
-                      <span className="bda-device-icon">📱</span> 모바일 {overallStats.mobileUsers}명
+                      <span className="bda-device-icon">📱</span> 모바일 {overallStats.mobileUsers} 세션
                     </span>
                     {overallStats.unknownDeviceUsers > 0 && (
                       <span className="bda-device-item unknown">
-                        <span className="bda-device-icon">❓</span> 알 수 없음 {overallStats.unknownDeviceUsers}명
+                        <span className="bda-device-icon">❓</span> 알 수 없음 {overallStats.unknownDeviceUsers} 세션
                       </span>
                     )}
                   </div>
@@ -433,7 +433,7 @@ function BasicDataAnalysis({ onBack }) {
                             />
                           </div>
                           <div className="bda-chart-detail">
-                            방문 {stats?.sessions || 0}명 → 시작 {stats?.started || 0}명 (참여 {stats?.participationRate || 0}%) → 완료 {stats?.completed || 0}명 (완료 {stats?.completionRate || 0}%)
+                            방문 {stats?.sessions || 0} 세션 → 시작 {stats?.started || 0} 세션 (참여 {stats?.participationRate || 0}%) → 완료 {stats?.completed || 0} 세션 (완료 {stats?.completionRate || 0}%)
                           </div>
                         </div>
                       );
@@ -675,16 +675,16 @@ function BasicDataAnalysis({ onBack }) {
                 <div className="bda-mission-header">
                   <div className="bda-mission-name">{currentMission.name}: {currentMission.description}</div>
                   <div className="bda-device-breakdown mission">
-                    <span className="bda-device-label">세션 {currentStats.sessions}명:</span>
+                    <span className="bda-device-label">세션 {currentStats.sessions}개:</span>
                     <span className="bda-device-item">
-                      <span className="bda-device-icon">🖥️</span> PC {currentStats.desktopUsers}명
+                      <span className="bda-device-icon">🖥️</span> PC {currentStats.desktopUsers} 세션
                     </span>
                     <span className="bda-device-item">
-                      <span className="bda-device-icon">📱</span> 모바일 {currentStats.mobileUsers}명
+                      <span className="bda-device-icon">📱</span> 모바일 {currentStats.mobileUsers} 세션
                     </span>
                     {currentStats.unknownDeviceUsers > 0 && (
                       <span className="bda-device-item unknown">
-                        <span className="bda-device-icon">❓</span> 알 수 없음 {currentStats.unknownDeviceUsers}명
+                        <span className="bda-device-icon">❓</span> 알 수 없음 {currentStats.unknownDeviceUsers} 세션
                       </span>
                     )}
                   </div>
@@ -700,7 +700,7 @@ function BasicDataAnalysis({ onBack }) {
                         <div className="bda-funnel-bar-wrap">
                           <div className="bda-funnel-bar" style={{ width: '100%' }}></div>
                         </div>
-                        <div className="bda-funnel-value">{currentStats.sessions}명</div>
+                        <div className="bda-funnel-value">{currentStats.sessions} 세션</div>
                       </div>
                       <div className="bda-funnel-step dropout">
                         <div className="bda-funnel-label">↳ 미시작 이탈</div>
@@ -708,7 +708,7 @@ function BasicDataAnalysis({ onBack }) {
                           <div className="bda-funnel-bar dropout-bar" style={{ width: `${currentStats.sessions > 0 ? (currentStats.notStarted / currentStats.sessions * 100) : 0}%` }}></div>
                         </div>
                         <div className="bda-funnel-value dropout-value">
-                          {currentStats.notStarted}명
+                          {currentStats.notStarted} 세션
                           <span className="bda-funnel-rate">({currentStats.sessions > 0 ? ((currentStats.notStarted / currentStats.sessions) * 100).toFixed(1) : 0}%)</span>
                         </div>
                       </div>
@@ -718,7 +718,7 @@ function BasicDataAnalysis({ onBack }) {
                           <div className="bda-funnel-bar started" style={{ width: `${currentStats.participationRate}%` }}></div>
                         </div>
                         <div className="bda-funnel-value">
-                          {currentStats.started}명
+                          {currentStats.started} 세션
                           <span className="bda-funnel-rate">({currentStats.participationRate}%)</span>
                         </div>
                       </div>
@@ -728,7 +728,7 @@ function BasicDataAnalysis({ onBack }) {
                           <div className="bda-funnel-bar completed" style={{ width: `${currentStats.sessions > 0 ? (currentStats.completed / currentStats.sessions * 100) : 0}%` }}></div>
                         </div>
                         <div className="bda-funnel-value">
-                          {currentStats.completed}명
+                          {currentStats.completed} 세션
                           <span className="bda-funnel-rate">({currentStats.completionRate}%)</span>
                         </div>
                       </div>
@@ -738,7 +738,7 @@ function BasicDataAnalysis({ onBack }) {
                           <div className="bda-funnel-bar dropout-bar" style={{ width: `${currentStats.started > 0 ? (currentStats.notCompleted / currentStats.started * 100) : 0}%` }}></div>
                         </div>
                         <div className="bda-funnel-value dropout-value">
-                          {currentStats.notCompleted}명
+                          {currentStats.notCompleted} 세션
                           <span className="bda-funnel-rate">({currentStats.started > 0 ? ((currentStats.notCompleted / currentStats.started) * 100).toFixed(1) : 0}%)</span>
                         </div>
                       </div>
@@ -757,7 +757,7 @@ function BasicDataAnalysis({ onBack }) {
                           <div className="bda-funnel-bar-wrap">
                             <div className="bda-funnel-bar" style={{ width: '100%' }}></div>
                           </div>
-                          <div className="bda-funnel-value">{currentStats.sessions}명</div>
+                          <div className="bda-funnel-value">{currentStats.sessions} 세션</div>
                         </div>
                         <div className="bda-funnel-step dropout">
                           <div className="bda-funnel-label">↳ 미시작 이탈</div>
@@ -765,7 +765,7 @@ function BasicDataAnalysis({ onBack }) {
                             <div className="bda-funnel-bar dropout-bar" style={{ width: `${currentStats.sessions > 0 ? (currentStats.basicNotStarted / currentStats.sessions * 100) : 0}%` }}></div>
                           </div>
                           <div className="bda-funnel-value dropout-value">
-                            {currentStats.basicNotStarted}명
+                            {currentStats.basicNotStarted} 세션
                             <span className="bda-funnel-rate">({currentStats.sessions > 0 ? ((currentStats.basicNotStarted / currentStats.sessions) * 100).toFixed(1) : 0}%)</span>
                           </div>
                         </div>
@@ -781,7 +781,7 @@ function BasicDataAnalysis({ onBack }) {
                             <div className="bda-funnel-bar started" style={{ width: `${currentStats.participationRate}%` }}></div>
                           </div>
                           <div className="bda-funnel-value">
-                            {currentStats.basicStarted}명
+                            {currentStats.basicStarted} 세션
                             <span className="bda-funnel-rate">({currentStats.participationRate}%)</span>
                           </div>
                         </div>
@@ -791,7 +791,7 @@ function BasicDataAnalysis({ onBack }) {
                             <div className="bda-funnel-bar completed" style={{ width: `${currentStats.sessions > 0 ? (currentStats.basicCompleted / currentStats.sessions * 100) : 0}%` }}></div>
                           </div>
                           <div className="bda-funnel-value">
-                            {currentStats.basicCompleted}명
+                            {currentStats.basicCompleted} 세션
                             <span className="bda-funnel-rate">({currentStats.basicCompletionRate}%)</span>
                           </div>
                         </div>
@@ -801,7 +801,7 @@ function BasicDataAnalysis({ onBack }) {
                             <div className="bda-funnel-bar dropout-bar" style={{ width: `${currentStats.basicStarted > 0 ? (currentStats.basicNotCompleted / currentStats.basicStarted * 100) : 0}%` }}></div>
                           </div>
                           <div className="bda-funnel-value dropout-value">
-                            {currentStats.basicNotCompleted}명
+                            {currentStats.basicNotCompleted} 세션
                             <span className="bda-funnel-rate">({currentStats.basicStarted > 0 ? ((currentStats.basicNotCompleted / currentStats.basicStarted) * 100).toFixed(1) : 0}%)</span>
                           </div>
                         </div>
@@ -822,7 +822,7 @@ function BasicDataAnalysis({ onBack }) {
                             <div className="bda-funnel-bar started" style={{ width: `${currentStats.additionalParticipationRate}%` }}></div>
                           </div>
                           <div className="bda-funnel-value">
-                            {currentStats.additionalStarted}명
+                            {currentStats.additionalStarted} 세션
                             <span className="bda-funnel-rate">({currentStats.additionalParticipationRate}%)</span>
                           </div>
                         </div>
@@ -832,7 +832,7 @@ function BasicDataAnalysis({ onBack }) {
                             <div className="bda-funnel-bar completed" style={{ width: `${currentStats.basicCompleted > 0 ? (currentStats.additionalCompleted / currentStats.basicCompleted * 100) : 0}%` }}></div>
                           </div>
                           <div className="bda-funnel-value">
-                            {currentStats.additionalCompleted}명
+                            {currentStats.additionalCompleted} 세션
                             <span className="bda-funnel-rate">({currentStats.additionalCompletionRate}%)</span>
                           </div>
                         </div>
@@ -842,7 +842,7 @@ function BasicDataAnalysis({ onBack }) {
                             <div className="bda-funnel-bar dropout-bar" style={{ width: `${currentStats.additionalStarted > 0 ? (currentStats.additionalNotCompleted / currentStats.additionalStarted * 100) : 0}%` }}></div>
                           </div>
                           <div className="bda-funnel-value dropout-value">
-                            {currentStats.additionalNotCompleted}명
+                            {currentStats.additionalNotCompleted} 세션
                             <span className="bda-funnel-rate">({currentStats.additionalStarted > 0 ? ((currentStats.additionalNotCompleted / currentStats.additionalStarted) * 100).toFixed(1) : 0}%)</span>
                           </div>
                         </div>

@@ -406,6 +406,20 @@ function Edit1_1Screen({ onComplete, onBack }) {
     );
   }
 
+  // 확인 버튼 클릭 - 브라우저 탭 닫기 시도, 실패 시 미션 메인으로 이동
+  const handleConfirmComplete = () => {
+    logButtonClick('편집1-1_화면', '미션완료확인');
+
+    // 브라우저 탭 닫기 시도
+    window.close();
+
+    // window.close()가 실패하면 (보안 제한) 미션 메인으로 이동
+    // 약간의 딜레이 후 체크하여 창이 닫히지 않았으면 뒤로가기
+    setTimeout(() => {
+      onBack();
+    }, 100);
+  };
+
   // 완료 화면
   if (completed) {
     return (
@@ -415,6 +429,9 @@ function Edit1_1Screen({ onComplete, onBack }) {
             <div className="cub-complete-check">✓</div>
             <p>미션을 완료했습니다.</p>
             <p className="cub-complete-next">이어서 다음 미션을 수행해 주세요.</p>
+            <button className="cub-confirm-btn" onClick={handleConfirmComplete}>
+              확인
+            </button>
           </div>
         </div>
       </div>

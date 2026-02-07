@@ -1189,7 +1189,7 @@ function DataAnalysis({ onBack }) {
                     <div className="da-mission-card-stats">
                       <div className="da-mission-card-stat">
                         <span className="da-mission-card-stat-icon">👤</span>
-                        <span>{stats?.sessions || 0}명</span>
+                        <span>{stats?.sessions || 0} 세션</span>
                       </div>
                       <div className="da-mission-card-stat">
                         <span className="da-mission-card-stat-icon">📱</span>
@@ -1269,7 +1269,7 @@ function DataAnalysis({ onBack }) {
                             {selectedMissionAnalysis.funnel.overallConversion}%
                           </span>
                           <span className="da-funnel-summary-detail">
-                            ({selectedMissionAnalysis.funnel.lastStepSessions}/{selectedMissionAnalysis.funnel.firstStepSessions}명 완료)
+                            ({selectedMissionAnalysis.funnel.lastStepSessions}/{selectedMissionAnalysis.funnel.firstStepSessions} 세션 완료)
                           </span>
                         </div>
 
@@ -1285,7 +1285,7 @@ function DataAnalysis({ onBack }) {
                                 />
                               </div>
                               <span className="da-funnel-pct">
-                                {step.sessions}명
+                                {step.sessions} 세션
                               </span>
                             </div>
                           ))}
@@ -1306,7 +1306,7 @@ function DataAnalysis({ onBack }) {
                                   {prevStep.name} → {step.name}
                                 </span>
                                 <span className={`da-funnel-dropoff-value ${parseFloat(step.dropoffRate) > 20 ? 'high' : ''}`}>
-                                  {step.dropoff > 0 ? `-${step.dropoff}명` : '0명'}
+                                  {step.dropoff > 0 ? `-${step.dropoff} 세션` : '0 세션'}
                                   {step.dropoff > 0 && ` (${step.dropoffRate}%)`}
                                 </span>
                               </div>
@@ -1334,9 +1334,9 @@ function DataAnalysis({ onBack }) {
                     <div className="da-result-section">
                       <div className="da-result-section-title">▸ 참여 현황</div>
                       <div className="da-result-section-content">
-                        세션 수: {selectedMissionAnalysis.stats.sessions}명 |
-                        PC: {selectedMissionAnalysis.stats.deviceSessions?.desktop || 0}명 |
-                        모바일: {selectedMissionAnalysis.stats.deviceSessions?.mobile || 0}명
+                        세션 수: {selectedMissionAnalysis.stats.sessions} 세션 |
+                        PC: {selectedMissionAnalysis.stats.deviceSessions?.desktop || 0} 세션 |
+                        모바일: {selectedMissionAnalysis.stats.deviceSessions?.mobile || 0} 세션
                       </div>
                     </div>
                   )}
@@ -1494,7 +1494,7 @@ function DataAnalysis({ onBack }) {
                                     }}
                                   />
                                 </div>
-                                <span className="da-time-dist-count">{count}명</span>
+                                <span className="da-time-dist-count">{count} 세션</span>
                               </div>
                             ))}
                           </div>
