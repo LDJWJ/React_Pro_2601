@@ -158,7 +158,7 @@ function Plan1_1AScreen({ onComplete, onBack }) {
           <div className="story-complete-message">
             <div className="story-complete-check">✓</div>
             <p>미션을 완료했습니다.</p>
-            <p className="story-complete-next">이어서 다음 미션을 수행해 주세요.</p>
+            <p className="story-complete-next">화면을 닫고 이어서 다음 미션을 수행해 주세요.</p>
           </div>
         </div>
       </div>

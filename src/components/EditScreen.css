@@ -722,27 +722,3 @@
 .cub-complete-btn:active {
   opacity: 0.8;
 }
-
-/* 미션 완료 확인 버튼 */
-.cub-confirm-btn {
-  width: 90%;
-  max-width: 320px;
-  padding: 16px 0;
-  margin-top: 32px;
-  border: none;
-  border-radius: var(--radius-md);
-  background-color: var(--fill-primary);
-  color: #000;
-  font-size: 16px;
-  font-weight: 700;
-  cursor: pointer;
-  transition: opacity 0.2s ease;
-}
-
-.cub-confirm-btn:hover {
-  opacity: 0.9;
-}
-
-.cub-confirm-btn:active {
-  opacity: 0.8;
-}
