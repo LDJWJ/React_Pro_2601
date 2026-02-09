@@ -21,10 +21,11 @@ function SampleTemplateB({ onComplete, onBack }) {
     onBack();
   };
 
-  const handleComplete = () => {
+  const handleComplete = async () => {
     logButtonClick('sample_template_b', 'complete');
     const completionTime = ((Date.now() - missionStartTime.current) / 1000).toFixed(1);
-    logMissionComplete('sample_template_b', 'mission_99', `완료시간:${completionTime}초`);
+    // 미션 완료 로그 전송 완료를 기다림 (로그 누락 방지)
+    await logMissionComplete('sample_template_b', 'mission_99', `완료시간:${completionTime}초`);
     onComplete();
   };
 

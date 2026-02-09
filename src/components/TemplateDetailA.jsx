@@ -39,10 +39,11 @@ function TemplateDetailA({ onComplete, onBack }) {
     }
   };
 
-  const handleHookNote = () => {
+  const handleHookNote = async () => {
     logButtonClick('template_detail_a', 'hook_note_button');
     const completionTime = ((Date.now() - missionStartTime.current) / 1000).toFixed(1);
-    logMissionComplete('template_detail_a', 'mission_1', `완료시간:${completionTime}초`);
+    // 미션 완료 로그 전송 완료를 기다림 (로그 누락 방지)
+    await logMissionComplete('template_detail_a', 'mission_1', `완료시간:${completionTime}초`);
     setShowComplete(true);
     setTimeout(() => {
       onComplete();

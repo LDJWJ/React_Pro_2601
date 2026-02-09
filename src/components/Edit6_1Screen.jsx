@@ -326,7 +326,7 @@ function Edit6_1Screen({ onComplete, onBack }) {
   };
 
   // AI 추천 선택
-  const handleSelectAiSuggestion = (suggestion, index) => {
+  const handleSelectAiSuggestion = async (suggestion, index) => {
     if (isCompleting) return;
     const state = {
       currentCut: currentCutIndex + 1,
@@ -347,7 +347,8 @@ function Edit6_1Screen({ onComplete, onBack }) {
       setIsCompleting(true);
       // 미션 완료 시간은 선택 시점에 계산 (2초 대기 시간 제외)
       const completionTime = ((Date.now() - missionStartTime.current) / 1000).toFixed(1);
-      logMissionComplete('편집6-1_화면', '편집6-1_기본미션완료', `완료시간:${completionTime}초`);
+      // 미션 완료 로그 전송 완료를 기다림 (로그 누락 방지)
+      await logMissionComplete('편집6-1_화면', '편집6-1_기본미션완료', `완료시간:${completionTime}초`);
       setTimeout(() => {
         // 추가 미션 시작은 팝업 확인 버튼을 누를 때로 이동
         setMissionStage(1);
@@ -363,7 +364,8 @@ function Edit6_1Screen({ onComplete, onBack }) {
       setIsCompleting(true);
       // 미션 완료 시간은 선택 시점에 계산 (2초 대기 시간 제외)
       const completionTime = ((Date.now() - missionStartTime.current) / 1000).toFixed(1);
-      logMissionComplete('편집6-1_화면', '편집6-1_추가미션완료', `완료시간:${completionTime}초`);
+      // 미션 완료 로그 전송 완료를 기다림 (로그 누락 방지)
+      await logMissionComplete('편집6-1_화면', '편집6-1_추가미션완료', `완료시간:${completionTime}초`);
       setTimeout(() => {
         setCompleted(true);
       }, 2000);

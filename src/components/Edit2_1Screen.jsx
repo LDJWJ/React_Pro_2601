@@ -91,7 +91,7 @@ function Edit2_1Screen({ onComplete, onBack }) {
   };
 
   // 컷 선택 — 4번째 컷(index 3) 선택 시 자동 완료
-  const handleCutSelect = (index) => {
+  const handleCutSelect = async (index) => {
     // 미션 완료 대기 중에는 로그 남기지 않음
     if (isCompleting) return;
 
@@ -117,7 +117,8 @@ function Edit2_1Screen({ onComplete, onBack }) {
       setIsCompleting(true);
       // 미션 완료 시간은 버튼 클릭 시점에 계산 (2초 대기 시간 제외)
       const completionTime = ((Date.now() - missionStartTime.current) / 1000).toFixed(1);
-      logMissionComplete('편집2-1_화면', '편집2-1_미션완료', `완료시간:${completionTime}초`);
+      // 미션 완료 로그 전송 완료를 기다림 (로그 누락 방지)
+      await logMissionComplete('편집2-1_화면', '편집2-1_미션완료', `완료시간:${completionTime}초`);
       setTimeout(() => {
         setCompleted(true);
       }, 2000);
