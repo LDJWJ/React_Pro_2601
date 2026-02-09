@@ -249,7 +249,32 @@ function computeMissionStats(data, mission) {
   } else {
     // 일반 미션
     starts = validRows.filter(r => r['이벤트'] === '미션 시작' && r['대상'] === mission.missionStartTarget).length;
-    completes = validRows.filter(r => r['이벤트'] === '미션 완료' && r['대상'] === mission.missionCompleteTarget).length;
+
+    // 기획 미션(plan1-1, plan1-2)의 경우: 저장하기 버튼 클릭도 완료로 인정
+    // (미션 완료 로그가 누락된 경우를 보완)
+    if (mission.id === 'plan1-1' || mission.id === 'plan1-2') {
+      // 미션 완료 로그가 있는 세션
+      const completedSessions = new Set();
+      validRows.forEach(r => {
+        if (r['이벤트'] === '미션 완료' && r['대상'] === mission.missionCompleteTarget) {
+          completedSessions.add(r['사용자ID']);
+        }
+      });
+
+      // 저장하기 버튼 클릭 로그가 있는 세션 (미션 완료 로그 없어도 완료로 인정)
+      const screenName = `${mission.screenPrefix}_화면`;
+      validRows.forEach(r => {
+        if (r['이벤트'] === '버튼 클릭' &&
+            r['대상'] === '저장하기' &&
+            r['화면']?.includes(mission.screenPrefix)) {
+          completedSessions.add(r['사용자ID']);
+        }
+      });
+
+      completes = completedSessions.size;
+    } else {
+      completes = validRows.filter(r => r['이벤트'] === '미션 완료' && r['대상'] === mission.missionCompleteTarget).length;
+    }
 
     validRows.forEach(r => {
       if (r['이벤트'] === '미션 완료' && r['대상'] === mission.missionCompleteTarget) {
@@ -944,6 +969,23 @@ function computeFunnelAnalysis(data, mission) {
 
       sessionSet.add(session);
     });
+
+    // 기획 미션(plan1-1, plan1-2)의 missionComplete 단계:
+    // 저장하기 버튼 클릭도 완료로 인정 (미션 완료 로그 누락 보완)
+    if (step.id === 'missionComplete' && (mission.id === 'plan1-1' || mission.id === 'plan1-2')) {
+      validRows.forEach(r => {
+        const event = r['이벤트']?.trim();
+        const screen = r['화면']?.trim();
+        const target = r['대상']?.trim();
+        const session = r['사용자ID'];
+
+        if (event === '버튼 클릭' &&
+            target === '저장하기' &&
+            screen?.includes(mission.screenPrefix)) {
+          sessionSet.add(session);
+        }
+      });
+    }
 
     return {
       id: step.id,

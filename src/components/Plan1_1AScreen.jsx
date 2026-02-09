@@ -93,7 +93,7 @@ function Plan1_1AScreen({ onComplete, onBack }) {
     }
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     // 중복 클릭 방지 (ref로 동기적 체크)
     if (isSaving || savingRef.current) return;
     savingRef.current = true;  // 동기적으로 즉시 설정
@@ -118,7 +118,9 @@ function Plan1_1AScreen({ onComplete, onBack }) {
 
     // 미션 완료 시간은 버튼 클릭 시점에 계산 (2초 대기 시간 제외)
     const completionTime = ((Date.now() - missionStartTime.current) / 1000).toFixed(1);
-    logMissionComplete('기획1-1_화면', '기획1-1_미션완료', `완료시간:${completionTime}초,메모수:${memoCount},총길이:${totalMemoLength}`);
+
+    // 미션 완료 로그 전송 완료를 기다림 (로그 누락 방지)
+    await logMissionComplete('기획1-1_화면', '기획1-1_미션완료', `완료시간:${completionTime}초,메모수:${memoCount},총길이:${totalMemoLength}`);
 
     // 2초 후 완료 화면 표시
     setTimeout(() => {
