@@ -82,6 +82,7 @@ const MISSIONS = {
     screenPrefix: '기획1-1',
     missionStartTarget: '기획1-1_미션시작',
     missionCompleteTarget: '기획1-1_미션완료',
+    saveButtonScreen: '기획1-1_화면',  // 저장하기 버튼 클릭도 완료로 인정
   },
   'plan1-2': {
     id: 'plan1-2',
@@ -90,6 +91,7 @@ const MISSIONS = {
     screenPrefix: '기획1-2',
     missionStartTarget: '기획1-2_미션시작',
     missionCompleteTarget: '기획1-2_미션완료',
+    saveButtonScreen: '기획1-2_화면',  // 저장하기 버튼 클릭도 완료로 인정
   },
 };
 
@@ -138,9 +140,21 @@ function computeMissionStats(data, mission) {
   const completedUsers = new Set();
   const completionTimesByUser = new Map();
   validRows.forEach(r => {
+    const userId = r['사용자ID'];
+    // 기존 미션 완료 이벤트
     if (r['이벤트'] === '미션 완료' && r['대상'] === mission.missionCompleteTarget) {
-      const userId = r['사용자ID'];
       completedUsers.add(userId);
+      if (!completionTimesByUser.has(userId)) {
+        const match = r['값']?.match(/완료시간:(\d+\.?\d*)초/);
+        if (match) {
+          completionTimesByUser.set(userId, parseFloat(match[1]));
+        }
+      }
+    }
+    // 저장하기 버튼 클릭도 미션 완료로 인정 (기획1-1, 기획1-2)
+    if (mission.saveButtonScreen && r['이벤트'] === '버튼 클릭' && r['화면'] === mission.saveButtonScreen && r['대상'] === '저장하기') {
+      completedUsers.add(userId);
+      // 저장하기 버튼 클릭 시 완료 시간 추출 시도
       if (!completionTimesByUser.has(userId)) {
         const match = r['값']?.match(/완료시간:(\d+\.?\d*)초/);
         if (match) {
